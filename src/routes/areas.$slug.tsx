@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { AREAS, PROJETOS, type AreaSlug } from "@/data/idex";
+import { AREAS, type AreaSlug } from "@/data/idex";
+import { useAreas, useProjetos } from "@/lib/conteudo";
 import { AreaIcon } from "@/components/AreaIcon";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder, PlaceholderBox } from "@/components/Placeholder";
@@ -31,8 +32,10 @@ export const Route = createFileRoute("/areas/$slug")({
 });
 
 function AreaDetalhe() {
-  const { area } = Route.useLoaderData();
-  const projetos = PROJETOS.filter((p) => p.area === area.slug);
+  const { area: areaEstatica } = Route.useLoaderData();
+  // Conteúdo do banco sobrescreve o estático quando existir
+  const area = useAreas().find((a) => a.slug === areaEstatica.slug) ?? areaEstatica;
+  const projetos = useProjetos().filter((p) => p.area === area.slug);
 
   return (
     <>
