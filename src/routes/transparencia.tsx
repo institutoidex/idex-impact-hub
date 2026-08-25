@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
+import { useDocumentos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder, PlaceholderBox } from "@/components/Placeholder";
@@ -46,6 +47,7 @@ const FAQ = [
 ];
 
 function Transparencia() {
+  const docsBanco = useDocumentos(); // documentos publicados no banco
   return (
     <>
       <PageHero
@@ -70,7 +72,27 @@ function Transparencia() {
 
             {(["estatuto", "relatorios", "documentos", "lgpd"] as const).map((chave) => (
               <TabsContent key={chave} value={chave} className="mt-8 space-y-4">
-                {(DOCS[chave] ?? []).map((doc) => (
+                {(docsBanco[chave] ?? []).map((doc) => (
+                  <a
+                    key={doc.id}
+                    href={doc.arquivo_url ?? "#"}
+                    target={doc.arquivo_url ? "_blank" : undefined}
+                    rel="noreferrer"
+                    className="lift flex items-center gap-4 rounded-2xl border border-border bg-card p-5"
+                  >
+                    <span className="grid size-11 place-items-center rounded-xl bg-muted">
+                      <FileText className="size-5 text-secondary" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="font-display">{doc.titulo}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {doc.ano ? `Ano ${doc.ano}` : "Documento publicado"}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+                {!docsBanco[chave]?.length &&
+                  (DOCS[chave] ?? []).map((doc) => (
                   <div
                     key={doc}
                     className="flex items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-5"
