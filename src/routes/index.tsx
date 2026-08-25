@@ -166,14 +166,17 @@ function Inicio() {
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {NOTICIAS.map((n, i) => (
             <Reveal as="article" key={n.slug} delay={i * 90}>
-              <div className="lift h-full rounded-3xl border border-border bg-card p-7">
-                <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                  {n.data}
-                </p>
-                <h3 className="mt-3 text-xl">{n.titulo}</h3>
-                <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-              </div>
+              <TiltCard>
+                <div className="lift h-full rounded-3xl border border-border bg-card p-7">
+                  <p className="text-xs font-semibold tracking-widest text-primary uppercase">
+                    {n.data}
+                  </p>
+                  <h3 className="mt-3 text-xl">{n.titulo}</h3>
+                  <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+                </div>
+              </TiltCard>
             </Reveal>
+
           ))}
           {[0, 1].map((i) => (
             <Reveal as="article" key={i} delay={(i + 1) * 120}>
