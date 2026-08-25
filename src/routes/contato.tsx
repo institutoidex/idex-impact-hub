@@ -57,7 +57,7 @@ function Contato() {
     }
 
     setEnviando(true);
-    const { error } = await supabase.from("mensagens").insert(parsed.data);
+    const { error } = await supabase.from("mensagens").insert([parsed.data]);
     setEnviando(false);
 
     if (error) {
