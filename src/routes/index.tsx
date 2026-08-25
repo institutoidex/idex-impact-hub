@@ -6,6 +6,10 @@ import culturaImg from "@/assets/comunidade-cultura.jpg";
 import { AREAS, NOTICIAS, CONTATO } from "@/data/idex";
 import { AreaIcon } from "@/components/AreaIcon";
 import { Reveal } from "@/components/Reveal";
+import { AnimatedText } from "@/components/motion/AnimatedText";
+import { Counter } from "@/components/motion/Counter";
+import { TiltCard } from "@/components/motion/TiltCard";
+
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
 
@@ -46,11 +50,12 @@ function Inicio() {
             <span className="inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase">
               Instituto IDEX · desde 2007
             </span>
-            <h1 className="mt-6 text-4xl leading-[1.05] text-ink-foreground sm:text-6xl lg:text-7xl">
-              A gente muda vida
-              <br />
-              perto de casa.
-            </h1>
+            <AnimatedText
+              as="h1"
+              text={"A gente muda vida\nperto de casa."}
+              className="mt-6 text-4xl leading-[1.05] text-ink-foreground sm:text-6xl lg:text-7xl"
+            />
+
             <p className="mt-6 max-w-xl text-lg text-ink-foreground/80">
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
@@ -138,17 +143,20 @@ function Inicio() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
         <div className="grid gap-6 rounded-3xl bg-ink p-8 text-ink-foreground sm:grid-cols-3 sm:p-10">
           {[
-            { n: "2007", t: "ano de fundação" },
-            { n: "19", t: "anos de atuação" },
-            { n: "200", t: "crianças no Talento Brasil" },
+            { v: 2007, sep: false, t: "ano de fundação" },
+            { v: 19, sep: true, t: "anos de atuação" },
+            { v: 200, sep: true, t: "crianças no Talento Brasil" },
           ].map((item, i) => (
             <Reveal key={item.t} delay={i * 100}>
               <div className="h-full rounded-2xl bg-ink-card p-7">
-                <p className="font-display text-5xl text-primary">{item.n}</p>
+                <p className="font-display text-5xl text-primary">
+                  {item.sep ? <Counter valor={item.v} /> : item.v}
+                </p>
                 <p className="mt-2 text-sm text-ink-foreground/70">{item.t}</p>
               </div>
             </Reveal>
           ))}
+
         </div>
       </section>
 
@@ -166,14 +174,17 @@ function Inicio() {
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {NOTICIAS.map((n, i) => (
             <Reveal as="article" key={n.slug} delay={i * 90}>
-              <div className="lift h-full rounded-3xl border border-border bg-card p-7">
-                <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                  {n.data}
-                </p>
-                <h3 className="mt-3 text-xl">{n.titulo}</h3>
-                <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-              </div>
+              <TiltCard>
+                <div className="lift h-full rounded-3xl border border-border bg-card p-7">
+                  <p className="text-xs font-semibold tracking-widest text-primary uppercase">
+                    {n.data}
+                  </p>
+                  <h3 className="mt-3 text-xl">{n.titulo}</h3>
+                  <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+                </div>
+              </TiltCard>
             </Reveal>
+
           ))}
           {[0, 1].map((i) => (
             <Reveal as="article" key={i} delay={(i + 1) * 120}>

@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
+
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -126,7 +128,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Barra de progresso de leitura */}
+      <ScrollProgress />
       <Header />
+
       <main className="min-h-screen">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
