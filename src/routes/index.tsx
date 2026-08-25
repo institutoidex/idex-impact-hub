@@ -6,6 +6,10 @@ import culturaImg from "@/assets/comunidade-cultura.jpg";
 import { AREAS, NOTICIAS, CONTATO } from "@/data/idex";
 import { AreaIcon } from "@/components/AreaIcon";
 import { Reveal } from "@/components/Reveal";
+import { AnimatedText } from "@/components/motion/AnimatedText";
+import { Counter } from "@/components/motion/Counter";
+import { TiltCard } from "@/components/motion/TiltCard";
+
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
 
