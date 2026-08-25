@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { AREAS, PROJETOS } from "@/data/idex";
+import { useAreas, useProjetos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
@@ -24,16 +24,18 @@ export const Route = createFileRoute("/projetos/")({
 });
 
 function ProjetosIndex() {
+  const areas = useAreas();
+  const projetos = useProjetos();
   const [area, setArea] = useState<string>("todas");
   const [ano, setAno] = useState<string>("todos");
 
   const anos = useMemo(
-    () => Array.from(new Set(PROJETOS.map((p) => String(p.ano)))).sort(),
-    [],
+    () => Array.from(new Set(projetos.map((p) => String(p.ano)))).sort(),
+    [projetos],
   );
 
   // Filtra o catálogo pelos seletores de área e ano.
-  const lista = PROJETOS.filter(
+  const lista = projetos.filter(
     (p) => (area === "todas" || p.area === area) && (ano === "todos" || String(p.ano) === ano),
   );
 
@@ -59,7 +61,7 @@ function ProjetosIndex() {
               <FiltroBotao ativo={area === "todas"} onClick={() => setArea("todas")}>
                 Todas
               </FiltroBotao>
-              {AREAS.map((a) => (
+              {areas.map((a) => (
                 <FiltroBotao key={a.slug} ativo={area === a.slug} onClick={() => setArea(a.slug)}>
                   {a.nome}
                 </FiltroBotao>
@@ -102,7 +104,7 @@ function ProjetosIndex() {
                 />
                 <div className="p-7">
                   <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                    {AREAS.find((a) => a.slug === p.area)?.nome} · {p.ano}
+                    {areas.find((a) => a.slug === p.area)?.nome} · {p.ano}
                   </p>
                   <h2 className="mt-2 text-xl">{p.nome}</h2>
                   <p className="mt-3 text-sm text-muted-foreground">{p.resumo}</p>

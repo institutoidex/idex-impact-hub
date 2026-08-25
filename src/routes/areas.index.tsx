@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { AREAS } from "@/data/idex";
+import { useAreas } from "@/lib/conteudo";
 import { AreaIcon } from "@/components/AreaIcon";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/areas/")({
 });
 
 function AreasIndex() {
+  const areas = useAreas(); // banco com fallback estático
   return (
     <>
       <PageHero
@@ -35,7 +36,7 @@ function AreasIndex() {
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
         <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {AREAS.map((area, i) => (
+          {areas.map((area, i) => (
             <Reveal as="li" key={area.slug} delay={i * 80}>
               <Link
                 to="/areas/$slug"
