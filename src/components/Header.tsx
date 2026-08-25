@@ -4,6 +4,7 @@ import { Menu, X, HeartHandshake } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import logoAsset from "@/assets/logo-idex.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
 export function Header() {
@@ -28,16 +29,12 @@ export function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
         <Link to="/" className="group flex items-center gap-2" onClick={() => setAberto(false)}>
-          {/* Marca provisória — substituir pelo logo oficial quando enviado */}
-          <span className="grid size-10 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground transition-transform group-hover:-rotate-3">
-            i
-          </span>
-          <span className="leading-tight">
-            <span className="block font-display text-lg font-semibold">Instituto IDEX</span>
-            <span className="block text-[11px] uppercase tracking-widest text-muted-foreground">
-              desde 2007
-            </span>
-          </span>
+          {/* Logo oficial do Instituto IDEX */}
+          <img
+            src={logoAsset.url}
+            alt="Instituto IDEX"
+            className="h-10 w-auto object-contain transition-transform group-hover:-rotate-1 sm:h-12"
+          />
         </Link>
 
         <nav className="ml-auto hidden items-center gap-1 xl:flex">
