@@ -138,17 +138,20 @@ function Inicio() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
         <div className="grid gap-6 rounded-3xl bg-ink p-8 text-ink-foreground sm:grid-cols-3 sm:p-10">
           {[
-            { n: "2007", t: "ano de fundação" },
-            { n: "19", t: "anos de atuação" },
-            { n: "200", t: "crianças no Talento Brasil" },
+            { v: 2007, sep: false, t: "ano de fundação" },
+            { v: 19, sep: true, t: "anos de atuação" },
+            { v: 200, sep: true, t: "crianças no Talento Brasil" },
           ].map((item, i) => (
             <Reveal key={item.t} delay={i * 100}>
               <div className="h-full rounded-2xl bg-ink-card p-7">
-                <p className="font-display text-5xl text-primary">{item.n}</p>
+                <p className="font-display text-5xl text-primary">
+                  {item.sep ? <Counter valor={item.v} /> : item.v}
+                </p>
                 <p className="mt-2 text-sm text-ink-foreground/70">{item.t}</p>
               </div>
             </Reveal>
           ))}
+
         </div>
       </section>
 
