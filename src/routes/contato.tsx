@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
+import { supabase } from "@/lib/supabase";
 import { MapPin, Instagram, Facebook, Phone, Mail } from "lucide-react";
 import { CONTATO } from "@/data/idex";
 import { PageHero } from "@/components/PageHero";
