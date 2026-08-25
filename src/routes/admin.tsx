@@ -1,17 +1,32 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Mail, Newspaper, FolderKanban } from "lucide-react";
+import { LogOut, Mail, Newspaper, FolderKanban, Plus, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useSessao } from "@/hooks/useSessao";
 import {
   formatarData,
   mensagensQuery,
   noticiasAdminQuery,
-  projetosQuery,
+  projetosAdminQuery,
 } from "@/lib/queries";
+import { useAlternarPublicacao, useApagarRegistro } from "@/lib/mutations";
+import { EditorNoticia } from "@/components/admin/EditorNoticia";
+import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import type { NoticiaRow, ProjetoRow } from "@/lib/db-types";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -40,13 +55,40 @@ function Painel() {
   const logado = Boolean(sessao);
   const mensagens = useQuery({ ...mensagensQuery, enabled: logado });
   const noticias = useQuery({ ...noticiasAdminQuery, enabled: logado });
-  const projetos = useQuery({ ...projetosQuery, enabled: logado });
+  const projetos = useQuery({ ...projetosAdminQuery, enabled: logado });
+
+  // Estado dos editores e da confirmação de exclusão
+  const [editorNoticia, setEditorNoticia] = useState<{ aberto: boolean; item: NoticiaRow | null }>({
+    aberto: false,
+    item: null,
+  });
+  const [editorProjeto, setEditorProjeto] = useState<{ aberto: boolean; item: ProjetoRow | null }>({
+    aberto: false,
+    item: null,
+  });
+  const [aExcluir, setAExcluir] = useState<{
+    tabela: "noticias" | "projetos";
+    id: string;
+    titulo: string;
+  } | null>(null);
+
+  const publicarNoticia = useAlternarPublicacao("noticias");
+  const publicarProjeto = useAlternarPublicacao("projetos");
+  const apagarNoticia = useApagarRegistro("noticias");
+  const apagarProjeto = useApagarRegistro("projetos");
 
   async function sair() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
+  }
+
+  function confirmarExclusao() {
+    if (!aExcluir) return;
+    if (aExcluir.tabela === "noticias") apagarNoticia.mutate(aExcluir.id);
+    else apagarProjeto.mutate(aExcluir.id);
+    setAExcluir(null);
   }
 
   if (carregando || !sessao) {
@@ -68,19 +110,145 @@ function Painel() {
         </Button>
       </div>
 
-      <Tabs defaultValue="mensagens" className="mt-10">
+      <Tabs defaultValue="noticias" className="mt-10">
         <TabsList>
-          <TabsTrigger value="mensagens">
-            <Mail className="size-4" /> Mensagens
-          </TabsTrigger>
           <TabsTrigger value="noticias">
             <Newspaper className="size-4" /> Notícias
           </TabsTrigger>
           <TabsTrigger value="projetos">
             <FolderKanban className="size-4" /> Projetos
           </TabsTrigger>
+          <TabsTrigger value="mensagens">
+            <Mail className="size-4" /> Mensagens
+          </TabsTrigger>
         </TabsList>
 
+        {/* ---------------- Notícias ---------------- */}
+        <TabsContent value="noticias" className="mt-6 space-y-4">
+          <div className="flex justify-end">
+            <Button
+              className="rounded-full"
+              onClick={() => setEditorNoticia({ aberto: true, item: null })}
+            >
+              <Plus className="size-4" /> Nova notícia
+            </Button>
+          </div>
+
+          {noticias.isLoading && <Vazio texto="Carregando notícias..." />}
+          {noticias.error && <Vazio texto="Não foi possível carregar as notícias." />}
+          {noticias.data?.length === 0 && <Vazio texto="Nenhuma notícia cadastrada ainda." />}
+
+          {noticias.data?.map((n) => (
+            <article
+              key={n.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
+            >
+              <div className="min-w-56 flex-1">
+                <h2 className="text-lg">{n.titulo}</h2>
+                <p className="text-sm text-muted-foreground">{n.resumo}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {formatarData(n.publicado_em)} · /{n.slug}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Switch
+                    checked={n.publicado}
+                    onCheckedChange={(v) =>
+                      publicarNoticia.mutate({ id: n.id, publicado: v })
+                    }
+                  />
+                  {n.publicado ? "Publicada" : "Rascunho"}
+                </label>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label={`Editar ${n.titulo}`}
+                  onClick={() => setEditorNoticia({ aberto: true, item: n })}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label={`Apagar ${n.titulo}`}
+                  onClick={() =>
+                    setAExcluir({ tabela: "noticias", id: n.id, titulo: n.titulo })
+                  }
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            </article>
+          ))}
+        </TabsContent>
+
+        {/* ---------------- Projetos ---------------- */}
+        <TabsContent value="projetos" className="mt-6 space-y-4">
+          <div className="flex justify-end">
+            <Button
+              className="rounded-full"
+              onClick={() => setEditorProjeto({ aberto: true, item: null })}
+            >
+              <Plus className="size-4" /> Novo projeto
+            </Button>
+          </div>
+
+          {projetos.isLoading && <Vazio texto="Carregando projetos..." />}
+          {projetos.error && <Vazio texto="Não foi possível carregar os projetos." />}
+          {projetos.data?.length === 0 && <Vazio texto="Nenhum projeto cadastrado ainda." />}
+
+          {projetos.data?.map((p) => (
+            <article
+              key={p.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
+            >
+              <div className="min-w-56 flex-1">
+                <h2 className="text-lg">{p.titulo}</h2>
+                <p className="text-sm text-muted-foreground">{p.resumo}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {p.status} · /{p.slug}
+                  {p.destaque ? " · destaque" : ""}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Switch
+                    checked={p.publicado}
+                    onCheckedChange={(v) =>
+                      publicarProjeto.mutate({ id: p.id, publicado: v })
+                    }
+                  />
+                  {p.publicado ? "Publicado" : "Rascunho"}
+                </label>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label={`Editar ${p.titulo}`}
+                  onClick={() => setEditorProjeto({ aberto: true, item: p })}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label={`Apagar ${p.titulo}`}
+                  onClick={() =>
+                    setAExcluir({ tabela: "projetos", id: p.id, titulo: p.titulo })
+                  }
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            </article>
+          ))}
+        </TabsContent>
+
+        {/* ---------------- Mensagens ---------------- */}
         <TabsContent value="mensagens" className="mt-6 space-y-4">
           {mensagens.isLoading && <Vazio texto="Carregando mensagens..." />}
           {mensagens.error && <Vazio texto="Sem permissão ou tabela ainda não criada." />}
@@ -99,48 +267,33 @@ function Painel() {
             </article>
           ))}
         </TabsContent>
-
-        <TabsContent value="noticias" className="mt-6 space-y-4">
-          {noticias.error && <Vazio texto="Tabela de notícias ainda não criada." />}
-          {noticias.data?.length === 0 && <Vazio texto="Nenhuma notícia cadastrada." />}
-          {noticias.data?.map((n) => (
-            <article
-              key={n.id}
-              className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl border border-border bg-card p-6"
-            >
-              <span>
-                <h2 className="text-lg">{n.titulo}</h2>
-                <p className="text-sm text-muted-foreground">{n.resumo}</p>
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {n.publicado ? "Publicada" : "Rascunho"} · {formatarData(n.publicado_em)}
-              </span>
-            </article>
-          ))}
-        </TabsContent>
-
-        <TabsContent value="projetos" className="mt-6 space-y-4">
-          {projetos.error && <Vazio texto="Tabela de projetos ainda não criada." />}
-          {projetos.data?.length === 0 && <Vazio texto="Nenhum projeto cadastrado." />}
-          {projetos.data?.map((p) => (
-            <article
-              key={p.id}
-              className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl border border-border bg-card p-6"
-            >
-              <span>
-                <h2 className="text-lg">{p.titulo}</h2>
-                <p className="text-sm text-muted-foreground">{p.resumo}</p>
-              </span>
-              <span className="text-xs text-muted-foreground">{p.status}</span>
-            </article>
-          ))}
-        </TabsContent>
       </Tabs>
 
-      <p className="mt-10 text-xs text-muted-foreground">
-        A edição de conteúdo é feita direto no banco por enquanto. Posso montar telas de
-        criação/edição aqui quando você quiser.
-      </p>
+      <EditorNoticia
+        aberto={editorNoticia.aberto}
+        noticia={editorNoticia.item}
+        aoFechar={() => setEditorNoticia({ aberto: false, item: null })}
+      />
+      <EditorProjeto
+        aberto={editorProjeto.aberto}
+        projeto={editorProjeto.item}
+        aoFechar={() => setEditorProjeto({ aberto: false, item: null })}
+      />
+
+      <AlertDialog open={Boolean(aExcluir)} onOpenChange={(v) => !v && setAExcluir(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apagar “{aExcluir?.titulo}”?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser desfeita e o conteúdo some do site na hora.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmarExclusao}>Apagar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

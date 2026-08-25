@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { useRealtimeConteudo } from "@/hooks/useRealtimeConteudo";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -128,6 +129,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Escuta o banco e atualiza as páginas em tempo real */}
+      <AssinaturaRealtime />
       {/* Barra de progresso de leitura */}
       <ScrollProgress />
       <Header />
@@ -140,4 +143,10 @@ function RootComponent() {
       <Toaster />
     </QueryClientProvider>
   );
+}
+
+/** Componente sem UI: mantém a assinatura de tempo real do conteúdo. */
+function AssinaturaRealtime() {
+  useRealtimeConteudo();
+  return null;
 }
