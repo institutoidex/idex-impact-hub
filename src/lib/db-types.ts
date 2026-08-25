@@ -3,7 +3,7 @@
  * Mantidos à mão — atualize aqui sempre que o schema mudar.
  */
 
-export interface AreaRow {
+export type AreaRow = {
   id: string;
   slug: string;
   nome: string;
@@ -15,7 +15,7 @@ export interface AreaRow {
   criado_em: string;
 }
 
-export interface ProjetoRow {
+export type ProjetoRow = {
   id: string;
   slug: string;
   titulo: string;
@@ -33,7 +33,7 @@ export interface ProjetoRow {
   criado_em: string;
 }
 
-export interface NoticiaRow {
+export type NoticiaRow = {
   id: string;
   slug: string;
   titulo: string;
@@ -45,7 +45,7 @@ export interface NoticiaRow {
   criado_em: string;
 }
 
-export interface DocumentoRow {
+export type DocumentoRow = {
   id: string;
   titulo: string;
   categoria: string; // "estatuto" | "relatorio" | "financeiro" | "outro"
@@ -55,7 +55,7 @@ export interface DocumentoRow {
   criado_em: string;
 }
 
-export interface MensagemRow {
+export type MensagemRow = {
   id: string;
   nome: string;
   email: string;
@@ -73,7 +73,7 @@ type Tabela<Row, Insert = Partial<Row>> = {
   Relationships: [];
 };
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       areas: Tabela<AreaRow>;
