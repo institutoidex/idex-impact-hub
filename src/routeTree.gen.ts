@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AreasRouteImport } from './routes/areas'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ComoAjudarRouteImport } from './routes/como-ajudar'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as NoticiasRouteImport } from './routes/noticias'
@@ -28,9 +30,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AreasRoute = AreasRouteImport.update({
   id: '/areas',
   path: '/areas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComoAjudarRoute = ComoAjudarRouteImport.update({
@@ -91,7 +103,9 @@ const ProjetosSlugRoute = ProjetosSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/areas': typeof AreasRouteWithChildren
+  '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/noticias': typeof NoticiasRoute
@@ -106,6 +120,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/noticias': typeof NoticiasRoute
@@ -120,7 +136,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/areas': typeof AreasRouteWithChildren
+  '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/noticias': typeof NoticiasRoute
@@ -137,7 +155,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/areas'
+    | '/auth'
     | '/como-ajudar'
     | '/contato'
     | '/noticias'
@@ -152,6 +172,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
+    | '/auth'
     | '/como-ajudar'
     | '/contato'
     | '/noticias'
@@ -165,7 +187,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/areas'
+    | '/auth'
     | '/como-ajudar'
     | '/contato'
     | '/noticias'
@@ -181,7 +205,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AreasRoute: typeof AreasRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
   NoticiasRoute: typeof NoticiasRoute
@@ -200,11 +226,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/areas': {
       id: '/areas'
       path: '/areas'
       fullPath: '/areas'
       preLoaderRoute: typeof AreasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/como-ajudar': {
@@ -315,7 +355,9 @@ const ProjetosRouteWithChildren = ProjetosRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AreasRoute: AreasRouteWithChildren,
+  AuthRoute: AuthRoute,
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
   NoticiasRoute: NoticiasRoute,
