@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { useRealtimeConteudo } from "@/hooks/useRealtimeConteudo";
 
 import { Toaster } from "@/components/ui/sonner";
 
