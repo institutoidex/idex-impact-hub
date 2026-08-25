@@ -3,7 +3,8 @@ import { ArrowRight, Instagram, HeartHandshake, Handshake } from "lucide-react";
 import heroImg from "@/assets/hero-esporte.jpg";
 import talentoImg from "@/assets/talento-brasil.jpg";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
-import { AREAS, NOTICIAS, CONTATO } from "@/data/idex";
+import { NOTICIAS, CONTATO } from "@/data/idex";
+import { useAreas } from "@/lib/conteudo";
 import { AreaIcon } from "@/components/AreaIcon";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
@@ -87,7 +88,7 @@ function Inicio() {
           </p>
         </Reveal>
         <ul className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
-          {AREAS.map((area, i) => (
+          {areas.map((area, i) => (
             <Reveal as="li" key={area.slug} delay={i * 70}>
               <Link
                 to="/areas/$slug"
