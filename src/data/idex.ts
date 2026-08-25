@@ -27,7 +27,7 @@ export const AREAS: Area[] = [
     nome: "Educação",
     resumo: "Apoio e desenvolvimento",
     descricao:
-      "Frente de apoio e desenvolvimento educacional. [Descrição detalhada a definir com a equipe do instituto]",
+      "Apoio e desenvolvimento educacional para crianças e jovens da comunidade. [Detalhamento de objetivos e ações a definir com a equipe do instituto]",
     icone: "GraduationCap",
     cor: "bg-primary text-primary-foreground",
   },
@@ -36,16 +36,16 @@ export const AREAS: Area[] = [
     nome: "Cultura",
     resumo: "Artes e oficinas",
     descricao:
-      "Frente de artes e oficinas culturais. [Descrição detalhada a definir com a equipe do instituto]",
+      "Artes e oficinas que ampliam repertório e geram renda para a comunidade. [Detalhamento de objetivos e ações a definir]",
     icone: "Palette",
     cor: "bg-secondary text-secondary-foreground",
   },
   {
     slug: "esportes",
     nome: "Esportes",
-    resumo: "Projetos e ações sociais",
+    resumo: "Ações sociais",
     descricao:
-      "Frente de projetos e ações sociais por meio do esporte. É onde está o projeto Talento Brasil.",
+      "Projetos e ações sociais pelo esporte — inclui o Talento Brasil, projeto ativo desde 2017.",
     icone: "Trophy",
     cor: "bg-primary text-primary-foreground",
   },
@@ -54,7 +54,7 @@ export const AREAS: Area[] = [
     nome: "Meio Ambiente",
     resumo: "Sustentabilidade",
     descricao:
-      "Frente de sustentabilidade. [Descrição detalhada a definir com a equipe do instituto]",
+      "Ações de sustentabilidade e educação ambiental na comunidade. [Detalhamento de objetivos e ações a definir]",
     icone: "Leaf",
     cor: "bg-primary text-primary-foreground",
   },
@@ -63,7 +63,7 @@ export const AREAS: Area[] = [
     nome: "Negócios",
     resumo: "Indústria e comércio",
     descricao:
-      "Frente ligada a indústria e comércio — origem histórica do instituto, em projetos de comércio exterior e competitividade. [Descrição detalhada a definir]",
+      "Indústria e comércio: a origem do IDEX, hoje a serviço da competitividade local. [Detalhamento de objetivos e ações a definir]",
     icone: "Briefcase",
     cor: "bg-secondary text-secondary-foreground",
   },
@@ -72,11 +72,12 @@ export const AREAS: Area[] = [
     nome: "Saúde",
     resumo: "Qualidade de vida",
     descricao:
-      "Frente de qualidade de vida. [Descrição detalhada a definir com a equipe do instituto]",
+      "Qualidade de vida como parte do desenvolvimento social integral. [Detalhamento de objetivos e ações a definir]",
     icone: "HeartPulse",
     cor: "bg-secondary text-secondary-foreground",
   },
 ];
+
 
 export interface Projeto {
   slug: string;
