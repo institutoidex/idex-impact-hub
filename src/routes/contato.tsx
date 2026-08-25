@@ -27,20 +27,45 @@ export const Route = createFileRoute("/contato")({
   component: Contato,
 });
 
+// Validação da mensagem antes de gravar no banco
+const esquemaContato = z.object({
+  nome: z.string().trim().min(2, "Informe seu nome").max(120),
+  email: z.string().trim().email("E-mail inválido").max(255),
+  assunto: z.string().trim().min(2, "Informe o assunto").max(150),
+  mensagem: z.string().trim().min(5, "Escreva sua mensagem").max(2000),
+});
+
 function Contato() {
   const [enviando, setEnviando] = useState(false);
 
-  // O formulário ainda não tem back-end: apenas confirma o preenchimento.
-  function aoEnviar(e: React.FormEvent<HTMLFormElement>) {
+  // Grava a mensagem na tabela `mensagens` (leitura só pela equipe logada).
+  async function aoEnviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
+    const dados = new FormData(form);
+    const parsed = esquemaContato.safeParse({
+      nome: dados.get("nome"),
+      email: dados.get("email"),
+      assunto: dados.get("assunto"),
+      mensagem: dados.get("mensagem"),
+    });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Confira os campos");
+      return;
+    }
+
     setEnviando(true);
-    setTimeout(() => {
-      setEnviando(false);
-      toast.success("Mensagem registrada", {
-        description: "O envio real será ativado quando o destino de e-mail for definido.",
+    const { error } = await supabase.from("mensagens").insert(parsed.data);
+    setEnviando(false);
+
+    if (error) {
+      toast.error("Não conseguimos enviar agora", {
+        description: "Tente novamente em instantes ou fale com a gente pelo Instagram.",
       });
-      e.currentTarget?.reset?.();
-    }, 500);
+      return;
+    }
+    toast.success("Mensagem enviada!", { description: "A equipe do IDEX vai te responder." });
+    form.reset();
   }
 
   return (
