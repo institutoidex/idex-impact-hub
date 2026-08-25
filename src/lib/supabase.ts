@@ -2,13 +2,21 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./db-types";
 
 /**
- * Cliente do banco do Instituto IDEX.
- * A URL e a chave publishable (anon) são públicas por definição —
- * a proteção real vem das políticas de RLS configuradas no banco.
+ * Cliente do banco do Instituto IDEX (navegador/SSR público).
+ * URL e chave publishable (anon) vêm de variáveis de ambiente VITE_*.
+ * Elas são públicas por definição — a proteção real vem das políticas de RLS.
  */
-export const SUPABASE_URL = "https://rhgiuskcuowphhwuewcf.supabase.co";
-export const SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoZ2l1c2tjdW93cGhod3Vld2NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NzYyNDYsImV4cCI6MjEwMzI1MjI0Nn0.DnqyODZTkMeXKTLLBS5lysc-KePOqoUU6B8H2MkgOmo";
+export const SUPABASE_URL = import.meta.env['VITE_SUPABASE_URL'] as string | undefined;
+export const SUPABASE_PUBLISHABLE_KEY = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as
+  | string
+  | undefined;
+
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  // Erro claro em vez de falha silenciosa nas consultas
+  throw new Error(
+    "Variáveis VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY não configuradas (.env).",
+  );
+}
 
 const noNavegador = typeof window !== "undefined";
 
