@@ -46,11 +46,12 @@ function Inicio() {
             <span className="inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase">
               Instituto IDEX · desde 2007
             </span>
-            <h1 className="mt-6 text-4xl leading-[1.05] text-ink-foreground sm:text-6xl lg:text-7xl">
-              A gente muda vida
-              <br />
-              perto de casa.
-            </h1>
+            <AnimatedText
+              as="h1"
+              text={"A gente muda vida\nperto de casa."}
+              className="mt-6 text-4xl leading-[1.05] text-ink-foreground sm:text-6xl lg:text-7xl"
+            />
+
             <p className="mt-6 max-w-xl text-lg text-ink-foreground/80">
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
