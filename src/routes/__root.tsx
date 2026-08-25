@@ -126,7 +126,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Barra de progresso de leitura */}
+      <ScrollProgress />
       <Header />
+
       <main className="min-h-screen">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
