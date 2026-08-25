@@ -128,6 +128,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Escuta o banco e atualiza as páginas em tempo real */}
+      <AssinaturaRealtime />
       {/* Barra de progresso de leitura */}
       <ScrollProgress />
       <Header />
@@ -140,4 +142,10 @@ function RootComponent() {
       <Toaster />
     </QueryClientProvider>
   );
+}
+
+/** Componente sem UI: mantém a assinatura de tempo real do conteúdo. */
+function AssinaturaRealtime() {
+  useRealtimeConteudo();
+  return null;
 }
