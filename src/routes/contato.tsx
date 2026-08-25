@@ -106,7 +106,7 @@ function Contato() {
               {enviando ? "Enviando..." : "Enviar mensagem"}
             </Button>
             <p className="text-xs text-muted-foreground">
-              <Placeholder>destino do formulário a definir</Placeholder>
+              Sua mensagem vai direto para a equipe do instituto.
             </p>
           </form>
         </Reveal>
