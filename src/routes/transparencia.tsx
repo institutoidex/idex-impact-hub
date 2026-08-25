@@ -70,7 +70,7 @@ function Transparencia() {
 
             {(["estatuto", "relatorios", "documentos", "lgpd"] as const).map((chave) => (
               <TabsContent key={chave} value={chave} className="mt-8 space-y-4">
-                {DOCS[chave].map((doc) => (
+                {(DOCS[chave] ?? []).map((doc) => (
                   <div
                     key={doc}
                     className="flex items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-5"
