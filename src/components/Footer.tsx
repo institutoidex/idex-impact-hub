@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, MapPin } from "lucide-react";
 import { NAV, CONTATO, AREAS } from "@/data/idex";
+import logoAsset from "@/assets/logo-idex.png.asset.json";
 
 /** Rodapé escuro com filete amarelo no topo (elemento da identidade atual). */
 export function Footer() {
@@ -12,10 +13,12 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-1">
           <div className="flex items-center gap-2">
-            <span className="grid size-10 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
-              i
-            </span>
-            <span className="font-display text-lg">Instituto IDEX</span>
+            {/* Logo oficial no rodapé */}
+            <img
+              src={logoAsset.url}
+              alt="Instituto IDEX"
+              className="h-10 w-auto object-contain"
+            />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">
             ONG brasileira de desenvolvimento social, fundada em 2007.
