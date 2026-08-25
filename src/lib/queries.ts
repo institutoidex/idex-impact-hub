@@ -114,3 +114,16 @@ export function formatarData(iso: string | null | undefined) {
     year: "numeric",
   });
 }
+
+/** Painel: todos os projetos, inclusive rascunhos (exige login). */
+export const projetosAdminQuery = queryOptions({
+  queryKey: ["projetos", "admin"],
+  queryFn: async (): Promise<ProjetoRow[]> => {
+    const { data, error } = await supabase
+      .from("projetos")
+      .select("*")
+      .order("criado_em", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
