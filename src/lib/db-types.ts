@@ -92,11 +92,11 @@ export interface Database {
       >;
       user_roles: Tabela<{ id: string; user_id: string; role: string }>;
     };
-    Views: Record<string, never>;
+    Views: { [_ in never]: never };
     Functions: {
       has_role: { Args: { _user_id: string; _role: string }; Returns: boolean };
     };
     Enums: { app_role: "admin" | "editor" };
-    CompositeTypes: Record<string, never>;
+    CompositeTypes: { [_ in never]: never };
   };
 }
