@@ -34,6 +34,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Inicio() {
+  const areas = useAreas(); // áreas vindas do banco, com fallback estático
   return (
     <>
       {/* Hero ------------------------------------------------------------ */}
