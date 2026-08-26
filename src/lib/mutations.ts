@@ -234,6 +234,31 @@ export function useSalvarArea() {
   });
 }
 
+/**
+ * Salva a nova ordem das áreas após arrastar e soltar no painel.
+ * Recebe os ids na sequência desejada e reatribui `ordem` de 1 a N em lote (upsert).
+ */
+export function useReordenarAreas() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (idsOrdenados: string[]) => {
+      const linhas = idsOrdenados.map((id, indice) => ({ id, ordem: indice + 1 }));
+      const { error } = await supabase.from("areas").upsert(linhas);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["areas"] });
+      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
+      toast.success("Ordem das áreas atualizada.");
+    },
+    onError: (erro: Error) => {
+      // Em caso de erro, recarrega para desfazer a atualização otimista da lista
+      void queryClient.invalidateQueries({ queryKey: ["areas"] });
+      toast.error(traduzirErro(erro));
+    },
+  });
+}
+
 /** Remove uma área de atuação (projetos ligados a ela ficam sem área). */
 export function useApagarArea() {
   const queryClient = useQueryClient();
