@@ -32,9 +32,13 @@ export const Route = createFileRoute("/projetos/$slug")({
               : (base?.ano ?? new Date().getFullYear()),
             resumo: data.resumo,
             real: true,
-            objetivo: data.descricao || base?.objetivo,
-            local: data.local ?? base?.local,
-            parceria: data.parceiro ?? base?.parceria,
+            ...(data.descricao || base?.objetivo
+              ? { objetivo: data.descricao || base?.objetivo }
+              : {}),
+            ...(data.local ?? base?.local ? { local: (data.local ?? base?.local)! } : {}),
+            ...(data.parceiro ?? base?.parceria
+              ? { parceria: (data.parceiro ?? base?.parceria)! }
+              : {}),
             // capa enviada pelo painel
             imagem: data.imagem_url,
           },
