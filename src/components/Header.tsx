@@ -57,9 +57,10 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 xl:ml-2">
-          {/* Busca sutil de documentos */}
-          <div className="hidden sm:block">
+        {/* Ações à direita: shrink-0 garante que busca e botões não sejam esmagados */}
+        <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-2">
+          {/* Busca sutil de documentos — some em telas médias para dar espaço à navegação */}
+          <div className="hidden sm:block xl:hidden 2xl:block">
             <BuscaDocumentos />
           </div>
           <Button asChild className="hidden rounded-full sm:inline-flex">
