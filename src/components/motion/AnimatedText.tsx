@@ -45,7 +45,7 @@ export function AnimatedText({
       {linhas.map((linha, li) => (
         <span key={li} className="block">
           {linha.split(" ").map((palavra, pi) => (
-            <span key={pi} className="inline-block overflow-hidden align-bottom">
+            <span key={pi} className="inline-block">
               <span data-palavra className="inline-block will-change-transform">
                 {palavra}
                 {pi < linha.split(" ").length - 1 ? "\u00A0" : ""}
