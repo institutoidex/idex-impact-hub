@@ -138,6 +138,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
+    // Dados estruturados JSON-LD: Organização e WebSite (válidos em todas as páginas)
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(jsonLdOrganizacao) },
+      { type: "application/ld+json", children: JSON.stringify(jsonLdWebSite) },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
