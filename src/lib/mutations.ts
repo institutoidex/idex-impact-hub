@@ -26,6 +26,8 @@ export type NoticiaForm = {
   resumo: string;
   conteudo: string | null;
   imagem_url: string | null;
+  /** slug do projeto relacionado (opcional) */
+  projeto_slug: string | null;
   publicado: boolean;
   publicado_em: string;
 };

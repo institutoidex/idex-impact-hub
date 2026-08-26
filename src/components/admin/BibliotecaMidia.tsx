@@ -139,7 +139,6 @@ export function BibliotecaMidia() {
               <SelectItem value="site">site</SelectItem>
               <SelectItem value="projetos">projetos</SelectItem>
               <SelectItem value="noticias">noticias</SelectItem>
-              <SelectItem value="parceiros">parceiros</SelectItem>
               <SelectItem value="equipe">equipe</SelectItem>
             </SelectContent>
           </Select>

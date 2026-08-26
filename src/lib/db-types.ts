@@ -40,6 +40,8 @@ export type NoticiaRow = {
   resumo: string;
   conteudo: string | null;
   imagem_url: string | null;
+  /** vínculo opcional: slug do projeto relacionado (null = notícia geral) */
+  projeto_slug: string | null;
   publicado: boolean;
   publicado_em: string;
   criado_em: string;
