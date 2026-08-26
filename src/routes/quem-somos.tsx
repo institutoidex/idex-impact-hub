@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder, PlaceholderBox } from "@/components/Placeholder";
+import { Placeholder } from "@/components/Placeholder";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
 
 export const Route = createFileRoute("/quem-somos")({
