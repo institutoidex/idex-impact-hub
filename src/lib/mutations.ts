@@ -47,11 +47,12 @@ export type ProjetoForm = {
   publicado: boolean;
 };
 
-/** Invalida tudo que depende de notícias/projetos (painel + páginas públicas). */
+/** Invalida tudo que depende de notícias/projetos (painel + páginas públicas + auditoria). */
 function useInvalidar() {
   const queryClient = useQueryClient();
   return (chave: "noticias" | "projetos") => {
     void queryClient.invalidateQueries({ queryKey: [chave] });
+    void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
   };
 }
 

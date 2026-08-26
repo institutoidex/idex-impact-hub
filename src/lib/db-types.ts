@@ -91,6 +91,7 @@ export type Database = {
         }
       >;
       user_roles: Tabela<{ id: string; user_id: string; role: string }>;
+      auditoria: Tabela<AuditoriaRow>;
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -99,4 +100,18 @@ export type Database = {
     Enums: { app_role: "admin" | "editor" };
     CompositeTypes: { [_ in never]: never };
   };
+}
+
+/** Trilha de auditoria: cada alteração feita no conteúdo do site. */
+export type AuditoriaRow = {
+  id: string;
+  tabela: string;
+  registro_id: string | null;
+  titulo: string | null;
+  acao: string; // criado | atualizado | publicado | despublicado | excluido
+  campos: string[] | null;
+  alteracoes: Record<string, { antes: unknown; depois: unknown }> | null;
+  autor_id: string | null;
+  autor_email: string | null;
+  criado_em: string;
 }
