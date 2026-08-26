@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { ArrowRight, HeartHandshake } from "lucide-react";
 import heroImg from "@/assets/hero-esporte.jpg";
 import talentoImg from "@/assets/talento-brasil.jpg";
-import { NOTICIAS, CONTATO } from "@/data/idex";
+import { NOTICIAS } from "@/data/idex";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
 import { Counter } from "@/components/motion/Counter";
