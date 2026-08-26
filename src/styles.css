@@ -180,6 +180,13 @@
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--foreground);
+
+  /* Em telas grandes (mas não gigantes) os links ficam mais compactos,
+     para caber a busca de documentos e os botões de acesso no cabeçalho */
+  @media (min-width: 80rem) and (max-width: 96rem) {
+    padding: 0.5rem 0.45rem;
+    font-size: 0.8125rem;
+  }
   transition:
     color 0.25s ease,
     background-color 0.25s ease;
@@ -278,25 +285,76 @@
   transform: none;
 }
 
+/* Entrada imediata em CSS puro — não espera o JavaScript hidratar.
+   Usada no conteúdo acima da dobra (ex.: hero da home). Atraso via --d. */
+@keyframes entrada-suave {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility entrada {
+  animation: entrada-suave 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Título palavra a palavra em CSS puro (componente AnimatedText):
+   cascata via --i (índice da palavra) + --d (atraso inicial) */
+@keyframes palavra-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.anim-texto [data-palavra] {
+  animation: palavra-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 55ms);
+}
+
+/* Quem prefere menos movimento vê tudo pronto, sem animar */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .entrada,
+  .anim-texto [data-palavra] {
+    animation: none;
+  }
+}
+
 /* ===== Acessibilidade (painel flutuante) ============================== */
 
-/* Alto contraste: escurece fundos e força texto claro/escuro puro */
+/* Alto contraste: tokens mais fortes, SEM filter no body —
+   filter em um ancestral quebra o position:fixed dos widgets flutuantes
+   (botão de acessibilidade, VLibras), fazendo-os "sumir" da tela */
 html.acess-contraste {
   --background: oklch(1 0 0);
   --foreground: oklch(0.15 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0 0);
   --muted-foreground: oklch(0.28 0 0);
   --border: oklch(0.35 0 0);
-}
-html.acess-contraste body {
-  filter: contrast(1.25);
+  /* verde e azul mais escuros para manter contraste AA sobre branco */
+  --primary: oklch(0.45 0.12 155);
+  --secondary: oklch(0.32 0.09 268);
 }
 
-/* Escala de cinza para quem precisa remover ruído de cor */
-html.acess-cinza body {
+/* Escala de cinza: aplica só no conteúdo e no cabeçalho, nunca no body,
+   pelo mesmo motivo — assim os botões flutuantes continuam no lugar */
+html.acess-cinza .site-conteudo,
+html.acess-cinza .site-cabecalho {
   filter: grayscale(1);
-}
-html.acess-cinza.acess-contraste body {
-  filter: grayscale(1) contrast(1.25);
 }
 
 /* Sublinhar links para não depender só da cor */

@@ -25,7 +25,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        // site-cabecalho: alvo do filtro de escala de cinza da acessibilidade
+        "site-cabecalho fixed inset-x-0 top-0 z-50 transition-all duration-300",
         rolou
           ? "border-b border-border bg-background/95 shadow-[0_12px_32px_-24px_rgba(36,35,35,0.55)] backdrop-blur"
           : "border-b border-transparent bg-background/85 backdrop-blur-sm",
@@ -59,8 +60,9 @@ export function Header() {
 
         {/* Ações à direita: shrink-0 garante que busca e botões não sejam esmagados */}
         <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-2">
-          {/* Busca sutil de documentos — some em telas médias para dar espaço à navegação */}
-          <div className="hidden sm:block xl:hidden 2xl:block">
+          {/* Busca sutil de documentos — sempre visível do breakpoint sm em diante;
+              em telas xl os links do menu ficam mais compactos para ela caber */}
+          <div className="hidden sm:block">
             <BuscaDocumentos />
           </div>
           <Button asChild className="hidden rounded-full sm:inline-flex">

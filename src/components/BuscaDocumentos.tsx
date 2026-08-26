@@ -65,7 +65,8 @@ export function BuscaDocumentos() {
       >
         <Search className="size-4" />
         <span className="hidden lg:inline">Buscar documentos</span>
-        <kbd className="hidden rounded border border-border px-1.5 text-[10px] lg:inline">
+        {/* Atalho de teclado só em telas bem largas, para não apertar o cabeçalho */}
+        <kbd className="hidden rounded border border-border px-1.5 text-[10px] 2xl:inline">
           Ctrl K
         </kbd>
       </button>

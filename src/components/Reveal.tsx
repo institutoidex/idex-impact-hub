@@ -1,11 +1,11 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { animate } from "animejs";
 import { cn } from "@/lib/utils";
 
 /**
- * Revela o conteúdo com uma animação discreta quando ele entra na viewport.
- * Usa IntersectionObserver + Anime.js e degrada bem no SSR:
- * sem JS (ou com "prefers-reduced-motion") o conteúdo aparece normalmente.
+ * Revela o conteúdo com uma transição discreta quando ele entra na viewport.
+ * A animação é 100% CSS (utilitários reveal/reveal-in do styles.css);
+ * o JS apenas observa o scroll e liga a classe — sem depender de biblioteca
+ * de animação para o conteúdo aparecer.
  */
 export function Reveal({
   children,
@@ -34,15 +34,9 @@ export function Reveal({
       (entries) => {
         if (!entries[0]?.isIntersecting) return;
         obs.disconnect();
+        // Atraso aplicado na transição CSS definida pelo utilitário reveal
+        el.style.transitionDelay = `${delay}ms`;
         el.classList.add("reveal-in");
-        animate(el, {
-          opacity: [0, 1],
-          y: [24, 0],
-          filter: ["blur(6px)", "blur(0px)"],
-          duration: 750,
-          delay,
-          ease: "outQuint",
-        });
       },
       { threshold: 0.12 },
     );
