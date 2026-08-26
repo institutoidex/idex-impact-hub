@@ -42,6 +42,7 @@ function Transparencia() {
   const documentos = useListaDocumentos();
   const { pasta: slugPasta, doc: docBuscado } = Route.useSearch();
   const navigate = useNavigate({ from: "/transparencia" });
+  const [termoBusca, setTermoBusca] = useState("");
 
   const arvore = montarArvore(pastas);
   const pastaAtual = pastas.find((p) => p.slug === slugPasta) ?? null;
@@ -50,6 +51,12 @@ function Transparencia() {
     ? (arvore.length ? acharNo(arvore, pastaAtual.id)?.filhas ?? [] : [])
     : arvore;
   const arquivos = documentosDaPasta(documentos, pastaAtual?.id ?? null);
+
+  // Filtra documentos pelo nome dentro do contexto atual (pasta ou todas)
+  const termoNormalizado = normalizar(termoBusca);
+  const documentosVisiveis = (pastaAtual ? arquivos : documentos).filter((doc) =>
+    termoNormalizado ? normalizar(doc.titulo).includes(termoNormalizado) : true
+  );
 
   // Rola até o documento vindo da busca do cabeçalho
   useEffect(() => {
