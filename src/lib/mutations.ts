@@ -38,14 +38,8 @@ export type ProjetoForm = {
   titulo: string;
   resumo: string;
   descricao: string;
-  area_slug: string | null;
   imagem_url: string | null;
-  local: string | null;
-  parceiro: string | null;
-  status: string;
   iniciado_em: string | null;
-  beneficiados: number | null;
-  destaque: boolean;
   publicado: boolean;
 };
 
@@ -215,73 +209,6 @@ export function useDocumentoAcoes() {
   });
 
   return { publicar, apagar };
-}
-
-/** Cria (sem id) ou atualiza (com id) uma área de atuação. */
-export function useSalvarArea() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, ...campos }: AreaForm) => {
-      const { error } = id
-        ? await supabase.from("areas").update(campos).eq("id", id)
-        : await supabase.from("areas").insert(campos);
-      if (error) throw error;
-    },
-    onSuccess: (_d, { id }) => {
-      void queryClient.invalidateQueries({ queryKey: ["areas"] });
-      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
-      toast.success(id ? "Área atualizada." : "Área criada.");
-    },
-    onError: (erro: Error) => toast.error(traduzirErro(erro)),
-  });
-}
-
-/**
- * Salva a nova ordem das áreas após arrastar e soltar no painel.
- * Recebe os ids na sequência desejada e reatribui `ordem` de 1 a N.
- * Usa UPDATE por linha (não upsert): o upsert parcial falharia na validação
- * NOT NULL das demais colunas antes de detectar o conflito de id.
- */
-export function useReordenarAreas() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (idsOrdenados: string[]) => {
-      const resultados = await Promise.all(
-        idsOrdenados.map((id, indice) =>
-          supabase.from("areas").update({ ordem: indice + 1 }).eq("id", id),
-        ),
-      );
-      const erro = resultados.find((r) => r.error)?.error;
-      if (erro) throw erro;
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["areas"] });
-      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
-      toast.success("Ordem das áreas atualizada.");
-    },
-    onError: (erro: Error) => {
-      // Em caso de erro, recarrega para desfazer a atualização otimista da lista
-      void queryClient.invalidateQueries({ queryKey: ["areas"] });
-      toast.error(traduzirErro(erro));
-    },
-  });
-}
-
-/** Remove uma área de atuação (projetos ligados a ela ficam sem área). */
-export function useApagarArea() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("areas").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["areas"] });
-      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
-      toast.success("Área removida.");
-    },
-    onError: (erro: Error) => toast.error(traduzirErro(erro)),
-  });
 }
 
 /** Marca uma mensagem de contato como lida/não lida ou apaga. */

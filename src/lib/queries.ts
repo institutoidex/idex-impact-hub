@@ -2,7 +2,6 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 import { listarMidia } from "./storage";
 import type {
-  AreaRow,
   AuditoriaRow,
   DocumentoRow,
   MensagemRow,
@@ -14,15 +13,6 @@ import type {
  * Consultas ao banco usadas pelas páginas públicas e pelo painel.
  * Tudo passa pelo cliente publishable, respeitando as políticas de RLS.
  */
-
-export const areasQuery = queryOptions({
-  queryKey: ["areas"],
-  queryFn: async (): Promise<AreaRow[]> => {
-    const { data, error } = await supabase.from("areas").select("*").order("ordem");
-    if (error) throw error;
-    return data ?? [];
-  },
-});
 
 export const projetosQuery = queryOptions({
   queryKey: ["projetos"],
