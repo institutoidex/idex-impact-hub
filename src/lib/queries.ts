@@ -184,3 +184,15 @@ export const pastasQuery = queryOptions({
     return data ?? [];
   },
 });
+
+/**
+ * Diz se a tabela `pastas` já existe no banco.
+ * Usada no painel para avisar que falta rodar `supabase/pastas.sql`.
+ */
+export const tabelaPastasQuery = queryOptions({
+  queryKey: ["pastas", "tabela-existe"],
+  queryFn: async (): Promise<boolean> => {
+    const { error } = await supabase.from("pastas").select("id").limit(1);
+    return !error;
+  },
+});
