@@ -25,6 +25,7 @@ import { Route as TransparenciaRouteImport } from './routes/transparencia'
 import { Route as AreasIndexRouteImport } from './routes/areas.index'
 import { Route as AreasSlugRouteImport } from './routes/areas.$slug'
 import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
+import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
 import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
 import { Route as ProjetosSlugRouteImport } from './routes/projetos.$slug'
 
@@ -108,6 +109,11 @@ const NoticiasIndexRoute = NoticiasIndexRouteImport.update({
   path: '/',
   getParentRoute: () => NoticiasRoute,
 } as any)
+const NoticiasSlugRoute = NoticiasSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NoticiasRoute,
+} as any)
 const ProjetosIndexRoute = ProjetosIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas/': typeof AreasIndexRoute
   '/noticias/': typeof NoticiasIndexRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas': typeof AreasIndexRoute
   '/noticias': typeof NoticiasIndexRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas/': typeof AreasIndexRoute
   '/noticias/': typeof NoticiasIndexRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas/'
     | '/noticias/'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas'
     | '/noticias'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas/'
     | '/noticias/'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NoticiasIndexRouteImport
       parentRoute: typeof NoticiasRoute
     }
+    '/noticias/$slug': {
+      id: '/noticias/$slug'
+      path: '/$slug'
+      fullPath: '/noticias/$slug'
+      preLoaderRoute: typeof NoticiasSlugRouteImport
+      parentRoute: typeof NoticiasRoute
+    }
     '/projetos/': {
       id: '/projetos/'
       path: '/'
@@ -397,10 +416,12 @@ const AreasRouteChildren: AreasRouteChildren = {
 const AreasRouteWithChildren = AreasRoute._addFileChildren(AreasRouteChildren)
 
 interface NoticiasRouteChildren {
+  NoticiasSlugRoute: typeof NoticiasSlugRoute
   NoticiasIndexRoute: typeof NoticiasIndexRoute
 }
 
 const NoticiasRouteChildren: NoticiasRouteChildren = {
+  NoticiasSlugRoute: NoticiasSlugRoute,
   NoticiasIndexRoute: NoticiasIndexRoute,
 }
 

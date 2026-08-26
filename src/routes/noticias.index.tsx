@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { NOTICIAS } from "@/data/idex";
 import { formatarData, noticiasQuery } from "@/lib/queries";
+import { SITE_URL } from "@/lib/site";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
@@ -33,14 +34,17 @@ export const Route = createFileRoute("/noticias/")({
       },
       { property: "og:title", content: "Notícias — Instituto IDEX" },
       { property: "og:description", content: "Acompanhe as novidades do instituto." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE_URL}/noticias` },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/noticias` }],
   }),
   component: Noticias,
 });
 
 function Noticias() {
   const { busca = "", ano = "todos", pagina = 1 } = Route.useSearch();
-  const navigate = useNavigate({ from: "/noticias" });
+  const navigate = useNavigate({ from: "/noticias/" });
 
   // Busca no banco; se ainda não houver registros, mostra o conteúdo fixo atual.
   const { data } = useQuery(noticiasQuery());
@@ -154,18 +158,35 @@ function Noticias() {
                   <p className="text-xs font-semibold tracking-widest text-primary uppercase">
                     {n.data}
                   </p>
-                  <h2 className="mt-2 text-xl">{n.titulo}</h2>
+                  <h2 className="mt-2 text-xl">
+                    <Link
+                      to="/noticias/$slug"
+                      params={{ slug: n.slug }}
+                      className="hover:text-primary"
+                    >
+                      {n.titulo}
+                    </Link>
+                  </h2>
                   <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
                   {/* Link para o projeto só aparece quando a notícia está vinculada a um */}
+                  <div className="mt-4 flex flex-wrap items-center gap-4">
+                    <Link
+                      to="/noticias/$slug"
+                      params={{ slug: n.slug }}
+                      className="text-sm font-semibold text-primary hover:underline"
+                    >
+                      Ler a notícia
+                    </Link>
                   {n.projeto && (
                     <Link
                       to="/projetos/$slug"
                       params={{ slug: n.projeto }}
-                      className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+                      className="text-sm font-semibold text-primary hover:underline"
                     >
                       Ver o projeto
                     </Link>
                   )}
+                  </div>
                 </div>
               </div>
             </Reveal>
