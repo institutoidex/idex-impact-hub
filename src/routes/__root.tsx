@@ -92,6 +92,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "ONG brasileira que atua em educação, cultura, esportes, meio ambiente, negócios e saúde.",
       },
       { name: "author", content: "Instituto IDEX" },
+      // Verificação de propriedade do site no Google Search Console
+      {
+        name: "google-site-verification",
+        content: "f41Di7u7feDIM43P6vFZUwTAlxVsjqowHAfM-jHS7AM",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
