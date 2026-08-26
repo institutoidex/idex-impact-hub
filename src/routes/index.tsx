@@ -29,6 +29,8 @@ export const Route = createFileRoute("/")({
         content: "Seis frentes de atuação e o projeto Talento Brasil, para 200 crianças e jovens.",
       },
     ],
+    // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
+    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
   }),
   component: Inicio,
 });
@@ -50,20 +52,32 @@ function Inicio() {
         {/* Reforço de contraste na base do hero */}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent" />
         <div className="relative mx-auto flex max-w-7xl flex-col justify-end px-4 pt-16 sm:px-6">
-          <Reveal className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase">
+          {/* Entrada em CSS puro (utilitário entrada): o texto aparece no primeiro
+              paint, sem esperar o JavaScript carregar — nada de hero vazio */}
+          <div className="max-w-3xl">
+            <span
+              className="entrada inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
+              style={{ "--d": "0ms" } as React.CSSProperties}
+            >
               Instituto IDEX · desde 2007
             </span>
             <AnimatedText
               as="h1"
               text={"A gente muda vida\nperto de casa."}
+              delay={150}
               className="mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
             />
 
-            <p className="mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg">
+            <p
+              className="entrada mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
+              style={{ "--d": "500ms" } as React.CSSProperties}
+            >
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div
+              className="entrada mt-8 flex flex-wrap gap-3"
+              style={{ "--d": "650ms" } as React.CSSProperties}
+            >
               <Button asChild size="lg" className="rounded-full">
                 <Link to="/como-ajudar">
                   <HeartHandshake className="size-4" /> Quero ajudar
@@ -78,7 +92,7 @@ function Inicio() {
                 <Link to="/projetos">Ver projetos</Link>
               </Button>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 
