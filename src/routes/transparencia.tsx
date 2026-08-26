@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Download, FileText, Folder, FolderOpen } from "lucide-react";
 import { useListaDocumentos, usePastas } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { PlaceholderBox } from "@/components/Placeholder";
+import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import {
   caminhoDaPasta,
   documentosDaPasta,
@@ -41,6 +42,7 @@ function Transparencia() {
   const documentos = useListaDocumentos();
   const { pasta: slugPasta, doc: docBuscado } = Route.useSearch();
   const navigate = useNavigate({ from: "/transparencia" });
+  const [termoBusca, setTermoBusca] = useState("");
 
   const arvore = montarArvore(pastas);
   const pastaAtual = pastas.find((p) => p.slug === slugPasta) ?? null;
@@ -49,6 +51,12 @@ function Transparencia() {
     ? (arvore.length ? acharNo(arvore, pastaAtual.id)?.filhas ?? [] : [])
     : arvore;
   const arquivos = documentosDaPasta(documentos, pastaAtual?.id ?? null);
+
+  // Filtra documentos pelo nome dentro do contexto atual (pasta ou todas)
+  const termoNormalizado = normalizar(termoBusca);
+  const documentosVisiveis = (pastaAtual ? arquivos : documentos).filter((doc) =>
+    termoNormalizado ? normalizar(doc.titulo).includes(termoNormalizado) : true
+  );
 
   // Rola até o documento vindo da busca do cabeçalho
   useEffect(() => {
@@ -139,8 +147,20 @@ function Transparencia() {
             <h2 className="mt-2 text-3xl">{pastaAtual?.nome ?? "Todos os documentos"}</h2>
           </Reveal>
 
+          {/* Busca local de documentos */}
+          <Reveal delay={80}>
+            <div className="mt-6">
+              <CampoBusca
+                valor={termoBusca}
+                aoMudar={setTermoBusca}
+                placeholder="Buscar documento pelo nome..."
+                rotulo="Buscar documentos"
+              />
+            </div>
+          </Reveal>
+
           {/* Subpastas */}
-          {subpastas.length > 0 && (
+          {subpastas.length > 0 && !termoNormalizado && (
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {subpastas.map((sub, i) => (
                 <Reveal key={sub.id} delay={i * 60}>
@@ -161,7 +181,7 @@ function Transparencia() {
 
           {/* Arquivos da pasta */}
           <div className="mt-6 space-y-4">
-            {(pastaAtual ? arquivos : documentos).map((doc) => (
+            {documentosVisiveis.map((doc) => (
               <a
                 key={doc.id}
                 id={`doc-${doc.id}`}
@@ -187,10 +207,18 @@ function Transparencia() {
               </a>
             ))}
 
-            {(pastaAtual ? arquivos : documentos).length === 0 && (
+            {documentosVisiveis.length === 0 && (
               <PlaceholderBox
-                titulo="Pasta ainda sem arquivos"
-                nota="Os PDFs oficiais entram aqui quando enviados pelo painel."
+                titulo={
+                  termoNormalizado
+                    ? "Nenhum documento encontrado"
+                    : "Pasta ainda sem arquivos"
+                }
+                nota={
+                  termoNormalizado
+                    ? "Tente outro termo ou mude de pasta."
+                    : "Os PDFs oficiais entram aqui quando enviados pelo painel."
+                }
               />
             )}
           </div>
