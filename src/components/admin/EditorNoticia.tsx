@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { gerarSlug, useSalvarNoticia, type NoticiaForm } from "@/lib/mutations";
+import { projetosAdminQuery } from "@/lib/queries";
 import type { NoticiaRow } from "@/lib/db-types";
 import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
 
@@ -29,6 +38,8 @@ export function EditorNoticia({
 }) {
   const salvar = useSalvarNoticia();
   const [form, setForm] = useState<NoticiaForm>(vazia());
+  // Lista de projetos para o vínculo opcional da notícia
+  const { data: projetos } = useQuery(projetosAdminQuery);
 
   // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
@@ -42,6 +53,7 @@ export function EditorNoticia({
             resumo: noticia.resumo,
             conteudo: noticia.conteudo,
             imagem_url: noticia.imagem_url,
+            projeto_slug: noticia.projeto_slug,
             publicado: noticia.publicado,
             publicado_em: (noticia.publicado_em ?? "").slice(0, 10),
           }
@@ -56,6 +68,7 @@ export function EditorNoticia({
       slug: form.slug || gerarSlug(form.titulo),
       imagem_url: form.imagem_url || null,
       conteudo: form.conteudo || null,
+      projeto_slug: form.projeto_slug || null,
       publicado_em: form.publicado_em || new Date().toISOString().slice(0, 10),
     });
     aoFechar();
@@ -128,6 +141,29 @@ export function EditorNoticia({
 
           <UploadMidia pasta="noticias" />
 
+          {/* Vínculo opcional: a notícia pode ser sobre um projeto ou geral */}
+          <div className="space-y-2">
+            <Label htmlFor="projeto">Projeto relacionado (opcional)</Label>
+            <Select
+              value={form.projeto_slug ?? "nenhum"}
+              onValueChange={(v) =>
+                setForm((f) => ({ ...f, projeto_slug: v === "nenhum" ? null : v }))
+              }
+            >
+              <SelectTrigger id="projeto">
+                <SelectValue placeholder="Nenhum — notícia geral do instituto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="nenhum">Nenhum — notícia geral do instituto</SelectItem>
+                {(projetos ?? []).map((p) => (
+                  <SelectItem key={p.id} value={p.slug}>
+                    {p.titulo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="data">Data de publicação</Label>
             <Input
@@ -172,6 +208,7 @@ function vazia(): NoticiaForm {
     resumo: "",
     conteudo: "",
     imagem_url: "",
+    projeto_slug: null,
     publicado: false,
     publicado_em: new Date().toISOString().slice(0, 10),
   };

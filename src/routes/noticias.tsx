@@ -47,7 +47,7 @@ function Noticias() {
 
   const itens = useMemo(
     () =>
-      data && data.length > 0
+       data && data.length > 0
         ? data.map((n) => ({
             slug: n.slug,
             titulo: n.titulo,
@@ -55,6 +55,8 @@ function Noticias() {
             data: formatarData(n.publicado_em),
             ano: String(new Date(n.publicado_em).getFullYear()),
             imagem: n.imagem_url ?? talentoImg,
+            // vínculo opcional com um projeto (null = notícia geral)
+            projeto: n.projeto_slug,
           }))
         : NOTICIAS.map((n) => ({
             slug: n.slug,
@@ -63,6 +65,8 @@ function Noticias() {
             data: n.data,
             ano: (n.data.match(/\d{4}/)?.[0] ?? ""),
             imagem: talentoImg,
+            // a notícia fixa é o lançamento do Talento Brasil
+            projeto: "talento-brasil" as string | null,
           })),
     [data],
   );
@@ -152,13 +156,16 @@ function Noticias() {
                   </p>
                   <h2 className="mt-2 text-xl">{n.titulo}</h2>
                   <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-                  <Link
-                    to="/projetos/$slug"
-                    params={{ slug: "talento-brasil" }}
-                    className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
-                  >
-                    Ver o projeto
-                  </Link>
+                  {/* Link para o projeto só aparece quando a notícia está vinculada a um */}
+                  {n.projeto && (
+                    <Link
+                      to="/projetos/$slug"
+                      params={{ slug: n.projeto }}
+                      className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+                    >
+                      Ver o projeto
+                    </Link>
+                  )}
                 </div>
               </div>
             </Reveal>

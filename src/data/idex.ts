@@ -146,7 +146,6 @@ export const NAV = [
   { to: "/quem-somos", label: "Quem Somos" },
   { to: "/areas", label: "Áreas de Atuação" },
   { to: "/projetos", label: "Projetos" },
-  { to: "/parceiros", label: "Parceiros" },
   { to: "/transparencia", label: "Transparência" },
   { to: "/noticias", label: "Notícias" },
   { to: "/contato", label: "Contato" },

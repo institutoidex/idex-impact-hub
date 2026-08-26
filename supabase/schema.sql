@@ -105,6 +105,8 @@ create table if not exists public.noticias (
   resumo text not null default '',
   conteudo text,
   imagem_url text,
+  -- vínculo opcional com um projeto (notícia pode ser geral do instituto)
+  projeto_slug text references public.projetos(slug) on update cascade on delete set null,
   publicado boolean not null default true,
   publicado_em timestamptz not null default now(),
   criado_em timestamptz not null default now()
