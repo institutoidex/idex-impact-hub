@@ -102,26 +102,64 @@ function Login() {
           Acesso apenas para a equipe do instituto. Contas são criadas manualmente.
         </p>
 
-        <form onSubmit={aoEnviar} className="mt-7 space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input id="email" name="email" type="email" required autoComplete="email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="senha">Senha</Label>
-            <Input
-              id="senha"
-              name="senha"
-              type="password"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
-            <LogIn className="size-4" />
-            {enviando ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
+        {modo === "login" ? (
+          <form onSubmit={aoEnviar} className="mt-7 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" name="email" type="email" required autoComplete="email" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="senha">Senha</Label>
+                <button
+                  type="button"
+                  onClick={() => setModo("recuperar")}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+              <Input
+                id="senha"
+                name="senha"
+                type="password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+              <LogIn className="size-4" />
+              {enviando ? "Entrando..." : "Entrar"}
+            </Button>
+          </form>
+        ) : (
+          /* Sem cadastro: troca de senha apenas via e-mail */
+          <form onSubmit={recuperarSenha} className="mt-7 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email-recuperar">E-mail</Label>
+              <Input
+                id="email-recuperar"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+              <p className="text-xs text-muted-foreground">
+                Você receberá um link para definir uma nova senha.
+              </p>
+            </div>
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+              {enviando ? "Enviando..." : "Enviar link de redefinição"}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setModo("login")}
+              className="w-full text-center text-sm font-medium text-primary hover:underline"
+            >
+              Voltar ao login
+            </button>
+          </form>
+        )}
       </div>
     </section>
   );
