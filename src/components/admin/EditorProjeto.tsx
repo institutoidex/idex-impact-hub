@@ -12,20 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { gerarSlug, useSalvarProjeto, type ProjetoForm } from "@/lib/mutations";
-import { AREAS } from "@/data/idex";
 import type { ProjetoRow } from "@/lib/db-types";
 import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
 
-
-/** Formulário de criação/edição de projeto dentro de um diálogo. */
+/**
+ * Cadastro/edição de projeto — mesmo fluxo simples das notícias:
+ * título, endereço, resumo, texto, capa, data e publicar.
+ */
 export function EditorProjeto({
   aberto,
   aoFechar,
@@ -38,6 +32,7 @@ export function EditorProjeto({
   const salvar = useSalvarProjeto();
   const [form, setForm] = useState<ProjetoForm>(vazio());
 
+  // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
     if (!aberto) return;
     setForm(
@@ -48,14 +43,8 @@ export function EditorProjeto({
             titulo: projeto.titulo,
             resumo: projeto.resumo,
             descricao: projeto.descricao,
-            area_slug: projeto.area_slug,
             imagem_url: projeto.imagem_url,
-            local: projeto.local,
-            parceiro: projeto.parceiro,
-            status: projeto.status,
             iniciado_em: (projeto.iniciado_em ?? "").slice(0, 10) || null,
-            beneficiados: projeto.beneficiados,
-            destaque: projeto.destaque,
             publicado: projeto.publicado,
           }
         : vazio(),
@@ -68,10 +57,7 @@ export function EditorProjeto({
       ...form,
       slug: form.slug || gerarSlug(form.titulo),
       imagem_url: form.imagem_url || null,
-      local: form.local || null,
-      parceiro: form.parceiro || null,
       iniciado_em: form.iniciado_em || null,
-      beneficiados: form.beneficiados ?? null,
     });
     aoFechar();
   }
@@ -82,7 +68,7 @@ export function EditorProjeto({
         <DialogHeader>
           <DialogTitle>{projeto ? "Editar projeto" : "Novo projeto"}</DialogTitle>
           <DialogDescription>
-            Projetos publicados aparecem na hora nas páginas de Projetos e Áreas.
+            O que estiver publicado aparece na hora na página de Projetos.
           </DialogDescription>
         </DialogHeader>
 
@@ -125,93 +111,13 @@ export function EditorProjeto({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="p-descricao">Descrição</Label>
+            <Label htmlFor="p-descricao">Texto completo</Label>
             <Textarea
               id="p-descricao"
               rows={6}
               value={form.descricao}
               onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
             />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Área de atuação</Label>
-              <Select
-                value={form.area_slug ?? ""}
-                onValueChange={(v) => setForm((f) => ({ ...f, area_slug: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {AREAS.map((a) => (
-                    <SelectItem key={a.slug} value={a.slug}>
-                      {a.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="em-breve">Em breve</SelectItem>
-                  <SelectItem value="encerrado">Encerrado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="p-local">Local</Label>
-              <Input
-                id="p-local"
-                value={form.local ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, local: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="p-parceiro">Parceiro</Label>
-              <Input
-                id="p-parceiro"
-                value={form.parceiro ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, parceiro: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="p-inicio">Início</Label>
-              <Input
-                id="p-inicio"
-                type="date"
-                value={form.iniciado_em ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, iniciado_em: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="p-benef">Pessoas atendidas</Label>
-              <Input
-                id="p-benef"
-                type="number"
-                min={0}
-                value={form.beneficiados ?? ""}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    beneficiados: e.target.value === "" ? null : Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
           </div>
 
           {/* Capa com envio de arquivo e pré-visualização */}
@@ -223,28 +129,25 @@ export function EditorProjeto({
 
           <UploadMidia pasta="projetos" />
 
+          <div className="space-y-2">
+            <Label htmlFor="p-inicio">Data do projeto</Label>
+            <Input
+              id="p-inicio"
+              type="date"
+              value={form.iniciado_em ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, iniciado_em: e.target.value }))}
+            />
+          </div>
 
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-3 rounded-2xl border border-border p-4">
-              <Switch
-                id="p-destaque"
-                checked={form.destaque}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, destaque: v }))}
-              />
-              <Label htmlFor="p-destaque" className="cursor-pointer">
-                Destaque na home
-              </Label>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl border border-border p-4">
-              <Switch
-                id="p-publicado"
-                checked={form.publicado}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, publicado: v }))}
-              />
-              <Label htmlFor="p-publicado" className="cursor-pointer">
-                Publicar no site
-              </Label>
-            </div>
+          <div className="flex items-center gap-3 rounded-2xl border border-border p-4">
+            <Switch
+              id="p-publicado"
+              checked={form.publicado}
+              onCheckedChange={(v) => setForm((f) => ({ ...f, publicado: v }))}
+            />
+            <Label htmlFor="p-publicado" className="cursor-pointer">
+              Publicar no site
+            </Label>
           </div>
 
           <DialogFooter>
@@ -268,14 +171,8 @@ function vazio(): ProjetoForm {
     titulo: "",
     resumo: "",
     descricao: "",
-    area_slug: null,
     imagem_url: "",
-    local: "",
-    parceiro: "",
-    status: "ativo",
-    iniciado_em: null,
-    beneficiados: null,
-    destaque: false,
+    iniciado_em: new Date().toISOString().slice(0, 10),
     publicado: false,
   };
 }

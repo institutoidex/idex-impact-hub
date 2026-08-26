@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, MapPin } from "lucide-react";
-import { NAV, CONTATO, AREAS } from "@/data/idex";
+import { NAV, CONTATO } from "@/data/idex";
 import logoAsset from "@/assets/logo-idex.png.asset.json";
 
 /** Rodapé escuro com filete amarelo no topo (elemento da identidade atual). */
@@ -69,22 +69,6 @@ export function Footer() {
           </ul>
         </div>
 
-        <div>
-          <h3 className="font-display text-base">Áreas de atuação</h3>
-          <ul className="mt-4 space-y-2 text-sm">
-            {AREAS.map((a) => (
-              <li key={a.slug}>
-                <Link
-                  to="/areas/$slug"
-                  params={{ slug: a.slug }}
-                  className="text-ink-foreground/70 transition-colors hover:text-primary"
-                >
-                  {a.nome}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
 
         <div>
           <h3 className="font-display text-base">Contato</h3>

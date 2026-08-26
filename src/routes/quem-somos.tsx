@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AREAS } from "@/data/idex";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder, PlaceholderBox } from "@/components/Placeholder";
@@ -129,14 +128,6 @@ function QuemSomos() {
                   <div key={t} className="rounded-2xl bg-ink-card p-5">
                     <p className="font-display">{t}</p>
                     <p className="text-xs text-ink-foreground/60">[responsável a definir]</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mx-auto my-4 h-8 w-px bg-ink-foreground/20" />
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                {AREAS.map((a) => (
-                  <div key={a.slug} className="rounded-xl bg-ink-card/70 px-3 py-3 text-sm">
-                    {a.nome}
                   </div>
                 ))}
               </div>
