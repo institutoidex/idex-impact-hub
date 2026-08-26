@@ -4,6 +4,7 @@ import { Menu, X, HeartHandshake } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { BuscaDocumentos } from "@/components/BuscaDocumentos";
 import logoAsset from "@/assets/logo-idex.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
@@ -52,6 +53,10 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 xl:ml-2">
+          {/* Busca sutil de documentos */}
+          <div className="hidden sm:block">
+            <BuscaDocumentos />
+          </div>
           <Button asChild className="hidden rounded-full sm:inline-flex">
             <Link to="/como-ajudar">
               <HeartHandshake className="size-4" />

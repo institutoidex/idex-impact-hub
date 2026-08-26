@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { useDocumentos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
@@ -12,7 +13,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+// Parâmetros da URL: aba ativa e documento a destacar (vindos da busca do header).
+type BuscaTransparencia = { aba?: string; doc?: string };
+
 export const Route = createFileRoute("/transparencia")({
+  validateSearch: (search: Record<string, unknown>): BuscaTransparencia => ({
+    aba: typeof search['aba'] === "string" ? search['aba'] : "estatuto",
+    doc: typeof search['doc'] === "string" ? search['doc'] : "",
+  }),
   head: () => ({
     meta: [
       { title: "Transparência — Instituto IDEX" },
@@ -46,8 +54,27 @@ const FAQ = [
   "Como minha empresa pode ser parceira?",
 ];
 
+const ABAS = ["estatuto", "relatorios", "documentos", "faq", "lgpd"];
+
 function Transparencia() {
   const docsBanco = useDocumentos(); // documentos publicados no banco
+  const { aba, doc: docBuscado } = Route.useSearch();
+  const abaInicial = aba && ABAS.includes(aba) ? aba : "estatuto";
+  const [abaAtiva, setAbaAtiva] = useState(abaInicial);
+
+  useEffect(() => setAbaAtiva(abaInicial), [abaInicial]);
+
+  // Rola até o documento vindo da busca do cabeçalho
+  useEffect(() => {
+    if (!docBuscado) return;
+    const t = setTimeout(() => {
+      document
+        .getElementById(`doc-${docBuscado}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 250);
+    return () => clearTimeout(t);
+  }, [docBuscado, abaAtiva]);
+
   return (
     <>
       <PageHero
@@ -61,7 +88,7 @@ function Transparencia() {
 
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <Reveal>
-          <Tabs defaultValue="estatuto">
+          <Tabs value={abaAtiva} onValueChange={setAbaAtiva}>
             <TabsList className="flex h-auto flex-wrap justify-start gap-1 rounded-full bg-muted p-1">
               <TabsTrigger value="estatuto" className="rounded-full">Estatuto</TabsTrigger>
               <TabsTrigger value="relatorios" className="rounded-full">Relatórios</TabsTrigger>
@@ -75,10 +102,15 @@ function Transparencia() {
                 {(docsBanco[chave] ?? []).map((doc) => (
                   <a
                     key={doc.id}
+                    id={`doc-${doc.id}`}
                     href={doc.arquivo_url ?? "#"}
                     target={doc.arquivo_url ? "_blank" : undefined}
                     rel="noreferrer"
-                    className="lift flex items-center gap-4 rounded-2xl border border-border bg-card p-5"
+                    className={`lift flex items-center gap-4 rounded-2xl border bg-card p-5 ${
+                      docBuscado === doc.id
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border"
+                    }`}
                   >
                     <span className="grid size-11 place-items-center rounded-xl bg-muted">
                       <FileText className="size-5 text-secondary" aria-hidden />
