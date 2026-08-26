@@ -27,8 +27,8 @@ export function Header() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         rolou
-          ? "bg-background/95 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.6)] backdrop-blur"
-          : "bg-background/80 backdrop-blur-sm",
+          ? "border-b border-border bg-background/95 shadow-[0_12px_32px_-24px_rgba(36,35,35,0.55)] backdrop-blur"
+          : "border-b border-transparent bg-background/85 backdrop-blur-sm",
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
@@ -41,14 +41,16 @@ export function Header() {
           />
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-1 xl:flex">
+        {/* Navegação desktop: fonte Public Sans em peso médio, contraste pleno
+            e sublinhado verde animado (utilitário nav-link do styles.css) */}
+        <nav className="ml-auto hidden items-center gap-0.5 xl:flex">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "text-primary" }}
-              className="relative rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+              activeProps={{ className: "nav-link-ativo" }}
+              className="nav-link"
             >
               {item.label}
             </Link>
