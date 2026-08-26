@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { useSessao } from "@/hooks/useSessao";
+import { supabase } from "@/lib/supabase";
 import {
   areasQuery,
   documentosAdminQuery,
@@ -61,6 +62,19 @@ import type { Area } from "@/data/idex";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
+  /**
+   * Proteção no nível do roteador: roda ANTES de renderizar qualquer coisa.
+   * Sem sessão válida, redireciona para o login (/auth) levando o motivo na
+   * URL — a tela de login exibe o aviso discreto (o beforeLoad roda antes do
+   * Toaster existir, então o aviso precisa ser disparado lá).
+   * A verificação do papel `admin` continua no GuardaAdmin (defesa em camadas).
+   */
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      throw redirect({ to: "/auth", search: { motivo: "restrito" }, replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Painel — Instituto IDEX" },

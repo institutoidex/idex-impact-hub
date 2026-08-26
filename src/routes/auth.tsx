@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LogIn } from "lucide-react";
@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  // Motivo (opcional) da chegada ao login: ex. redirecionado do painel sem sessão
+  validateSearch: (search: Record<string, unknown>): { motivo?: "restrito" } =>
+    search["motivo"] === "restrito" ? { motivo: "restrito" } : {},
   head: () => ({
     meta: [
       { title: "Acesso restrito — Instituto IDEX" },
@@ -31,10 +34,23 @@ const esquema = z.object({
 
 function Login() {
   const navigate = useNavigate();
+  const { motivo } = Route.useSearch();
   const { sessao, carregando } = useSessao();
   const [enviando, setEnviando] = useState(false);
   // Alterna entre login e pedido de redefinição de senha (não há cadastro)
   const [modo, setModo] = useState<"login" | "recuperar">("login");
+  const avisou = useRef(false); // dispara o aviso de acesso restrito só uma vez
+
+  // Chegou redirecionado do painel sem sessão? mostra o aviso discreto
+  useEffect(() => {
+    if (motivo === "restrito" && !avisou.current) {
+      avisou.current = true;
+      toast("Acesso restrito", {
+        id: "acesso-restrito",
+        description: "Entre com sua conta para abrir o painel.",
+      });
+    }
+  }, [motivo]);
 
   // Envia e-mail com link de troca de senha (aponta para /redefinir-senha)
   async function recuperarSenha(e: React.FormEvent<HTMLFormElement>) {
