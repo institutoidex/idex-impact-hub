@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import type { CSSProperties } from "react";
 import { ArrowRight, Instagram, HeartHandshake, Handshake } from "lucide-react";
 import heroImg from "@/assets/hero-esporte.jpg";
 import talentoImg from "@/assets/talento-brasil.jpg";
