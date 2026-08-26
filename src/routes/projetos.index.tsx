@@ -1,13 +1,27 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useAreas, useProjetos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
-import { cn } from "@/lib/utils";
+import { CampoBusca, normalizar } from "@/components/CampoBusca";
+import { Paginacao } from "@/components/Paginacao";
+import { FiltroBotao } from "@/components/FiltroBotao";
 import talentoImg from "@/assets/talento-brasil.jpg";
 
+const POR_PAGINA = 6;
+
+/** Parâmetros de busca aceitos na URL (todos opcionais). */
+type BuscaProjetos = { busca?: string; area?: string; ano?: string; pagina?: number };
+
 export const Route = createFileRoute("/projetos/")({
+  // Filtros, busca e paginação vivem na URL (link compartilhável)
+  validateSearch: (search: Record<string, unknown>): BuscaProjetos => ({
+    busca: typeof search['busca'] === "string" ? search['busca'] : "",
+    area: typeof search['area'] === "string" ? search['area'] : "todas",
+    ano: typeof search['ano'] === "string" ? search['ano'] : "todos",
+    pagina: Number(search['pagina']) > 0 ? Number(search['pagina']) : 1,
+  }),
   head: () => ({
     meta: [
       { title: "Projetos — Instituto IDEX" },
@@ -26,18 +40,37 @@ export const Route = createFileRoute("/projetos/")({
 function ProjetosIndex() {
   const areas = useAreas();
   const projetos = useProjetos();
-  const [area, setArea] = useState<string>("todas");
-  const [ano, setAno] = useState<string>("todos");
+  const { busca = "", area = "todas", ano = "todos", pagina = 1 } = Route.useSearch();
+  const navigate = useNavigate({ from: "/projetos" });
 
   const anos = useMemo(
-    () => Array.from(new Set(projetos.map((p) => String(p.ano)))).sort(),
+    () => Array.from(new Set(projetos.map((p) => String(p.ano)))).sort().reverse(),
     [projetos],
   );
 
-  // Filtra o catálogo pelos seletores de área e ano.
-  const lista = projetos.filter(
-    (p) => (area === "todas" || p.area === area) && (ano === "todos" || String(p.ano) === ano),
-  );
+  // Filtra o catálogo por área, ano e texto livre
+  const lista = useMemo(() => {
+    const termo = normalizar(busca);
+    return projetos.filter((p) => {
+      const combinaArea = area === "todas" || p.area === area;
+      const combinaAno = ano === "todos" || String(p.ano) === ano;
+      const combinaTexto =
+        !termo ||
+        normalizar(`${p.nome} ${p.resumo} ${p.local ?? ""} ${p.parceria ?? ""}`).includes(termo);
+      return combinaArea && combinaAno && combinaTexto;
+    });
+  }, [projetos, area, ano, busca]);
+
+  const totalPaginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+  const paginaAtual = Math.min(pagina, totalPaginas);
+  const visiveis = lista.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA);
+
+  /** Atualiza a URL preservando os demais parâmetros (e volta para a página 1). */
+  function atualizar(novos: BuscaProjetos) {
+    void navigate({ search: (anterior) => ({ ...anterior, pagina: 1, ...novos }) });
+  }
+
+  const temFiltro = busca !== "" || area !== "todas" || ano !== "todos";
 
   return (
     <>
@@ -51,18 +84,32 @@ function ProjetosIndex() {
       </PageHero>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        {/* Busca */}
+        <Reveal>
+          <CampoBusca
+            valor={busca}
+            aoMudar={(texto) => atualizar({ busca: texto })}
+            placeholder="Buscar por nome, local ou parceiro"
+            rotulo="Buscar projetos"
+          />
+        </Reveal>
+
         {/* Filtros */}
-        <Reveal className="flex flex-wrap gap-8">
+        <Reveal className="mt-8 flex flex-wrap gap-8">
           <div>
             <p className="mb-3 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
               Área
             </p>
             <div className="flex flex-wrap gap-2">
-              <FiltroBotao ativo={area === "todas"} onClick={() => setArea("todas")}>
+              <FiltroBotao ativo={area === "todas"} onClick={() => atualizar({ area: "todas" })}>
                 Todas
               </FiltroBotao>
               {areas.map((a) => (
-                <FiltroBotao key={a.slug} ativo={area === a.slug} onClick={() => setArea(a.slug)}>
+                <FiltroBotao
+                  key={a.slug}
+                  ativo={area === a.slug}
+                  onClick={() => atualizar({ area: a.slug })}
+                >
                   {a.nome}
                 </FiltroBotao>
               ))}
@@ -73,11 +120,11 @@ function ProjetosIndex() {
               Ano
             </p>
             <div className="flex flex-wrap gap-2">
-              <FiltroBotao ativo={ano === "todos"} onClick={() => setAno("todos")}>
+              <FiltroBotao ativo={ano === "todos"} onClick={() => atualizar({ ano: "todos" })}>
                 Todos
               </FiltroBotao>
               {anos.map((a) => (
-                <FiltroBotao key={a} ativo={ano === a} onClick={() => setAno(a)}>
+                <FiltroBotao key={a} ativo={ano === a} onClick={() => atualizar({ ano: a })}>
                   {a}
                 </FiltroBotao>
               ))}
@@ -85,9 +132,26 @@ function ProjetosIndex() {
           </div>
         </Reveal>
 
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            {lista.length === 0
+              ? "Nenhum projeto encontrado."
+              : `${lista.length} ${lista.length === 1 ? "projeto" : "projetos"} · página ${paginaAtual} de ${totalPaginas}`}
+          </p>
+          {temFiltro && (
+            <button
+              type="button"
+              className="text-sm font-semibold text-primary hover:underline"
+              onClick={() => atualizar({ busca: "", area: "todas", ano: "todos" })}
+            >
+              Limpar filtros
+            </button>
+          )}
+        </div>
+
         {/* Catálogo */}
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {lista.map((p, i) => (
+        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {visiveis.map((p, i) => (
             <Reveal as="article" key={p.slug} delay={i * 80}>
               <Link
                 to="/projetos/$slug"
@@ -113,10 +177,14 @@ function ProjetosIndex() {
             </Reveal>
           ))}
 
-          {lista.length === 0 && (
-            <p className="text-muted-foreground">
-              Nenhum projeto publicado com esses filtros.
-            </p>
+          {visiveis.length === 0 && (
+            <div className="md:col-span-2 lg:col-span-3">
+              <div className="rounded-3xl border border-dashed border-border bg-muted/50 p-10 text-center">
+                <p className="text-muted-foreground">
+                  Nenhum projeto publicado com esses filtros.
+                </p>
+              </div>
+            </div>
           )}
 
           {[0, 1].map((i) => (
@@ -130,32 +198,13 @@ function ProjetosIndex() {
             </Reveal>
           ))}
         </div>
+
+        <Paginacao
+          pagina={paginaAtual}
+          totalPaginas={totalPaginas}
+          aoMudar={(p) => atualizar({ pagina: p })}
+        />
       </section>
     </>
-  );
-}
-
-function FiltroBotao({
-  ativo,
-  onClick,
-  children,
-}: {
-  ativo: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-full border px-4 py-1.5 text-sm transition-all",
-        ativo
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-card hover:border-primary hover:text-primary",
-      )}
-    >
-      {children}
-    </button>
   );
 }
