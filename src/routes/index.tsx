@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
-import { ArrowRight, Instagram, HeartHandshake, Handshake } from "lucide-react";
+import { ArrowRight, Instagram, HeartHandshake } from "lucide-react";
 import heroImg from "@/assets/hero-esporte.jpg";
 import talentoImg from "@/assets/talento-brasil.jpg";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
@@ -271,7 +271,7 @@ function Inicio() {
             <div>
               <h2 className="text-3xl sm:text-4xl">Vem junto com a gente</h2>
               <p className="mt-3 max-w-xl text-muted-foreground">
-                Doe, seja voluntário ou traga sua empresa como parceira do instituto.
+                Doe ou seja voluntário e ajude a transformar vidas na comunidade.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -281,9 +281,7 @@ function Inicio() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="rounded-full">
-                <Link to="/parceiros">
-                  <Handshake className="size-4" /> Ser parceiro
-                </Link>
+                <Link to="/contato">Falar com o instituto</Link>
               </Button>
             </div>
           </div>

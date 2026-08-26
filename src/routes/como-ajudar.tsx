@@ -92,10 +92,10 @@ function ComoAjudar() {
                 Patrocínio de projeto, apoio institucional ou voluntariado corporativo.
               </p>
               <div className="mt-6 rounded-2xl bg-ink-card p-5 text-sm text-ink-foreground/80">
-                Veja os benefícios detalhados na página de Parceiros.
+                Entre em contato para conversarmos sobre o formato de apoio ideal.
               </div>
               <Button asChild variant="secondary" className="mt-6 w-full rounded-full">
-                <Link to="/parceiros">Ver parceiros</Link>
+                <Link to="/contato">Falar com o instituto</Link>
               </Button>
             </div>
           </Reveal>
