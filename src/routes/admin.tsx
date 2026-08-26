@@ -72,8 +72,7 @@ type Exclusao = { tabela: "noticias" | "projetos" | "documentos" | "mensagens"; 
 
 function Painel() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { sessao, carregando, usuario } = useSessao();
+  const { sessao, carregando } = useSessao();
 
   // Sem sessão, volta para o login
   useEffect(() => {
@@ -113,13 +112,6 @@ function Painel() {
   const apagarProjeto = useApagarRegistro("projetos");
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
-
-  async function sair() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  }
 
   function confirmarExclusao() {
     if (!aExcluir) return;
