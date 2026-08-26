@@ -20,7 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
 import { useSalvarDocumento, type DocumentoForm } from "@/lib/mutations";
+import { pastasQuery } from "@/lib/queries";
+import { achatar, montarArvore } from "@/lib/pastas";
 import { enviarArquivo, validarDocumento } from "@/lib/storage";
 import type { DocumentoRow } from "@/lib/db-types";
 
@@ -35,6 +38,8 @@ export function EditorDocumento({
   documento?: DocumentoRow | null;
 }) {
   const salvar = useSalvarDocumento();
+  const pastas = useQuery(pastasQuery);
+  const opcoesPasta = achatar(montarArvore(pastas.data ?? []));
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
   const [form, setForm] = useState<DocumentoForm>(vazio());
@@ -47,6 +52,7 @@ export function EditorDocumento({
             id: documento.id,
             titulo: documento.titulo,
             categoria: documento.categoria,
+            pasta_id: documento.pasta_id,
             ano: documento.ano,
             arquivo_url: documento.arquivo_url,
             publicado: documento.publicado,
@@ -100,6 +106,29 @@ export function EditorDocumento({
               value={form.titulo}
               onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Pasta</Label>
+            <Select
+              value={form.pasta_id ?? "__raiz__"}
+              onValueChange={(v) =>
+                setForm((f) => ({ ...f, pasta_id: v === "__raiz__" ? null : v }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__raiz__">Sem pasta (raiz)</SelectItem>
+                {opcoesPasta.map((pasta) => (
+                  <SelectItem key={pasta.id} value={pasta.id}>
+                    {"— ".repeat(pasta.nivel)}
+                    {pasta.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
