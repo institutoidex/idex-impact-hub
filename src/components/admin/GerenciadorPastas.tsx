@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { documentosAdminQuery, pastasQuery } from "@/lib/queries";
+import { documentosAdminQuery, pastasQuery, tabelaPastasQuery } from "@/lib/queries";
 import { useApagarPasta } from "@/lib/mutations";
 import { montarArvore, PASTAS_BASE, type NoPasta } from "@/lib/pastas";
 import { EditorPasta } from "@/components/admin/EditorPasta";
