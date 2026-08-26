@@ -69,7 +69,10 @@ export const Route = createFileRoute("/admin")({
    * A verificação do papel `admin` continua no GuardaAdmin (defesa em camadas).
    */
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
+    // getSession() lê a sessão do armazenamento local (instantâneo);
+    // getUser() faria uma ida ao servidor e atrasava a abertura do painel.
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
     if (!data.user) {
       throw redirect({ to: "/auth", search: { motivo: "restrito" }, replace: true });
     }
