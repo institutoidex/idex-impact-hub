@@ -198,7 +198,16 @@ function Inicio() {
                   <p className="text-xs font-semibold tracking-widest text-primary uppercase">
                     {n.data}
                   </p>
-                  <h3 className="mt-3 text-xl">{n.titulo}</h3>
+                  <h3 className="mt-3 text-xl">
+                    {/* cada notícia tem endereço próprio em /noticias/slug */}
+                    <Link
+                      to="/noticias/$slug"
+                      params={{ slug: n.slug }}
+                      className="hover:text-primary"
+                    >
+                      {n.titulo}
+                    </Link>
+                  </h3>
                   <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
                 </div>
               </TiltCard>
