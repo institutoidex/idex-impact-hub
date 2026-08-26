@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PROJETOS as PROJETOS_ESTATICOS, type Projeto } from "@/data/idex";
-import { documentosQuery, projetosQuery } from "./queries";
-import type { DocumentoRow } from "./db-types";
+import { documentosQuery, pastasQuery, projetosQuery } from "./queries";
+import type { DocumentoRow, PastaRow } from "./db-types";
 
 /**
  * Camada de conteúdo: lê do banco quando disponível e cai para os dados
@@ -38,4 +38,16 @@ export function useDocumentos(): Record<string, DocumentoRow[]> {
     (grupos[doc.categoria] ??= []).push(doc);
   }
   return grupos;
+}
+
+/** Documentos publicados em lista crua (usada pela navegação por pastas). */
+export function useListaDocumentos(): DocumentoRow[] {
+  const { data } = useQuery(documentosQuery);
+  return data ?? [];
+}
+
+/** Pastas e subpastas cadastradas no painel. */
+export function usePastas(): PastaRow[] {
+  const { data } = useQuery(pastasQuery);
+  return data ?? [];
 }
