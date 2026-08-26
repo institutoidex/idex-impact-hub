@@ -15,6 +15,15 @@ declare global {
   }
 }
 
+// Atributos customizados exigidos pelo widget oficial do VLibras
+declare module "react" {
+  interface HTMLAttributes<T> {
+    vw?: string;
+    "vw-access-button"?: string;
+    "vw-plugin-wrapper"?: string;
+  }
+}
+
 const URL_APP = "https://vlibras.gov.br/app";
 const URL_SCRIPT = `${URL_APP}/vlibras-plugin.js`;
 
