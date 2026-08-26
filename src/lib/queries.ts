@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 import type {
   AreaRow,
+  AuditoriaRow,
   DocumentoRow,
   MensagemRow,
   NoticiaRow,
@@ -123,6 +124,20 @@ export const projetosAdminQuery = queryOptions({
       .from("projetos")
       .select("*")
       .order("criado_em", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+/** Painel: histórico de alterações (mais recentes primeiro). */
+export const auditoriaQuery = queryOptions({
+  queryKey: ["auditoria"],
+  queryFn: async (): Promise<AuditoriaRow[]> => {
+    const { data, error } = await supabase
+      .from("auditoria")
+      .select("*")
+      .order("criado_em", { ascending: false })
+      .limit(200);
     if (error) throw error;
     return data ?? [];
   },
