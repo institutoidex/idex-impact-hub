@@ -38,6 +38,7 @@ import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
+import { GerenciadorPastas } from "@/components/admin/GerenciadorPastas";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -93,7 +94,7 @@ function PainelProtegido() {
 }
 
 type Exclusao = {
-  tabela: "noticias" | "projetos" | "documentos" | "mensagens";
+  tabela: "noticias" | "projetos" | "documentos" | "mensagens" | "pastas";
   id: string;
   titulo: string;
 };
@@ -116,6 +117,7 @@ function Painel() {
     aberto: false,
     item: null,
   });
+  const [pastaDoNovoDocumento, setPastaDoNovoDocumento] = useState<string | null>(null);
   const [editorDocumento, setEditorDocumento] = useState<{
     aberto: boolean;
     item: DocumentoRow | null;
@@ -164,6 +166,9 @@ function Painel() {
           </TabsTrigger>
           <TabsTrigger value="documentos">
             <FileText className="size-4" /> Documentos
+          </TabsTrigger>
+          <TabsTrigger value="pastas">
+            <FolderTree className="size-4" /> Pastas
           </TabsTrigger>
           <TabsTrigger value="midia">
             <Images className="size-4" /> Imagens
@@ -506,6 +511,7 @@ function Painel() {
       <EditorDocumento
         aberto={editorDocumento.aberto}
         documento={editorDocumento.item}
+        pastaInicial={pastaDoNovoDocumento}
         aoFechar={() => setEditorDocumento({ aberto: false, item: null })}
       />
 

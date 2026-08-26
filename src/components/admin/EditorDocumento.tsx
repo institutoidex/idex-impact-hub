@@ -32,17 +32,20 @@ export function EditorDocumento({
   aberto,
   aoFechar,
   documento,
+  pastaInicial = null,
 }: {
   aberto: boolean;
   aoFechar: () => void;
   documento?: DocumentoRow | null;
+  /** pasta pré-selecionada ao criar (vem do botão da árvore de pastas) */
+  pastaInicial?: string | null;
 }) {
   const salvar = useSalvarDocumento();
   const pastas = useQuery(pastasQuery);
   const opcoesPasta = achatar(montarArvore(pastas.data ?? []));
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
-  const [form, setForm] = useState<DocumentoForm>(vazio());
+  const [form, setForm] = useState<DocumentoForm>(() => vazio());
 
   useEffect(() => {
     if (!aberto) return;
@@ -57,9 +60,9 @@ export function EditorDocumento({
             arquivo_url: documento.arquivo_url,
             publicado: documento.publicado,
           }
-        : vazio(),
+        : vazio(pastaInicial),
     );
-  }, [aberto, documento]);
+  }, [aberto, documento, pastaInicial]);
 
   async function anexar(arquivo?: File | null) {
     if (!arquivo) return;
@@ -232,10 +235,11 @@ export function EditorDocumento({
 }
 
 /** Estado inicial de um documento novo. */
-function vazio(): DocumentoForm {
+function vazio(pastaId: string | null = null): DocumentoForm {
   return {
     titulo: "",
     categoria: "relatorio",
+    pasta_id: pastaId,
     ano: new Date().getFullYear(),
     arquivo_url: null,
     publicado: true,
