@@ -34,6 +34,7 @@ import {
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
+import { AreaIcon } from "@/components/AreaIcon";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
