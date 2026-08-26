@@ -29,6 +29,7 @@ import {
 } from "@/lib/queries";
 import {
   useAlternarPublicacao,
+  useApagarArea,
   useApagarRegistro,
   useDocumentoAcoes,
   useMensagemAcoes,
@@ -79,7 +80,11 @@ function PainelProtegido() {
   );
 }
 
-type Exclusao = { tabela: "noticias" | "projetos" | "documentos" | "mensagens"; id: string; titulo: string };
+type Exclusao = {
+  tabela: "noticias" | "projetos" | "documentos" | "mensagens" | "areas";
+  id: string;
+  titulo: string;
+};
 
 function Painel() {
   const { sessao } = useSessao();
@@ -116,6 +121,7 @@ function Painel() {
   const apagarProjeto = useApagarRegistro("projetos");
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
+  const apagarArea = useApagarArea();
 
   function confirmarExclusao() {
     if (!aExcluir) return;
@@ -123,6 +129,7 @@ function Painel() {
     if (aExcluir.tabela === "projetos") apagarProjeto.mutate(aExcluir.id);
     if (aExcluir.tabela === "documentos") acoesDocumento.apagar.mutate(aExcluir.id);
     if (aExcluir.tabela === "mensagens") acoesMensagem.apagar.mutate(aExcluir.id);
+    if (aExcluir.tabela === "areas") apagarArea.mutate(aExcluir.id);
     setAExcluir(null);
   }
 
@@ -350,28 +357,51 @@ function Painel() {
 
         {/* ---------------- Áreas de atuação ---------------- */}
         <TabsContent value="areas" className="mt-6 space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Ajuste os textos das seis áreas. Elas aparecem na home, no menu e nas páginas de área.
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              As áreas aparecem na home, no menu e nas páginas de Áreas de Atuação.
+            </p>
+            <Button
+              className="rounded-full"
+              onClick={() => setEditorArea({ aberto: true, item: null })}
+            >
+              <Plus className="size-4" /> Nova área
+            </Button>
+          </div>
           {areas.isLoading && <Vazio texto="Carregando áreas..." />}
           {areas.error && <Vazio texto="Não foi possível carregar as áreas." />}
+          {areas.data?.length === 0 && <Vazio texto="Nenhuma área cadastrada ainda." />}
           {areas.data?.map((a) => (
             <article
               key={a.id}
               className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
             >
+              <span className={`grid size-12 shrink-0 place-items-center rounded-full ${a.cor}`}>
+                <AreaIcon icone={a.icone as Area["icone"]} className="size-5" />
+              </span>
               <div className="min-w-56 flex-1">
                 <h2 className="text-lg">{a.nome}</h2>
                 <p className="text-sm text-muted-foreground">{a.resumo}</p>
                 <p className="mt-1 text-xs text-muted-foreground">/areas/{a.slug}</p>
               </div>
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setEditorArea({ aberto: true, item: a })}
-              >
-                <Pencil className="size-4" /> Editar
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  className="rounded-full"
+                  onClick={() => setEditorArea({ aberto: true, item: a })}
+                >
+                  <Pencil className="size-4" /> Editar
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label={`Apagar ${a.nome}`}
+                  onClick={() => setAExcluir({ tabela: "areas", id: a.id, titulo: a.nome })}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
             </article>
           ))}
         </TabsContent>
