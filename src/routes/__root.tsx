@@ -137,11 +137,15 @@ function RootComponent() {
       <ScrollProgress />
       <Header />
 
-      <main className="min-h-screen">
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </main>
-      <Footer />
+      {/* site-conteudo: alvo do filtro de escala de cinza da acessibilidade.
+          Fica separado dos widgets flutuantes (fixos) para o filter não quebrá-los */}
+      <div className="site-conteudo">
+        <main className="min-h-screen">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
       {/* Painel flutuante de acessibilidade */}
       <BotaoAcessibilidade />
       {/* Intérprete de Libras (VLibras) — canto inferior esquerdo */}
