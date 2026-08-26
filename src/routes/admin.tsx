@@ -554,6 +554,7 @@ function Painel() {
         </AlertDialogContent>
       </AlertDialog>
     </section>
+    </>
   );
 }
 
