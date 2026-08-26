@@ -251,8 +251,7 @@ function Painel() {
                 <h2 className="text-lg">{p.titulo}</h2>
                 <p className="text-sm text-muted-foreground">{p.resumo}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {p.status} · /{p.slug}
-                  {p.destaque ? " · destaque" : ""}
+                  /{p.slug}
                 </p>
               </div>
               <div className="flex items-center gap-3">
