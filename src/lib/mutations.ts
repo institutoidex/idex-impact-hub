@@ -137,3 +137,124 @@ function traduzirErro(erro: Error) {
   if (texto.includes("row-level security")) return "Sua conta não tem permissão para essa ação.";
   return texto || "Não foi possível salvar. Tente de novo.";
 }
+
+export type DocumentoForm = {
+  id?: string;
+  titulo: string;
+  categoria: string;
+  ano: number | null;
+  arquivo_url: string | null;
+  publicado: boolean;
+};
+
+export type AreaForm = {
+  id: string;
+  slug: string;
+  nome: string;
+  resumo: string;
+  descricao: string;
+  ordem: number;
+};
+
+/** Cria ou atualiza um documento da página de Transparência. */
+export function useSalvarDocumento() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (valores: DocumentoForm) => {
+      const { id, ...campos } = valores;
+      const consulta = id
+        ? supabase.from("documentos").update(campos).eq("id", id).select().single()
+        : supabase.from("documentos").insert(campos).select().single();
+      const { data, error } = await consulta;
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_dado, valores) => {
+      void queryClient.invalidateQueries({ queryKey: ["documentos"] });
+      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
+      toast.success(valores.id ? "Documento atualizado." : "Documento adicionado.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+}
+
+/** Publica/despublica ou apaga documentos. */
+export function useDocumentoAcoes() {
+  const queryClient = useQueryClient();
+  const atualizar = () => {
+    void queryClient.invalidateQueries({ queryKey: ["documentos"] });
+    void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
+  };
+
+  const publicar = useMutation({
+    mutationFn: async ({ id, publicado }: { id: string; publicado: boolean }) => {
+      const { error } = await supabase.from("documentos").update({ publicado }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { publicado }) => {
+      atualizar();
+      toast.success(publicado ? "Documento publicado." : "Documento oculto do site.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+
+  const apagar = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("documentos").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      atualizar();
+      toast.success("Documento removido.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+
+  return { publicar, apagar };
+}
+
+/** Atualiza os textos de uma área de atuação. */
+export function useSalvarArea() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...campos }: AreaForm) => {
+      const { error } = await supabase.from("areas").update(campos).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["areas"] });
+      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
+      toast.success("Área atualizada.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+}
+
+/** Marca uma mensagem de contato como lida/não lida ou apaga. */
+export function useMensagemAcoes() {
+  const queryClient = useQueryClient();
+  const atualizar = () => void queryClient.invalidateQueries({ queryKey: ["mensagens"] });
+
+  const marcarLida = useMutation({
+    mutationFn: async ({ id, lida }: { id: string; lida: boolean }) => {
+      const { error } = await supabase.from("mensagens").update({ lida }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: atualizar,
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+
+  const apagar = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("mensagens").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      atualizar();
+      toast.success("Mensagem removida.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+
+  return { marcarLida, apagar };
+}

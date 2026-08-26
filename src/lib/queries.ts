@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
+import { listarMidia } from "./storage";
 import type {
   AreaRow,
   AuditoriaRow,
@@ -141,4 +142,24 @@ export const auditoriaQuery = queryOptions({
     if (error) throw error;
     return data ?? [];
   },
+});
+
+/** Painel: todos os documentos, inclusive rascunhos (exige login). */
+export const documentosAdminQuery = queryOptions({
+  queryKey: ["documentos", "admin"],
+  queryFn: async (): Promise<DocumentoRow[]> => {
+    const { data, error } = await supabase
+      .from("documentos")
+      .select("*")
+      .order("ano", { ascending: false })
+      .order("criado_em", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+/** Painel: biblioteca de mídia do bucket público. */
+export const midiaQuery = queryOptions({
+  queryKey: ["midia"],
+  queryFn: () => listarMidia(),
 });
