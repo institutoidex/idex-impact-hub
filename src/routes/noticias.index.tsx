@@ -16,7 +16,7 @@ const POR_PAGINA = 6;
 /** Parâmetros de busca aceitos na URL (todos opcionais). */
 type BuscaNoticias = { busca?: string; ano?: string; pagina?: number };
 
-export const Route = createFileRoute("/noticias")({
+export const Route = createFileRoute("/noticias/")({
   // Busca e paginação ficam na URL, para poder compartilhar o link do resultado
   validateSearch: (search: Record<string, unknown>): BuscaNoticias => ({
     busca: typeof search['busca'] === "string" ? search['busca'] : "",
