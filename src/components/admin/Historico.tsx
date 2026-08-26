@@ -85,7 +85,8 @@ function ItemHistorico({ item }: { item: AuditoriaRow }) {
 }
 
 /** Trilha de auditoria completa do painel. */
-export function Historico() {
+/** `limite` mostra só as alterações mais recentes (usado na visão geral). */
+export function Historico({ limite }: { limite?: number }) {
   const { data, isLoading, error } = useQuery(auditoriaQuery);
 
   if (isLoading) {
