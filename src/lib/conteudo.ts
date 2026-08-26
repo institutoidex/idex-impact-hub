@@ -48,6 +48,8 @@ export function useProjetos(): Projeto[] {
       real: true,
       local: p.local ?? base?.local,
       parceria: p.parceiro ?? base?.parceria,
+      // capa enviada pelo painel; quando vazia a página usa a imagem padrão
+      imagem: p.imagem_url,
     } as Projeto;
   });
 }
