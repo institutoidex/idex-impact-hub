@@ -73,8 +73,6 @@ export function BuscaDocumentos() {
       <CommandDialog
         open={aberto}
         onOpenChange={setAberto}
-        title="Buscar documentos"
-        description="Encontre estatuto, relatórios e demais arquivos do instituto."
       >
         <CommandInput placeholder="Digite o nome do documento, ano ou categoria..." />
         <CommandList>
