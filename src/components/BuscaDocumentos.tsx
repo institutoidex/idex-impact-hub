@@ -61,7 +61,7 @@ export function BuscaDocumentos() {
         type="button"
         onClick={() => setAberto(true)}
         aria-label="Buscar documentos"
-        className="flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        className="flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:border-primary hover:text-primary"
       >
         <Search className="size-4" />
         <span className="hidden lg:inline">Buscar documentos</span>
@@ -76,7 +76,12 @@ export function BuscaDocumentos() {
       >
         <CommandInput placeholder="Digite o nome do documento, ano ou categoria..." />
         <CommandList>
-          <CommandEmpty>Nenhum documento publicado com esse termo.</CommandEmpty>
+          <CommandEmpty>
+            {documentos.length
+              ? "Nenhum documento publicado com esse termo."
+              : "Ainda não há documentos publicados."}
+          </CommandEmpty>
+          {documentos.length > 0 && (
           <CommandGroup heading="Documentos">
             {documentos.map((doc) => (
               <CommandItem
@@ -107,6 +112,7 @@ export function BuscaDocumentos() {
               </CommandItem>
             ))}
           </CommandGroup>
+          )}
         </CommandList>
       </CommandDialog>
     </>
