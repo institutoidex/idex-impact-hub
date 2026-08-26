@@ -147,8 +147,20 @@ function Transparencia() {
             <h2 className="mt-2 text-3xl">{pastaAtual?.nome ?? "Todos os documentos"}</h2>
           </Reveal>
 
+          {/* Busca local de documentos */}
+          <Reveal delay={80}>
+            <div className="mt-6">
+              <CampoBusca
+                valor={termoBusca}
+                aoMudar={setTermoBusca}
+                placeholder="Buscar documento pelo nome..."
+                rotulo="Buscar documentos"
+              />
+            </div>
+          </Reveal>
+
           {/* Subpastas */}
-          {subpastas.length > 0 && (
+          {subpastas.length > 0 && !termoNormalizado && (
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {subpastas.map((sub, i) => (
                 <Reveal key={sub.id} delay={i * 60}>
@@ -169,7 +181,7 @@ function Transparencia() {
 
           {/* Arquivos da pasta */}
           <div className="mt-6 space-y-4">
-            {(pastaAtual ? arquivos : documentos).map((doc) => (
+            {documentosVisiveis.map((doc) => (
               <a
                 key={doc.id}
                 id={`doc-${doc.id}`}
@@ -195,10 +207,18 @@ function Transparencia() {
               </a>
             ))}
 
-            {(pastaAtual ? arquivos : documentos).length === 0 && (
+            {documentosVisiveis.length === 0 && (
               <PlaceholderBox
-                titulo="Pasta ainda sem arquivos"
-                nota="Os PDFs oficiais entram aqui quando enviados pelo painel."
+                titulo={
+                  termoNormalizado
+                    ? "Nenhum documento encontrado"
+                    : "Pasta ainda sem arquivos"
+                }
+                nota={
+                  termoNormalizado
+                    ? "Tente outro termo ou mude de pasta."
+                    : "Os PDFs oficiais entram aqui quando enviados pelo painel."
+                }
               />
             )}
           </div>
