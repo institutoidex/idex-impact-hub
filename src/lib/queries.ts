@@ -6,6 +6,7 @@ import type {
   DocumentoRow,
   MensagemRow,
   NoticiaRow,
+  PastaRow,
   ProjetoRow,
 } from "./db-types";
 
@@ -169,3 +170,17 @@ export const noticiaQuery = (slug: string) =>
       return data;
     },
   });
+
+/** Pastas e subpastas de documentos (leitura pública). */
+export const pastasQuery = queryOptions({
+  queryKey: ["pastas"],
+  queryFn: async (): Promise<PastaRow[]> => {
+    const { data, error } = await supabase
+      .from("pastas")
+      .select("*")
+      .order("ordem", { ascending: true });
+    // se a tabela ainda não existir no banco, o site segue com a estrutura base
+    if (error) return [];
+    return data ?? [];
+  },
+});

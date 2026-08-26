@@ -47,10 +47,23 @@ export type NoticiaRow = {
   criado_em: string;
 }
 
+/** Pasta (ou subpasta) que organiza os documentos da Transparência. */
+export type PastaRow = {
+  id: string;
+  nome: string;
+  slug: string;
+  /** pasta mãe; null = pasta de primeiro nível */
+  pasta_id: string | null;
+  ordem: number;
+  criado_em: string;
+}
+
 export type DocumentoRow = {
   id: string;
   titulo: string;
   categoria: string; // "estatuto" | "relatorio" | "financeiro" | "outro"
+  /** pasta onde o documento está guardado (null = raiz) */
+  pasta_id: string | null;
   ano: number | null;
   arquivo_url: string | null;
   publicado: boolean;
@@ -82,6 +95,7 @@ export type Database = {
       projetos: Tabela<ProjetoRow>;
       noticias: Tabela<NoticiaRow>;
       documentos: Tabela<DocumentoRow>;
+      pastas: Tabela<PastaRow>;
       mensagens: Tabela<
         MensagemRow,
         {
