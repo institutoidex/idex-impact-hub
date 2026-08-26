@@ -129,28 +129,17 @@ function Painel() {
   const naoLidas = (mensagens.data ?? []).filter((m) => !m.lida).length;
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <>
+      <AdminHeader />
+      <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
         <div>
           <span className="text-xs font-semibold tracking-widest text-primary uppercase">
             Painel interno
           </span>
           <h1 className="mt-2 text-4xl">Gerenciar o site</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Conectado como {usuario?.email}</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="rounded-full" asChild>
-            <Link to="/">
-              <ExternalLink className="size-4" /> Ver o site
-            </Link>
-          </Button>
-          <Button variant="outline" className="rounded-full" onClick={sair}>
-            <LogOut className="size-4" /> Sair
-          </Button>
-        </div>
-      </div>
 
-      <Tabs defaultValue="visao" className="mt-10">
+        <Tabs defaultValue="visao" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1">
           <TabsTrigger value="visao">
             <Gauge className="size-4" /> Visão geral
