@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Mail, Newspaper, FolderKanban, Plus, Pencil, Trash2 } from "lucide-react";
+import { LogOut, Mail, Newspaper, FolderKanban, Plus, Pencil, Trash2, History } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useSessao } from "@/hooks/useSessao";
 import {
@@ -11,6 +11,7 @@ import {
   projetosAdminQuery,
 } from "@/lib/queries";
 import { useAlternarPublicacao, useApagarRegistro } from "@/lib/mutations";
+import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,9 @@ function Painel() {
           </TabsTrigger>
           <TabsTrigger value="mensagens">
             <Mail className="size-4" /> Mensagens
+          </TabsTrigger>
+          <TabsTrigger value="historico">
+            <History className="size-4" /> Histórico
           </TabsTrigger>
         </TabsList>
 
@@ -266,6 +270,14 @@ function Painel() {
               <p className="mt-3 text-sm whitespace-pre-line">{m.mensagem}</p>
             </article>
           ))}
+        </TabsContent>
+
+        {/* ---------------- Histórico / auditoria ---------------- */}
+        <TabsContent value="historico" className="mt-6 space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Registro de tudo que foi criado, editado, publicado ou apagado no site.
+          </p>
+          <Historico />
         </TabsContent>
       </Tabs>
 
