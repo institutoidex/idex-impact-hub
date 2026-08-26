@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Mail,
   Newspaper,
@@ -15,7 +15,7 @@ import {
   Gauge,
   MailOpen,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+
 import { useSessao } from "@/hooks/useSessao";
 import {
   areasQuery,
