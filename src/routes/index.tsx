@@ -47,6 +47,8 @@ function Inicio() {
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-ink/70" />
+        {/* Reforço de contraste na base do hero */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent" />
         <div className="relative mx-auto flex max-w-7xl flex-col justify-end px-4 pt-16 sm:px-6">
           <Reveal className="max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase">
@@ -55,10 +57,10 @@ function Inicio() {
             <AnimatedText
               as="h1"
               text={"A gente muda vida\nperto de casa."}
-              className="mt-6 text-4xl leading-[1.05] text-ink-foreground sm:text-6xl lg:text-7xl"
+              className="mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
             />
 
-            <p className="mt-6 max-w-xl text-lg text-ink-foreground/80">
+            <p className="mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg">
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
