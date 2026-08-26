@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { gerarSlug, useSalvarNoticia, type NoticiaForm } from "@/lib/mutations";
 import type { NoticiaRow } from "@/lib/db-types";
+import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
+
 
 /** Formulário de criação/edição de notícia dentro de um diálogo. */
 export function EditorNoticia({
@@ -117,26 +119,25 @@ export function EditorNoticia({
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="imagem">URL da imagem</Label>
-              <Input
-                id="imagem"
-                placeholder="https://..."
-                value={form.imagem_url ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, imagem_url: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="data">Data de publicação</Label>
-              <Input
-                id="data"
-                type="date"
-                value={form.publicado_em}
-                onChange={(e) => setForm((f) => ({ ...f, publicado_em: e.target.value }))}
-              />
-            </div>
+          {/* Capa com envio de arquivo e pré-visualização */}
+          <UploadCapa
+            valor={form.imagem_url || null}
+            aoMudar={(url) => setForm((f) => ({ ...f, imagem_url: url }))}
+            pasta="noticias"
+          />
+
+          <UploadMidia pasta="noticias" />
+
+          <div className="space-y-2">
+            <Label htmlFor="data">Data de publicação</Label>
+            <Input
+              id="data"
+              type="date"
+              value={form.publicado_em}
+              onChange={(e) => setForm((f) => ({ ...f, publicado_em: e.target.value }))}
+            />
           </div>
+
 
           <div className="flex items-center gap-3 rounded-2xl border border-border p-4">
             <Switch
