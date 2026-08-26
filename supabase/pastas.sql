@@ -44,3 +44,30 @@ insert into public.pastas (nome, slug, ordem) values
   ('Projetos', 'projetos', 6),
   ('Relatórios', 'relatorios', 7)
 on conflict (slug) do nothing;
+
+-- Subpastas de "Documentos"
+insert into public.pastas (nome, slug, ordem, pasta_id)
+select v.nome, v.slug, v.ordem, p.id
+from (values
+  ('Atas', 'documentos-atas', 1),
+  ('Comprovação de Processo Eleitoral', 'documentos-processo-eleitoral', 2),
+  ('Declarações', 'documentos-declaracoes', 3),
+  ('Estatuto', 'documentos-estatuto', 4),
+  ('Financeiro', 'documentos-financeiro', 5),
+  ('LGPD', 'documentos-lgpd', 6)
+) as v(nome, slug, ordem)
+join public.pastas p on p.slug = 'documentos'
+on conflict (slug) do nothing;
+
+-- Subpastas de "Projetos" (é só uma pasta de arquivos, como as demais)
+insert into public.pastas (nome, slug, ordem, pasta_id)
+select v.nome, v.slug, v.ordem, p.id
+from (values
+  ('Projetos 2020', 'projetos-2020', 1),
+  ('Projetos 2021', 'projetos-2021', 2),
+  ('Projetos 2022', 'projetos-2022', 3),
+  ('Projetos 2023-2024', 'projetos-2023-2024', 4),
+  ('Projetos 2025', 'projetos-2025', 5)
+) as v(nome, slug, ordem)
+join public.pastas p on p.slug = 'projetos'
+on conflict (slug) do nothing;
