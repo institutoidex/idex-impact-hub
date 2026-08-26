@@ -143,16 +143,6 @@ export type DocumentoForm = {
   publicado: boolean;
 };
 
-export type AreaForm = {
-  id?: string; // sem id = criar nova área
-  slug: string;
-  nome: string;
-  resumo: string;
-  descricao: string;
-  icone: string;
-  cor: string;
-  ordem: number;
-};
 
 /** Cria ou atualiza um documento da página de Transparência. */
 export function useSalvarDocumento() {
