@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-  LogOut,
   Mail,
   Newspaper,
   FolderKanban,
@@ -17,7 +16,7 @@ import {
   ExternalLink,
   MailOpen,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+
 import { useSessao } from "@/hooks/useSessao";
 import {
   areasQuery,
@@ -34,6 +33,7 @@ import {
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
@@ -73,8 +73,7 @@ type Exclusao = { tabela: "noticias" | "projetos" | "documentos" | "mensagens"; 
 
 function Painel() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { sessao, carregando, usuario } = useSessao();
+  const { sessao, carregando } = useSessao();
 
   // Sem sessão, volta para o login
   useEffect(() => {
@@ -115,13 +114,6 @@ function Painel() {
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
 
-  async function sair() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  }
-
   function confirmarExclusao() {
     if (!aExcluir) return;
     if (aExcluir.tabela === "noticias") apagarNoticia.mutate(aExcluir.id);
@@ -138,28 +130,17 @@ function Painel() {
   const naoLidas = (mensagens.data ?? []).filter((m) => !m.lida).length;
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <>
+      <AdminHeader />
+      <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
         <div>
           <span className="text-xs font-semibold tracking-widest text-primary uppercase">
             Painel interno
           </span>
           <h1 className="mt-2 text-4xl">Gerenciar o site</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Conectado como {usuario?.email}</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="rounded-full" asChild>
-            <Link to="/">
-              <ExternalLink className="size-4" /> Ver o site
-            </Link>
-          </Button>
-          <Button variant="outline" className="rounded-full" onClick={sair}>
-            <LogOut className="size-4" /> Sair
-          </Button>
-        </div>
-      </div>
 
-      <Tabs defaultValue="visao" className="mt-10">
+        <Tabs defaultValue="visao" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1">
           <TabsTrigger value="visao">
             <Gauge className="size-4" /> Visão geral
@@ -574,6 +555,7 @@ function Painel() {
         </AlertDialogContent>
       </AlertDialog>
     </section>
+    </>
   );
 }
 
