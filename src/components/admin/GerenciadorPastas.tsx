@@ -54,11 +54,25 @@ export function GerenciadorPastas({
         </p>
         <Button
           className="rounded-full"
+          disabled={faltaMigracao}
           onClick={() => setEditor({ aberto: true, pasta: null, paiPadrao: null })}
         >
           <FolderPlus className="size-4" /> Nova pasta
         </Button>
       </div>
+
+      {faltaMigracao && (
+        <div className="rounded-3xl border border-destructive/40 bg-destructive/10 p-5 text-sm">
+          <p className="font-display text-base">A tabela de pastas ainda não existe no banco</p>
+          <p className="mt-2 text-muted-foreground">
+            Por isso aparece o aviso “Could not find the table 'public.pastas'”. Para liberar a
+            criação de pastas, abra o Supabase do instituto → <strong>SQL Editor</strong>, cole o
+            conteúdo do arquivo <code>supabase/pastas.sql</code> do projeto e clique em{" "}
+            <strong>Run</strong>. Depois recarregue esta página.
+          </p>
+        </div>
+      )}
+
 
       {lista.length === 0 && (
         <div className="rounded-3xl border border-dashed border-border bg-muted/40 p-6">
