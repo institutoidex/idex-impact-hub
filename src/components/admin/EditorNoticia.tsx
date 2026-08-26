@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { gerarSlug, useSalvarNoticia, type NoticiaForm } from "@/lib/mutations";
 import type { NoticiaRow } from "@/lib/db-types";
+import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
+
 
 /** Formulário de criação/edição de notícia dentro de um diálogo. */
 export function EditorNoticia({

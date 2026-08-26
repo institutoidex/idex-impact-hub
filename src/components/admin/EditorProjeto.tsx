@@ -22,6 +22,8 @@ import {
 import { gerarSlug, useSalvarProjeto, type ProjetoForm } from "@/lib/mutations";
 import { AREAS } from "@/data/idex";
 import type { ProjetoRow } from "@/lib/db-types";
+import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
+
 
 /** Formulário de criação/edição de projeto dentro de um diálogo. */
 export function EditorProjeto({
@@ -212,15 +214,15 @@ export function EditorProjeto({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="p-imagem">URL da imagem</Label>
-            <Input
-              id="p-imagem"
-              placeholder="https://..."
-              value={form.imagem_url ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, imagem_url: e.target.value }))}
-            />
-          </div>
+          {/* Capa com envio de arquivo e pré-visualização */}
+          <UploadCapa
+            valor={form.imagem_url || null}
+            aoMudar={(url) => setForm((f) => ({ ...f, imagem_url: url }))}
+            pasta="projetos"
+          />
+
+          <UploadMidia pasta="projetos" />
+
 
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-3 rounded-2xl border border-border p-4">
