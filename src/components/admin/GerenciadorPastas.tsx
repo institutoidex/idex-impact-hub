@@ -30,7 +30,10 @@ export function GerenciadorPastas({
 }) {
   const pastas = useQuery(pastasQuery);
   const documentos = useQuery(documentosAdminQuery);
+  const tabelaOk = useQuery(tabelaPastasQuery);
   const apagar = useApagarPasta();
+  // banco ainda sem a tabela: bloqueia as ações e mostra o passo que falta
+  const faltaMigracao = tabelaOk.data === false;
 
   const [editor, setEditor] = useState<{
     aberto: boolean;
