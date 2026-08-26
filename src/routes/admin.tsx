@@ -11,7 +11,6 @@ import {
   History,
   Images,
   FileText,
-  LayoutGrid,
   Gauge,
   ExternalLink,
   MailOpen,
