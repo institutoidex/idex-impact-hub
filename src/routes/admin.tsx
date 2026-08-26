@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  LogOut,
   Mail,
   Newspaper,
   FolderKanban,
@@ -14,7 +13,6 @@ import {
   FileText,
   LayoutGrid,
   Gauge,
-  ExternalLink,
   MailOpen,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -34,6 +32,7 @@ import {
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
