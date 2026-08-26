@@ -4,23 +4,19 @@ import { useEffect } from "react";
  * VLibras — intérprete de Libras (Língua Brasileira de Sinais) do Governo Federal.
  * Traduz o conteúdo textual do site para Libras por meio de um avatar 3D.
  * Documentação: https://vlibras.gov.br/doc/widget/installation/webpageintegration.html
+ *
+ * Como funciona a versão atual (v7+): o script oficial lê a configuração global
+ * `window.VLibrasWidget` ANTES de carregar e monta sozinho um botão flutuante
+ * (shadow DOM) na lateral da tela — não usamos mais as divs com atributos `vw`.
  */
 
-// Tipagem mínima do objeto global injetado pelo script oficial
 declare global {
   interface Window {
-    VLibras?: {
-      Widget: new (url: string, opcoes?: { position?: string }) => void;
+    VLibrasWidget?: {
+      path?: string;
+      position?: string; // "l" = esquerda; qualquer outro valor = direita
+      avatar?: string; // "icaro" | "hosana" | "guga"
     };
-  }
-}
-
-// Atributos customizados exigidos pelo widget oficial do VLibras
-declare module "react" {
-  interface HTMLAttributes<T> {
-    vw?: string;
-    "vw-access-button"?: string;
-    "vw-plugin-wrapper"?: string;
   }
 }
 
@@ -32,26 +28,16 @@ export function VLibras() {
     // Evita carregar o script duas vezes (StrictMode/remontagens)
     if (document.querySelector(`script[src="${URL_SCRIPT}"]`)) return;
 
+    // Configuração lida pelo script no carregamento: botão na lateral ESQUERDA,
+    // para não brigar com nosso botão de acessibilidade (canto inferior direito)
+    window.VLibrasWidget = { path: URL_APP, position: "l" };
+
     const script = document.createElement("script");
     script.src = URL_SCRIPT;
     script.async = true;
-    script.onload = () => {
-      // Posição à esquerda para não sobrepor o botão de acessibilidade (canto inferior direito)
-      if (window.VLibras) {
-        new window.VLibras.Widget(URL_APP, { position: "left" });
-      }
-    };
     document.body.appendChild(script);
   }, []);
 
-  // Estrutura exigida pelo widget oficial: os atributos vw/vw-access-button/vw-plugin-wrapper
-  // são os seletores que o script usa para montar o botão e o painel do intérprete.
-  return (
-    <div vw="" className="enabled print:hidden">
-      <div vw-access-button="" className="active" />
-      <div vw-plugin-wrapper="">
-        <div className="vw-plugin-top-wrapper" />
-      </div>
-    </div>
-  );
+  // O botão e o painel do intérprete são montados pelo script oficial
+  return null;
 }
