@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder, PlaceholderBox } from "@/components/Placeholder";
+import { Placeholder } from "@/components/Placeholder";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
 
 export const Route = createFileRoute("/quem-somos")({
@@ -89,58 +89,7 @@ function QuemSomos() {
         </div>
       </section>
 
-      {/* Equipe */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <Reveal>
-          <h2 className="text-3xl">Equipe</h2>
-          <p className="mt-3 text-muted-foreground">
-            Nomes, funções e fotos da equipe ainda serão enviados.
-          </p>
-        </Reveal>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <Reveal key={i} delay={i * 80}>
-              <div className="rounded-3xl border border-border bg-card p-6 text-center">
-                <div className="mx-auto size-24 rounded-full bg-muted" />
-                <p className="mt-4">
-                  <Placeholder>[nome a definir]</Placeholder>
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">[função a definir]</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
 
-      {/* Organograma */}
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
-        <Reveal>
-          <h2 className="text-3xl">Organograma</h2>
-          <div className="mt-8 rounded-3xl bg-ink p-8 text-ink-foreground">
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="mx-auto w-full max-w-xs rounded-2xl bg-ink-card p-5">
-                <p className="font-display text-lg">Diretoria</p>
-                <p className="text-xs text-ink-foreground/60">[composição a definir]</p>
-              </div>
-              <div className="mx-auto my-4 h-8 w-px bg-ink-foreground/20" />
-              <div className="grid gap-4 sm:grid-cols-3">
-                {["Coordenação de projetos", "Administrativo", "Comunicação"].map((t) => (
-                  <div key={t} className="rounded-2xl bg-ink-card p-5">
-                    <p className="font-display">{t}</p>
-                    <p className="text-xs text-ink-foreground/60">[responsável a definir]</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Reveal>
-        <div className="mt-6">
-          <PlaceholderBox
-            titulo="Organograma oficial"
-            nota="Substituir por versão validada pelo instituto quando disponível."
-          />
-        </div>
-      </section>
     </>
   );
 }
