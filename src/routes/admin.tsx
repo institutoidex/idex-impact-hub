@@ -13,6 +13,7 @@ import {
   FileText,
   LayoutGrid,
   Gauge,
+  ExternalLink,
   MailOpen,
 } from "lucide-react";
 
