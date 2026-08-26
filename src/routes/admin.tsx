@@ -57,6 +57,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { AreaRow, DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
+import type { Area } from "@/data/idex";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
