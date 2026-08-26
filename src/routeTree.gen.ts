@@ -20,6 +20,7 @@ import { Route as PainelRouteImport } from './routes/painel'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TransparenciaRouteImport } from './routes/transparencia'
 import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
 import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
@@ -81,6 +82,11 @@ const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TransparenciaRoute = TransparenciaRouteImport.update({
   id: '/transparencia',
   path: '/transparencia',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/painel': typeof PainelRoute
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/projetos'
     | '/quem-somos'
     | '/redefinir-senha'
+    | '/sitemap.xml'
     | '/transparencia'
     | '/noticias/$slug'
     | '/projetos/$slug'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/quem-somos'
     | '/redefinir-senha'
+    | '/sitemap.xml'
     | '/transparencia'
     | '/noticias/$slug'
     | '/projetos/$slug'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/projetos'
     | '/quem-somos'
     | '/redefinir-senha'
+    | '/sitemap.xml'
     | '/transparencia'
     | '/noticias/$slug'
     | '/projetos/$slug'
@@ -227,6 +239,7 @@ export interface RootRouteChildren {
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TransparenciaRoute: typeof TransparenciaRoute
 }
 
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RedefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/transparencia': {
       id: '/transparencia'
       path: '/transparencia'
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TransparenciaRoute: TransparenciaRoute,
 }
 export const routeTree = rootRouteImport
