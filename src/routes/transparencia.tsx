@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
-import { z } from "zod";
 import { FileText } from "lucide-react";
 import { useDocumentos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
@@ -16,13 +14,13 @@ import {
 } from "@/components/ui/accordion";
 
 // Parâmetros da URL: aba ativa e documento a destacar (vindos da busca do header).
-const buscaSchema = z.object({
-  aba: fallback(z.string(), "estatuto").default("estatuto"),
-  doc: fallback(z.string(), "").default(""),
-});
+type BuscaTransparencia = { aba?: string; doc?: string };
 
 export const Route = createFileRoute("/transparencia")({
-  validateSearch: zodValidator(buscaSchema),
+  validateSearch: (search: Record<string, unknown>): BuscaTransparencia => ({
+    aba: typeof search['aba'] === "string" ? search['aba'] : "estatuto",
+    doc: typeof search['doc'] === "string" ? search['doc'] : "",
+  }),
   head: () => ({
     meta: [
       { title: "Transparência — Instituto IDEX" },
@@ -61,7 +59,7 @@ const ABAS = ["estatuto", "relatorios", "documentos", "faq", "lgpd"];
 function Transparencia() {
   const docsBanco = useDocumentos(); // documentos publicados no banco
   const { aba, doc: docBuscado } = Route.useSearch();
-  const abaInicial = ABAS.includes(aba) ? aba : "estatuto";
+  const abaInicial = aba && ABAS.includes(aba) ? aba : "estatuto";
   const [abaAtiva, setAbaAtiva] = useState(abaInicial);
 
   useEffect(() => setAbaAtiva(abaInicial), [abaInicial]);
