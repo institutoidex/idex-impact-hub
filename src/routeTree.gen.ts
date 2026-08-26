@@ -15,7 +15,9 @@ import { Route as AreasRouteImport } from './routes/areas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ComoAjudarRouteImport } from './routes/como-ajudar'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticiasRouteImport } from './routes/noticias'
+import { Route as PainelRouteImport } from './routes/painel'
 import { Route as ParceirosRouteImport } from './routes/parceiros'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
@@ -55,9 +57,19 @@ const ContatoRoute = ContatoRouteImport.update({
   path: '/contato',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NoticiasRoute = NoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelRoute = PainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParceirosRoute = ParceirosRouteImport.update({
@@ -108,7 +120,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
+  '/painel': typeof PainelRoute
   '/parceiros': typeof ParceirosRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
@@ -124,7 +138,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
+  '/painel': typeof PainelRoute
   '/parceiros': typeof ParceirosRoute
   '/quem-somos': typeof QuemSomosRoute
   '/transparencia': typeof TransparenciaRoute
@@ -141,7 +157,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
+  '/painel': typeof PainelRoute
   '/parceiros': typeof ParceirosRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
@@ -160,7 +178,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/login'
     | '/noticias'
+    | '/painel'
     | '/parceiros'
     | '/projetos'
     | '/quem-somos'
@@ -176,7 +196,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/login'
     | '/noticias'
+    | '/painel'
     | '/parceiros'
     | '/quem-somos'
     | '/transparencia'
@@ -192,7 +214,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/login'
     | '/noticias'
+    | '/painel'
     | '/parceiros'
     | '/projetos'
     | '/quem-somos'
@@ -210,7 +234,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
+  LoginRoute: typeof LoginRoute
   NoticiasRoute: typeof NoticiasRoute
+  PainelRoute: typeof PainelRoute
   ParceirosRoute: typeof ParceirosRoute
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
@@ -261,11 +287,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/noticias': {
       id: '/noticias'
       path: '/noticias'
       fullPath: '/noticias'
       preLoaderRoute: typeof NoticiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel': {
+      id: '/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof PainelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parceiros': {
@@ -360,7 +400,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
+  LoginRoute: LoginRoute,
   NoticiasRoute: NoticiasRoute,
+  PainelRoute: PainelRoute,
   ParceirosRoute: ParceirosRoute,
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,

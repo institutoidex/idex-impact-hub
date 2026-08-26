@@ -102,10 +102,18 @@ export function Footer() {
       </div>
 
       <div className="border-t border-ink-foreground/10">
-        <p className="mx-auto max-w-7xl px-4 py-6 text-xs text-ink-foreground/50 sm:px-6">
-          © {ano} Instituto IDEX. Todos os direitos reservados.
-        </p>
+        {/* Rodapé final: direitos + acesso discreto à área da equipe */}
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-xs text-ink-foreground/50 sm:px-6">
+          <p>© {ano} Instituto IDEX. Todos os direitos reservados.</p>
+          <Link
+            to="/auth"
+            className="rounded-full px-3 py-1 text-ink-foreground/50 transition hover:bg-ink-foreground/10 hover:text-ink-foreground"
+          >
+            Área da equipe
+          </Link>
+        </div>
       </div>
+
     </footer>
   );
 }
