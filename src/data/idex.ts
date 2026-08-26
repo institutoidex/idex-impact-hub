@@ -22,7 +22,7 @@ export const PROJETOS: Projeto[] = [
   {
     slug: "talento-brasil",
     nome: "Talento Brasil",
-    area: "esportes",
+    
     ano: 2017,
     resumo:
       "Treinamento de futebol gratuito para 200 crianças e jovens nas categorias de base, em parceria com o Clube Esportivo Penha.",
