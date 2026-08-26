@@ -168,6 +168,56 @@
 
 /* Utilitários de marca -------------------------------------------------- */
 
+/* Link de navegação do cabeçalho: contraste alto + sublinhado animado.
+   O sublinhado verde desliza no hover; item ativo fica em verde sólido. */
+@utility nav-link {
+  position: relative;
+  /* evita quebra de linha em itens longos (ex.: "Áreas de Atuação") */
+  white-space: nowrap;
+  padding: 0.5rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--foreground);
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.25rem;
+    height: 2px;
+    border-radius: 9999px;
+    background: var(--brand-green);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &:hover {
+    color: var(--brand-green);
+    background-color: color-mix(in oklab, var(--brand-green) 8%, transparent);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Estado ativo do link: verde + sublinhado fixo */
+@utility nav-link-ativo {
+  color: var(--brand-green);
+  font-weight: 600;
+
+  &::after {
+    transform: scaleX(1);
+  }
+}
+
 /* Filete fino amarelo (elemento real da identidade atual) */
 @utility rule-yellow {
   height: 4px;
