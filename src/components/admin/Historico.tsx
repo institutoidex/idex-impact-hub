@@ -111,7 +111,7 @@ export function Historico({ limite }: { limite?: number }) {
 
   return (
     <div className="space-y-3">
-      {data.map((item) => (
+      {(limite ? data.slice(0, limite) : data).map((item) => (
         <ItemHistorico key={item.id} item={item} />
       ))}
     </div>
