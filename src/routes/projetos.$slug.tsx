@@ -87,7 +87,7 @@ function ProjetoDetalhe() {
     <>
       <section className="relative overflow-hidden pt-28 pb-16">
         <img
-          src={talentoImg}
+          src={projeto.imagem || talentoImg}
           alt={`Foto do projeto ${projeto.nome}`}
           width={1400}
           height={900}
@@ -138,7 +138,7 @@ function ProjetoDetalhe() {
             </p>
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[talentoImg, heroImg, culturaImg].map((src, i) => (
+            {[projeto.imagem || talentoImg, heroImg, culturaImg].map((src, i) => (
               <Reveal key={i} delay={i * 90}>
                 <img
                   src={src}
