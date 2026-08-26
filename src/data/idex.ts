@@ -91,6 +91,8 @@ export interface Projeto {
   parceria?: string;
   local?: string;
   lancamento?: string;
+  /** capa vinda do painel (URL pública do banco); vazio = imagem padrão */
+  imagem?: string | null;
 }
 
 export const PROJETOS: Projeto[] = [

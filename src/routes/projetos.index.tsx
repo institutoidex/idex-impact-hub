@@ -159,7 +159,7 @@ function ProjetosIndex() {
                 className="lift block h-full overflow-hidden rounded-3xl border border-border bg-card"
               >
                 <img
-                  src={talentoImg}
+                  src={p.imagem || talentoImg}
                   alt={`Imagem do projeto ${p.nome}`}
                   loading="lazy"
                   width={1400}

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, MapPin, Users, Handshake, Target } from "lucide-react";
-import { AREAS, PROJETOS } from "@/data/idex";
+import { AREAS, PROJETOS, type Projeto } from "@/data/idex";
+import { supabase } from "@/lib/supabase";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
@@ -8,29 +9,67 @@ import talentoImg from "@/assets/talento-brasil.jpg";
 import heroImg from "@/assets/hero-esporte.jpg";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
 
-// Template de detalhe de projeto (caso real: Talento Brasil).
+// Template de detalhe de projeto: lê do banco e cai para o conteúdo fixo.
 export const Route = createFileRoute("/projetos/$slug")({
-  loader: ({ params }) => {
-    const projeto = PROJETOS.find((p) => p.slug === params.slug);
-    if (!projeto) throw notFound();
-    return { projeto };
+  loader: async ({ params }): Promise<{ projeto: Projeto }> => {
+    const base = PROJETOS.find((p) => p.slug === params.slug);
+    try {
+      const { data } = await supabase
+        .from("projetos")
+        .select("*")
+        .eq("slug", params.slug)
+        .eq("publicado", true)
+        .maybeSingle();
+      if (data) {
+        return {
+          projeto: {
+            ...(base ?? ({} as Projeto)),
+            slug: data.slug,
+            nome: data.titulo,
+            area: (data.area_slug ?? base?.area ?? "esportes") as Projeto["area"],
+            ano: data.iniciado_em
+              ? new Date(data.iniciado_em).getFullYear()
+              : (base?.ano ?? new Date().getFullYear()),
+            resumo: data.resumo,
+            real: true,
+            objetivo: data.descricao || base?.objetivo,
+            local: data.local ?? base?.local,
+            parceria: data.parceiro ?? base?.parceria,
+            // capa enviada pelo painel
+            imagem: data.imagem_url,
+          } as Projeto,
+        };
+      }
+    } catch {
+      // banco indisponível: seguimos com o conteúdo fixo
+    }
+    if (!base) throw notFound();
+    return { projeto: base };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
       return { meta: [{ title: "Projeto não encontrado — Instituto IDEX" }, { name: "robots", content: "noindex" }] };
     }
     const { projeto } = loaderData;
+    const imagem = projeto.imagem?.startsWith("http") ? projeto.imagem : null;
     return {
       meta: [
         { title: `${projeto.nome} — Projetos | Instituto IDEX` },
         { name: "description", content: projeto.resumo },
         { property: "og:title", content: `${projeto.nome} — Instituto IDEX` },
         { property: "og:description", content: projeto.resumo },
+        ...(imagem
+          ? [
+              { property: "og:image", content: imagem },
+              { name: "twitter:image", content: imagem },
+            ]
+          : []),
       ],
     };
   },
   component: ProjetoDetalhe,
 });
+
 
 function ProjetoDetalhe() {
   const { projeto } = Route.useLoaderData();
@@ -48,7 +87,7 @@ function ProjetoDetalhe() {
     <>
       <section className="relative overflow-hidden pt-28 pb-16">
         <img
-          src={talentoImg}
+          src={projeto.imagem || talentoImg}
           alt={`Foto do projeto ${projeto.nome}`}
           width={1400}
           height={900}
@@ -99,7 +138,7 @@ function ProjetoDetalhe() {
             </p>
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[talentoImg, heroImg, culturaImg].map((src, i) => (
+            {[projeto.imagem || talentoImg, heroImg, culturaImg].map((src, i) => (
               <Reveal key={i} delay={i * 90}>
                 <img
                   src={src}
