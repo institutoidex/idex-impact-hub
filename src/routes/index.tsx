@@ -5,8 +5,6 @@ import heroImg from "@/assets/hero-esporte.jpg";
 import talentoImg from "@/assets/talento-brasil.jpg";
 import culturaImg from "@/assets/comunidade-cultura.jpg";
 import { NOTICIAS, CONTATO } from "@/data/idex";
-import { useAreas } from "@/lib/conteudo";
-import { AreaIcon } from "@/components/AreaIcon";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
 import { Counter } from "@/components/motion/Counter";
@@ -37,7 +35,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Inicio() {
-  const areas = useAreas(); // áreas vindas do banco, com fallback estático
   return (
     <>
       {/* Hero ------------------------------------------------------------ */}
@@ -95,35 +92,6 @@ function Inicio() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Áreas ----------------------------------------------------------- */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <Reveal>
-          <h2 className="text-3xl sm:text-4xl">Seis frentes, uma comunidade</h2>
-          <p className="mt-3 max-w-xl text-muted-foreground">
-            Cada frente nasce de uma necessidade concreta do território.
-          </p>
-        </Reveal>
-        <ul className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
-          {areas.map((area, i) => (
-            <Reveal as="li" key={area.slug} delay={i * 70}>
-              <Link
-                to="/areas/$slug"
-                params={{ slug: area.slug }}
-                className="group flex flex-col items-center text-center"
-              >
-                <span
-                  className={`grid size-24 place-items-center rounded-full ${area.cor} transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:rotate-6`}
-                >
-                  <AreaIcon icone={area.icone} className="size-10" />
-                </span>
-                <span className="mt-4 font-display text-lg">{area.nome}</span>
-                <span className="text-sm text-muted-foreground">{area.resumo}</span>
-              </Link>
-            </Reveal>
-          ))}
-        </ul>
       </section>
 
       {/* Projeto em destaque --------------------------------------------- */}

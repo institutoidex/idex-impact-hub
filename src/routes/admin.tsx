@@ -20,7 +20,6 @@ import {
 import { useSessao } from "@/hooks/useSessao";
 import { supabase } from "@/lib/supabase";
 import {
-  areasQuery,
   documentosAdminQuery,
   formatarData,
   mensagensQuery,
@@ -30,19 +29,16 @@ import {
 } from "@/lib/queries";
 import {
   useAlternarPublicacao,
-  useApagarArea,
   useApagarRegistro,
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
-import { ListaAreasOrdenavel } from "@/components/admin/ListaAreasOrdenavel";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
-import { EditorArea } from "@/components/admin/EditorArea";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -57,7 +53,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { AreaRow, DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
+import type { DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -98,7 +94,7 @@ function PainelProtegido() {
 }
 
 type Exclusao = {
-  tabela: "noticias" | "projetos" | "documentos" | "mensagens" | "areas";
+  tabela: "noticias" | "projetos" | "documentos" | "mensagens";
   id: string;
   titulo: string;
 };
@@ -110,7 +106,6 @@ function Painel() {
   const noticias = useQuery({ ...noticiasAdminQuery, enabled: logado });
   const projetos = useQuery({ ...projetosAdminQuery, enabled: logado });
   const documentos = useQuery({ ...documentosAdminQuery, enabled: logado });
-  const areas = useQuery({ ...areasQuery, enabled: logado });
   const midia = useQuery({ ...midiaQuery, enabled: logado });
 
   // Estado dos editores e da confirmação de exclusão
@@ -126,10 +121,6 @@ function Painel() {
     aberto: boolean;
     item: DocumentoRow | null;
   }>({ aberto: false, item: null });
-  const [editorArea, setEditorArea] = useState<{ aberto: boolean; item: AreaRow | null }>({
-    aberto: false,
-    item: null,
-  });
   const [aExcluir, setAExcluir] = useState<Exclusao | null>(null);
 
   const publicarNoticia = useAlternarPublicacao("noticias");
@@ -138,7 +129,6 @@ function Painel() {
   const apagarProjeto = useApagarRegistro("projetos");
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
-  const apagarArea = useApagarArea();
 
   function confirmarExclusao() {
     if (!aExcluir) return;
@@ -146,7 +136,6 @@ function Painel() {
     if (aExcluir.tabela === "projetos") apagarProjeto.mutate(aExcluir.id);
     if (aExcluir.tabela === "documentos") acoesDocumento.apagar.mutate(aExcluir.id);
     if (aExcluir.tabela === "mensagens") acoesMensagem.apagar.mutate(aExcluir.id);
-    if (aExcluir.tabela === "areas") apagarArea.mutate(aExcluir.id);
     setAExcluir(null);
   }
 
@@ -173,9 +162,6 @@ function Painel() {
           </TabsTrigger>
           <TabsTrigger value="noticias">
             <Newspaper className="size-4" /> Notícias
-          </TabsTrigger>
-          <TabsTrigger value="areas">
-            <LayoutGrid className="size-4" /> Áreas
           </TabsTrigger>
           <TabsTrigger value="documentos">
             <FileText className="size-4" /> Documentos
@@ -208,11 +194,6 @@ function Painel() {
               titulo="Notícias"
               total={noticias.data?.length}
               detalhe={`${(noticias.data ?? []).filter((n) => n.publicado).length} publicadas`}
-            />
-            <Cartao
-              titulo="Áreas de atuação"
-              total={areas.data?.length}
-              detalhe="textos editáveis"
             />
             <Cartao
               titulo="Documentos"
@@ -372,32 +353,6 @@ function Painel() {
           ))}
         </TabsContent>
 
-        {/* ---------------- Áreas de atuação ---------------- */}
-        <TabsContent value="areas" className="mt-6 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              As áreas aparecem na home, no menu e nas páginas de Áreas de Atuação.
-            </p>
-            <Button
-              className="rounded-full"
-              onClick={() => setEditorArea({ aberto: true, item: null })}
-            >
-              <Plus className="size-4" /> Nova área
-            </Button>
-          </div>
-          {areas.isLoading && <Vazio texto="Carregando áreas..." />}
-          {areas.error && <Vazio texto="Não foi possível carregar as áreas." />}
-          {areas.data?.length === 0 && <Vazio texto="Nenhuma área cadastrada ainda." />}
-          {/* Listagem com arrastar e soltar — a ordem é salva ao soltar o item */}
-          {areas.data && areas.data.length > 0 && (
-            <ListaAreasOrdenavel
-              areas={areas.data}
-              aoEditar={(a) => setEditorArea({ aberto: true, item: a })}
-              aoExcluir={(a) => setAExcluir({ tabela: "areas", id: a.id, titulo: a.nome })}
-            />
-          )}
-        </TabsContent>
-
         {/* ---------------- Documentos ---------------- */}
         <TabsContent value="documentos" className="mt-6 space-y-4">
           <div className="flex justify-end">
@@ -554,11 +509,6 @@ function Painel() {
         aberto={editorDocumento.aberto}
         documento={editorDocumento.item}
         aoFechar={() => setEditorDocumento({ aberto: false, item: null })}
-      />
-      <EditorArea
-        aberto={editorArea.aberto}
-        area={editorArea.item}
-        aoFechar={() => setEditorArea({ aberto: false, item: null })}
       />
 
       <AlertDialog open={Boolean(aExcluir)} onOpenChange={(v) => !v && setAExcluir(null)}>
