@@ -35,7 +35,7 @@ import {
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
-import { AreaIcon } from "@/components/AreaIcon";
+import { ListaAreasOrdenavel } from "@/components/admin/ListaAreasOrdenavel";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
@@ -58,7 +58,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { AreaRow, DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
-import type { Area } from "@/data/idex";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
