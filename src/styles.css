@@ -172,6 +172,8 @@
    O sublinhado verde desliza no hover; item ativo fica em verde sólido. */
 @utility nav-link {
   position: relative;
+  /* evita quebra de linha em itens longos (ex.: "Áreas de Atuação") */
+  white-space: nowrap;
   padding: 0.55rem 0.9rem;
   border-radius: 9999px;
   font-size: 0.875rem;
