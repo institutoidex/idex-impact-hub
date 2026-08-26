@@ -5,6 +5,7 @@ import {
   Mail,
   Newspaper,
   FolderKanban,
+  FolderTree,
   Plus,
   Pencil,
   Trash2,
@@ -361,7 +362,10 @@ function Painel() {
           <div className="flex justify-end">
             <Button
               className="rounded-full"
-              onClick={() => setEditorDocumento({ aberto: true, item: null })}
+              onClick={() => {
+                setPastaDoNovoDocumento(null);
+                setEditorDocumento({ aberto: true, item: null });
+              }}
             >
               <Plus className="size-4" /> Novo documento
             </Button>
@@ -427,6 +431,16 @@ function Painel() {
               </div>
             </article>
           ))}
+        </TabsContent>
+
+        {/* ---------------- Pastas de documentos ---------------- */}
+        <TabsContent value="pastas" className="mt-6">
+          <GerenciadorPastas
+            aoAbrirDocumento={(pastaId) => {
+              setPastaDoNovoDocumento(pastaId);
+              setEditorDocumento({ aberto: true, item: null });
+            }}
+          />
         </TabsContent>
 
         {/* ---------------- Biblioteca de imagens ---------------- */}
