@@ -73,7 +73,6 @@ export const Route = createFileRoute("/admin")({
     // getUser() faria uma ida ao servidor e atrasava a abertura do painel.
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-    if (!data.user) {
       throw redirect({ to: "/auth", search: { motivo: "restrito" }, replace: true });
     }
   },
