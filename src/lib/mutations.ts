@@ -148,11 +148,13 @@ export type DocumentoForm = {
 };
 
 export type AreaForm = {
-  id: string;
+  id?: string; // sem id = criar nova área
   slug: string;
   nome: string;
   resumo: string;
   descricao: string;
+  icone: string;
+  cor: string;
   ordem: number;
 };
 
@@ -213,18 +215,37 @@ export function useDocumentoAcoes() {
   return { publicar, apagar };
 }
 
-/** Atualiza os textos de uma área de atuação. */
+/** Cria (sem id) ou atualiza (com id) uma área de atuação. */
 export function useSalvarArea() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...campos }: AreaForm) => {
-      const { error } = await supabase.from("areas").update(campos).eq("id", id);
+      const { error } = id
+        ? await supabase.from("areas").update(campos).eq("id", id)
+        : await supabase.from("areas").insert(campos);
+      if (error) throw error;
+    },
+    onSuccess: (_d, { id }) => {
+      void queryClient.invalidateQueries({ queryKey: ["areas"] });
+      void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
+      toast.success(id ? "Área atualizada." : "Área criada.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+}
+
+/** Remove uma área de atuação (projetos ligados a ela ficam sem área). */
+export function useApagarArea() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("areas").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["areas"] });
       void queryClient.invalidateQueries({ queryKey: ["auditoria"] });
-      toast.success("Área atualizada.");
+      toast.success("Área removida.");
     },
     onError: (erro: Error) => toast.error(traduzirErro(erro)),
   });
