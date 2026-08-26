@@ -35,7 +35,7 @@ import {
   useDocumentoAcoes,
   useMensagemAcoes,
 } from "@/lib/mutations";
-import { AreaIcon } from "@/components/AreaIcon";
+import { ListaAreasOrdenavel } from "@/components/admin/ListaAreasOrdenavel";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
@@ -58,7 +58,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { AreaRow, DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
-import type { Area } from "@/data/idex";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -387,39 +386,14 @@ function Painel() {
           {areas.isLoading && <Vazio texto="Carregando áreas..." />}
           {areas.error && <Vazio texto="Não foi possível carregar as áreas." />}
           {areas.data?.length === 0 && <Vazio texto="Nenhuma área cadastrada ainda." />}
-          {areas.data?.map((a) => (
-            <article
-              key={a.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
-            >
-              <span className={`grid size-12 shrink-0 place-items-center rounded-full ${a.cor}`}>
-                <AreaIcon icone={a.icone as Area["icone"]} className="size-5" />
-              </span>
-              <div className="min-w-56 flex-1">
-                <h2 className="text-lg">{a.nome}</h2>
-                <p className="text-sm text-muted-foreground">{a.resumo}</p>
-                <p className="mt-1 text-xs text-muted-foreground">/areas/{a.slug}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  className="rounded-full"
-                  onClick={() => setEditorArea({ aberto: true, item: a })}
-                >
-                  <Pencil className="size-4" /> Editar
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full"
-                  aria-label={`Apagar ${a.nome}`}
-                  onClick={() => setAExcluir({ tabela: "areas", id: a.id, titulo: a.nome })}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            </article>
-          ))}
+          {/* Listagem com arrastar e soltar — a ordem é salva ao soltar o item */}
+          {areas.data && areas.data.length > 0 && (
+            <ListaAreasOrdenavel
+              areas={areas.data}
+              aoEditar={(a) => setEditorArea({ aberto: true, item: a })}
+              aoExcluir={(a) => setAExcluir({ tabela: "areas", id: a.id, titulo: a.nome })}
+            />
+          )}
         </TabsContent>
 
         {/* ---------------- Documentos ---------------- */}
