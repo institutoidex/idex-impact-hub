@@ -2,87 +2,9 @@
 // REGRA: nada aqui é inventado. Onde não há informação real confirmada,
 // usamos marcadores explícitos de placeholder (texto entre colchetes).
 
-export type AreaSlug =
-  | "educacao"
-  | "cultura"
-  | "esportes"
-  | "meio-ambiente"
-  | "negocios"
-  | "saude";
-
-export interface Area {
-  slug: AreaSlug;
-  nome: string;
-  resumo: string;
-  descricao: string;
-  /** nome do ícone lucide usado na página */
-  icone: "GraduationCap" | "Palette" | "Trophy" | "Leaf" | "Briefcase" | "HeartPulse";
-  /** classe utilitária de cor (tokens da paleta oficial) */
-  cor: string;
-}
-
-export const AREAS: Area[] = [
-  {
-    slug: "educacao",
-    nome: "Educação",
-    resumo: "Apoio e desenvolvimento",
-    descricao:
-      "Apoio e desenvolvimento educacional para crianças e jovens da comunidade. [Detalhamento de objetivos e ações a definir com a equipe do instituto]",
-    icone: "GraduationCap",
-    cor: "bg-primary text-primary-foreground",
-  },
-  {
-    slug: "cultura",
-    nome: "Cultura",
-    resumo: "Artes e oficinas",
-    descricao:
-      "Artes e oficinas que ampliam repertório e geram renda para a comunidade. [Detalhamento de objetivos e ações a definir]",
-    icone: "Palette",
-    cor: "bg-secondary text-secondary-foreground",
-  },
-  {
-    slug: "esportes",
-    nome: "Esportes",
-    resumo: "Ações sociais",
-    descricao:
-      "Projetos e ações sociais pelo esporte — inclui o Talento Brasil, projeto ativo desde 2017.",
-    icone: "Trophy",
-    cor: "bg-primary text-primary-foreground",
-  },
-  {
-    slug: "meio-ambiente",
-    nome: "Meio Ambiente",
-    resumo: "Sustentabilidade",
-    descricao:
-      "Ações de sustentabilidade e educação ambiental na comunidade. [Detalhamento de objetivos e ações a definir]",
-    icone: "Leaf",
-    cor: "bg-primary text-primary-foreground",
-  },
-  {
-    slug: "negocios",
-    nome: "Negócios",
-    resumo: "Indústria e comércio",
-    descricao:
-      "Indústria e comércio: a origem do IDEX, hoje a serviço da competitividade local. [Detalhamento de objetivos e ações a definir]",
-    icone: "Briefcase",
-    cor: "bg-secondary text-secondary-foreground",
-  },
-  {
-    slug: "saude",
-    nome: "Saúde",
-    resumo: "Qualidade de vida",
-    descricao:
-      "Qualidade de vida como parte do desenvolvimento social integral. [Detalhamento de objetivos e ações a definir]",
-    icone: "HeartPulse",
-    cor: "bg-secondary text-secondary-foreground",
-  },
-];
-
-
 export interface Projeto {
   slug: string;
   nome: string;
-  area: AreaSlug;
   ano: number;
   resumo: string;
   real: boolean;
@@ -94,6 +16,7 @@ export interface Projeto {
   /** capa vinda do painel (URL pública do banco); vazio = imagem padrão */
   imagem?: string | null;
 }
+
 
 export const PROJETOS: Projeto[] = [
   {

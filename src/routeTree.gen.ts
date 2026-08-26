@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AreasRouteImport } from './routes/areas'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ComoAjudarRouteImport } from './routes/como-ajudar'
 import { Route as ContatoRouteImport } from './routes/contato'
@@ -22,8 +21,6 @@ import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TransparenciaRouteImport } from './routes/transparencia'
-import { Route as AreasIndexRouteImport } from './routes/areas.index'
-import { Route as AreasSlugRouteImport } from './routes/areas.$slug'
 import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
 import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
 import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
@@ -37,11 +34,6 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AreasRoute = AreasRouteImport.update({
-  id: '/areas',
-  path: '/areas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -94,16 +86,6 @@ const TransparenciaRoute = TransparenciaRouteImport.update({
   path: '/transparencia',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AreasIndexRoute = AreasIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AreasRoute,
-} as any)
-const AreasSlugRoute = AreasSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => AreasRoute,
-} as any)
 const NoticiasIndexRoute = NoticiasIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,7 +110,6 @@ const ProjetosSlugRoute = ProjetosSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/areas': typeof AreasRouteWithChildren
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
@@ -139,10 +120,8 @@ export interface FileRoutesByFullPath {
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
-  '/areas/$slug': typeof AreasSlugRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
-  '/areas/': typeof AreasIndexRoute
   '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
 }
@@ -157,10 +136,8 @@ export interface FileRoutesByTo {
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
-  '/areas/$slug': typeof AreasSlugRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
-  '/areas': typeof AreasIndexRoute
   '/noticias': typeof NoticiasIndexRoute
   '/projetos': typeof ProjetosIndexRoute
 }
@@ -168,7 +145,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/areas': typeof AreasRouteWithChildren
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
@@ -179,10 +155,8 @@ export interface FileRoutesById {
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
-  '/areas/$slug': typeof AreasSlugRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
-  '/areas/': typeof AreasIndexRoute
   '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
 }
@@ -191,7 +165,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/areas'
     | '/auth'
     | '/como-ajudar'
     | '/contato'
@@ -202,10 +175,8 @@ export interface FileRouteTypes {
     | '/quem-somos'
     | '/redefinir-senha'
     | '/transparencia'
-    | '/areas/$slug'
     | '/noticias/$slug'
     | '/projetos/$slug'
-    | '/areas/'
     | '/noticias/'
     | '/projetos/'
   fileRoutesByTo: FileRoutesByTo
@@ -220,17 +191,14 @@ export interface FileRouteTypes {
     | '/quem-somos'
     | '/redefinir-senha'
     | '/transparencia'
-    | '/areas/$slug'
     | '/noticias/$slug'
     | '/projetos/$slug'
-    | '/areas'
     | '/noticias'
     | '/projetos'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/areas'
     | '/auth'
     | '/como-ajudar'
     | '/contato'
@@ -241,10 +209,8 @@ export interface FileRouteTypes {
     | '/quem-somos'
     | '/redefinir-senha'
     | '/transparencia'
-    | '/areas/$slug'
     | '/noticias/$slug'
     | '/projetos/$slug'
-    | '/areas/'
     | '/noticias/'
     | '/projetos/'
   fileRoutesById: FileRoutesById
@@ -252,7 +218,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  AreasRoute: typeof AreasRouteWithChildren
   AuthRoute: typeof AuthRoute
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
@@ -279,13 +244,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/areas': {
-      id: '/areas'
-      path: '/areas'
-      fullPath: '/areas'
-      preLoaderRoute: typeof AreasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -358,20 +316,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransparenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/areas/': {
-      id: '/areas/'
-      path: '/'
-      fullPath: '/areas/'
-      preLoaderRoute: typeof AreasIndexRouteImport
-      parentRoute: typeof AreasRoute
-    }
-    '/areas/$slug': {
-      id: '/areas/$slug'
-      path: '/$slug'
-      fullPath: '/areas/$slug'
-      preLoaderRoute: typeof AreasSlugRouteImport
-      parentRoute: typeof AreasRoute
-    }
     '/noticias/': {
       id: '/noticias/'
       path: '/'
@@ -402,18 +346,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AreasRouteChildren {
-  AreasSlugRoute: typeof AreasSlugRoute
-  AreasIndexRoute: typeof AreasIndexRoute
-}
-
-const AreasRouteChildren: AreasRouteChildren = {
-  AreasSlugRoute: AreasSlugRoute,
-  AreasIndexRoute: AreasIndexRoute,
-}
-
-const AreasRouteWithChildren = AreasRoute._addFileChildren(AreasRouteChildren)
 
 interface NoticiasRouteChildren {
   NoticiasSlugRoute: typeof NoticiasSlugRoute
@@ -446,7 +378,6 @@ const ProjetosRouteWithChildren = ProjetosRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  AreasRoute: AreasRouteWithChildren,
   AuthRoute: AuthRoute,
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
