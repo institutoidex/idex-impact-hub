@@ -2,6 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X, HeartHandshake, LogIn, LayoutDashboard } from "lucide-react";
 import { NAV } from "@/data/idex";
+import { usePastas } from "@/lib/conteudo";
+import { montarArvore, PASTAS_BASE } from "@/lib/pastas";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
@@ -45,17 +53,21 @@ export function Header() {
         {/* Navegação desktop: fonte Public Sans em peso médio, contraste pleno
             e sublinhado verde animado (utilitário nav-link do styles.css) */}
         <nav className="ml-auto hidden items-center gap-0.5 xl:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "nav-link-ativo" }}
-              className="nav-link"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV.map((item) =>
+            item.to === "/transparencia" ? (
+              <MenuTransparencia key={item.to} rotulo={item.label} />
+            ) : (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeOptions={{ exact: item.to === "/" }}
+                activeProps={{ className: "nav-link-ativo" }}
+                className="nav-link"
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         {/* Ações à direita: shrink-0 garante que busca e botões não sejam esmagados */}
@@ -136,5 +148,37 @@ export function Header() {
         </nav>
       </div>
     </header>
+  );
+}
+
+/** Menu suspenso de Transparência com as pastas de primeiro nível. */
+function MenuTransparencia({ rotulo }: { rotulo: string }) {
+  const pastas = usePastas();
+  const raizes = montarArvore(pastas);
+  const itens = raizes.length
+    ? raizes.map((p) => ({ nome: p.nome, slug: p.slug }))
+    : PASTAS_BASE;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Link
+          to="/transparencia"
+          activeProps={{ className: "nav-link-ativo" }}
+          className="nav-link"
+        >
+          {rotulo}
+        </Link>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-60">
+        {itens.map((item) => (
+          <DropdownMenuItem key={item.slug} asChild>
+            <Link to="/transparencia" search={{ pasta: item.slug, doc: "" }}>
+              {item.nome}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

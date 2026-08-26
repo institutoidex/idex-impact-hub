@@ -5,6 +5,7 @@ import {
   Mail,
   Newspaper,
   FolderKanban,
+  FolderTree,
   Plus,
   Pencil,
   Trash2,
@@ -38,6 +39,7 @@ import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
+import { GerenciadorPastas } from "@/components/admin/GerenciadorPastas";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -93,7 +95,7 @@ function PainelProtegido() {
 }
 
 type Exclusao = {
-  tabela: "noticias" | "projetos" | "documentos" | "mensagens";
+  tabela: "noticias" | "projetos" | "documentos" | "mensagens" | "pastas";
   id: string;
   titulo: string;
 };
@@ -116,6 +118,7 @@ function Painel() {
     aberto: false,
     item: null,
   });
+  const [pastaDoNovoDocumento, setPastaDoNovoDocumento] = useState<string | null>(null);
   const [editorDocumento, setEditorDocumento] = useState<{
     aberto: boolean;
     item: DocumentoRow | null;
@@ -164,6 +167,9 @@ function Painel() {
           </TabsTrigger>
           <TabsTrigger value="documentos">
             <FileText className="size-4" /> Documentos
+          </TabsTrigger>
+          <TabsTrigger value="pastas">
+            <FolderTree className="size-4" /> Pastas
           </TabsTrigger>
           <TabsTrigger value="midia">
             <Images className="size-4" /> Imagens
@@ -356,7 +362,10 @@ function Painel() {
           <div className="flex justify-end">
             <Button
               className="rounded-full"
-              onClick={() => setEditorDocumento({ aberto: true, item: null })}
+              onClick={() => {
+                setPastaDoNovoDocumento(null);
+                setEditorDocumento({ aberto: true, item: null });
+              }}
             >
               <Plus className="size-4" /> Novo documento
             </Button>
@@ -422,6 +431,16 @@ function Painel() {
               </div>
             </article>
           ))}
+        </TabsContent>
+
+        {/* ---------------- Pastas de documentos ---------------- */}
+        <TabsContent value="pastas" className="mt-6">
+          <GerenciadorPastas
+            aoAbrirDocumento={(pastaId) => {
+              setPastaDoNovoDocumento(pastaId);
+              setEditorDocumento({ aberto: true, item: null });
+            }}
+          />
         </TabsContent>
 
         {/* ---------------- Biblioteca de imagens ---------------- */}
@@ -506,6 +525,7 @@ function Painel() {
       <EditorDocumento
         aberto={editorDocumento.aberto}
         documento={editorDocumento.item}
+        pastaInicial={pastaDoNovoDocumento}
         aoFechar={() => setEditorDocumento({ aberto: false, item: null })}
       />
 

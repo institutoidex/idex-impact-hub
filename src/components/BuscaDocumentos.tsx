@@ -52,7 +52,7 @@ export function BuscaDocumentos() {
   /** Leva o visitante até o documento na página de Transparência. */
   function irAte(id: string, categoria: string) {
     setAberto(false);
-    void navigate({ to: "/transparencia", search: { aba: categoria, doc: id } });
+    void navigate({ to: "/transparencia", search: { pasta: "", doc: id } });
   }
 
   return (

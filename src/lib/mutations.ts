@@ -138,6 +138,8 @@ export type DocumentoForm = {
   id?: string;
   titulo: string;
   categoria: string;
+  /** pasta onde o arquivo fica guardado (null = raiz da Transparência) */
+  pasta_id: string | null;
   ano: number | null;
   arquivo_url: string | null;
   publicado: boolean;
@@ -228,4 +230,51 @@ export function useMensagemAcoes() {
   });
 
   return { marcarLida, apagar };
+}
+
+/** Dados do formulário de pasta. */
+export type PastaForm = {
+  id?: string;
+  nome: string;
+  slug: string;
+  pasta_id: string | null;
+  ordem: number;
+};
+
+/** Cria ou renomeia uma pasta/subpasta de documentos. */
+export function useSalvarPasta() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (valores: PastaForm) => {
+      const { id, ...campos } = valores;
+      const consulta = id
+        ? supabase.from("pastas").update(campos).eq("id", id).select().single()
+        : supabase.from("pastas").insert(campos).select().single();
+      const { data, error } = await consulta;
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_dado, valores) => {
+      void queryClient.invalidateQueries({ queryKey: ["pastas"] });
+      toast.success(valores.id ? "Pasta atualizada." : "Pasta criada.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
+}
+
+/** Apaga uma pasta (as subpastas vão junto; os documentos voltam para a raiz). */
+export function useApagarPasta() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("pastas").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["pastas"] });
+      void queryClient.invalidateQueries({ queryKey: ["documentos"] });
+      toast.success("Pasta removida.");
+    },
+    onError: (erro: Error) => toast.error(traduzirErro(erro)),
+  });
 }
