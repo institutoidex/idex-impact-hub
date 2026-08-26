@@ -236,15 +236,21 @@ export function useSalvarArea() {
 
 /**
  * Salva a nova ordem das áreas após arrastar e soltar no painel.
- * Recebe os ids na sequência desejada e reatribui `ordem` de 1 a N em lote (upsert).
+ * Recebe os ids na sequência desejada e reatribui `ordem` de 1 a N.
+ * Usa UPDATE por linha (não upsert): o upsert parcial falharia na validação
+ * NOT NULL das demais colunas antes de detectar o conflito de id.
  */
 export function useReordenarAreas() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (idsOrdenados: string[]) => {
-      const linhas = idsOrdenados.map((id, indice) => ({ id, ordem: indice + 1 }));
-      const { error } = await supabase.from("areas").upsert(linhas);
-      if (error) throw error;
+      const resultados = await Promise.all(
+        idsOrdenados.map((id, indice) =>
+          supabase.from("areas").update({ ordem: indice + 1 }).eq("id", id),
+        ),
+      );
+      const erro = resultados.find((r) => r.error)?.error;
+      if (erro) throw erro;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["areas"] });
