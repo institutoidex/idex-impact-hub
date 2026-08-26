@@ -144,6 +144,8 @@ function RootComponent() {
       <Footer />
       {/* Painel flutuante de acessibilidade */}
       <BotaoAcessibilidade />
+      {/* Intérprete de Libras (VLibras) — canto inferior esquerdo */}
+      <VLibras />
       <Toaster />
     </QueryClientProvider>
   );
