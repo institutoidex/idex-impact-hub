@@ -34,6 +34,7 @@ import {
   useMensagemAcoes,
 } from "@/lib/mutations";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorProjeto } from "@/components/admin/EditorProjeto";
@@ -66,20 +67,22 @@ export const Route = createFileRoute("/admin")({
       { property: "og:description", content: "Painel interno do instituto." },
     ],
   }),
-  component: Painel,
+  component: PainelProtegido,
 });
+
+// Envolve o painel com a proteção de rota (sessão + papel admin)
+function PainelProtegido() {
+  return (
+    <GuardaAdmin>
+      <Painel />
+    </GuardaAdmin>
+  );
+}
 
 type Exclusao = { tabela: "noticias" | "projetos" | "documentos" | "mensagens"; id: string; titulo: string };
 
 function Painel() {
-  const navigate = useNavigate();
-  const { sessao, carregando } = useSessao();
-
-  // Sem sessão, volta para o login
-  useEffect(() => {
-    if (!carregando && !sessao) navigate({ to: "/auth", replace: true });
-  }, [carregando, sessao, navigate]);
-
+  const { sessao } = useSessao();
   const logado = Boolean(sessao);
   const mensagens = useQuery({ ...mensagensQuery, enabled: logado });
   const noticias = useQuery({ ...noticiasAdminQuery, enabled: logado });
@@ -121,10 +124,6 @@ function Painel() {
     if (aExcluir.tabela === "documentos") acoesDocumento.apagar.mutate(aExcluir.id);
     if (aExcluir.tabela === "mensagens") acoesMensagem.apagar.mutate(aExcluir.id);
     setAExcluir(null);
-  }
-
-  if (carregando || !sessao) {
-    return <div className="px-4 py-32 text-center text-muted-foreground">Carregando painel...</div>;
   }
 
   const naoLidas = (mensagens.data ?? []).filter((m) => !m.lida).length;
