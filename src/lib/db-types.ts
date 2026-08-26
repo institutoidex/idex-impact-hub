@@ -91,6 +91,7 @@ export type Database = {
         }
       >;
       user_roles: Tabela<{ id: string; user_id: string; role: string }>;
+      auditoria: Tabela<AuditoriaRow>;
     };
     Views: { [_ in never]: never };
     Functions: {
