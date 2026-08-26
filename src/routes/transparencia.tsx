@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Download, FileText, Folder, FolderOpen } from "lucide-react";
 import { useListaDocumentos, usePastas } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { PlaceholderBox } from "@/components/Placeholder";
+import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import {
   caminhoDaPasta,
   documentosDaPasta,
