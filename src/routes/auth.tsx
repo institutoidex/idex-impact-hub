@@ -33,6 +33,32 @@ function Login() {
   const navigate = useNavigate();
   const { sessao, carregando } = useSessao();
   const [enviando, setEnviando] = useState(false);
+  // Alterna entre login e pedido de redefinição de senha (não há cadastro)
+  const [modo, setModo] = useState<"login" | "recuperar">("login");
+
+  // Envia e-mail com link de troca de senha (aponta para /redefinir-senha)
+  async function recuperarSenha(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const email = z.string().trim().email("E-mail inválido").max(255).safeParse(form.get("email"));
+    if (!email.success) {
+      toast.error(email.error.issues[0]?.message ?? "E-mail inválido");
+      return;
+    }
+    setEnviando(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setEnviando(false);
+    if (error) {
+      toast.error("Não foi possível enviar o e-mail", { description: error.message });
+      return;
+    }
+    toast.success("E-mail enviado!", {
+      description: "Abra o link recebido para definir a nova senha.",
+    });
+    setModo("login");
+  }
 
   // Já logado? vai direto para o painel
   useEffect(() => {
@@ -76,26 +102,64 @@ function Login() {
           Acesso apenas para a equipe do instituto. Contas são criadas manualmente.
         </p>
 
-        <form onSubmit={aoEnviar} className="mt-7 space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
-            <Input id="email" name="email" type="email" required autoComplete="email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="senha">Senha</Label>
-            <Input
-              id="senha"
-              name="senha"
-              type="password"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
-            <LogIn className="size-4" />
-            {enviando ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
+        {modo === "login" ? (
+          <form onSubmit={aoEnviar} className="mt-7 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" name="email" type="email" required autoComplete="email" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="senha">Senha</Label>
+                <button
+                  type="button"
+                  onClick={() => setModo("recuperar")}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+              <Input
+                id="senha"
+                name="senha"
+                type="password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+              <LogIn className="size-4" />
+              {enviando ? "Entrando..." : "Entrar"}
+            </Button>
+          </form>
+        ) : (
+          /* Sem cadastro: troca de senha apenas via e-mail */
+          <form onSubmit={recuperarSenha} className="mt-7 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email-recuperar">E-mail</Label>
+              <Input
+                id="email-recuperar"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+              <p className="text-xs text-muted-foreground">
+                Você receberá um link para definir uma nova senha.
+              </p>
+            </div>
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+              {enviando ? "Enviando..." : "Enviar link de redefinição"}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setModo("login")}
+              className="w-full text-center text-sm font-medium text-primary hover:underline"
+            >
+              Voltar ao login
+            </button>
+          </form>
+        )}
       </div>
     </section>
   );

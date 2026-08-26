@@ -21,6 +21,7 @@ import { Route as PainelRouteImport } from './routes/painel'
 import { Route as ParceirosRouteImport } from './routes/parceiros'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TransparenciaRouteImport } from './routes/transparencia'
 import { Route as AreasIndexRouteImport } from './routes/areas.index'
 import { Route as AreasSlugRouteImport } from './routes/areas.$slug'
@@ -87,6 +88,11 @@ const QuemSomosRoute = QuemSomosRouteImport.update({
   path: '/quem-somos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TransparenciaRoute = TransparenciaRouteImport.update({
   id: '/transparencia',
   path: '/transparencia',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/parceiros': typeof ParceirosRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/painel': typeof PainelRoute
   '/parceiros': typeof ParceirosRoute
   '/quem-somos': typeof QuemSomosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/parceiros': typeof ParceirosRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/parceiros'
     | '/projetos'
     | '/quem-somos'
+    | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
     | '/projetos/$slug'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/parceiros'
     | '/quem-somos'
+    | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
     | '/projetos/$slug'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/parceiros'
     | '/projetos'
     | '/quem-somos'
+    | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
     | '/projetos/$slug'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   ParceirosRoute: typeof ParceirosRoute
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   TransparenciaRoute: typeof TransparenciaRoute
 }
 
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuemSomosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/transparencia': {
       id: '/transparencia'
       path: '/transparencia'
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParceirosRoute: ParceirosRoute,
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
   TransparenciaRoute: TransparenciaRoute,
 }
 export const routeTree = rootRouteImport

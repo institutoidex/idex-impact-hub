@@ -1,16 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, HeartHandshake } from "lucide-react";
+import { Menu, X, HeartHandshake, LogIn, LayoutDashboard } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
+import { useSessao } from "@/hooks/useSessao";
 import logoAsset from "@/assets/logo-idex.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
 export function Header() {
   const [aberto, setAberto] = useState(false);
   const [rolou, setRolou] = useState(false);
+  // Sessão do visitante: decide se mostra "Entrar" ou atalho para o painel
+  const { sessao, carregando } = useSessao();
 
   useEffect(() => {
     const onScroll = () => setRolou(window.scrollY > 12);
@@ -63,6 +66,20 @@ export function Header() {
               Como Ajudar
             </Link>
           </Button>
+          {/* Botão de acesso: vira "Painel" quando já está logado (sem cadastro, só login) */}
+          {!carregando && (
+            <Button
+              asChild
+              variant="outline"
+              className="hidden rounded-full sm:inline-flex"
+              aria-label={sessao ? "Ir para o painel administrativo" : "Entrar na área da equipe"}
+            >
+              <Link to={sessao ? "/admin" : "/auth"}>
+                {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
+                {sessao ? "Painel" : "Entrar"}
+              </Link>
+            </Button>
+          )}
           <button
             type="button"
             aria-label={aberto ? "Fechar menu" : "Abrir menu"}
@@ -97,9 +114,18 @@ export function Header() {
           <Link
             to="/como-ajudar"
             onClick={() => setAberto(false)}
-            className="mt-3 mb-3 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
+            className="mt-3 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
           >
             Como Ajudar
+          </Link>
+          {/* Acesso da equipe também no menu mobile */}
+          <Link
+            to={sessao ? "/admin" : "/auth"}
+            onClick={() => setAberto(false)}
+            className="mt-2 mb-3 flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-center text-sm font-semibold"
+          >
+            {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
+            {sessao ? "Painel" : "Área da equipe"}
           </Link>
         </nav>
       </div>
