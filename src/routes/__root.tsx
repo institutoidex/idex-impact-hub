@@ -80,6 +80,34 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+// URL pública oficial do site (usada em canonicals, og:url e dados estruturados)
+export const SITE_URL = "https://idex-impact-hub.lovable.app";
+
+// Dados estruturados (JSON-LD) globais: Organization + WebSite.
+// Melhoram a exibição do instituto nos resultados de busca (nome, logo, redes).
+const jsonLdOrganizacao = {
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "@id": `${SITE_URL}/#organizacao`,
+  name: "Instituto IDEX",
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.png`,
+  foundingDate: "2007",
+  description:
+    "ONG brasileira que atua em educação, cultura, esportes, meio ambiente, negócios e saúde desde 2007.",
+  sameAs: ["https://instagram.com/idexbrasil", "https://facebook.com/idexsocial"],
+};
+
+const jsonLdWebSite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
+  name: "Instituto IDEX",
+  url: SITE_URL,
+  inLanguage: "pt-BR",
+  publisher: { "@id": `${SITE_URL}/#organizacao` },
+};
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -109,6 +137,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Public+Sans:wght@400;500;600;700&display=swap",
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
+    ],
+    // Dados estruturados JSON-LD: Organização e WebSite (válidos em todas as páginas)
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(jsonLdOrganizacao) },
+      { type: "application/ld+json", children: JSON.stringify(jsonLdWebSite) },
     ],
   }),
   shellComponent: RootShell,
