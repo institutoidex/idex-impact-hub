@@ -13,9 +13,12 @@ import talentoImg from "@/assets/talento-brasil.jpg";
 
 const POR_PAGINA = 6;
 
+/** Parâmetros de busca aceitos na URL (todos opcionais). */
+type BuscaNoticias = { busca?: string; ano?: string; pagina?: number };
+
 export const Route = createFileRoute("/noticias")({
   // Busca e paginação ficam na URL, para poder compartilhar o link do resultado
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): BuscaNoticias => ({
     busca: typeof search['busca'] === "string" ? search['busca'] : "",
     ano: typeof search['ano'] === "string" ? search['ano'] : "todos",
     pagina: Number(search['pagina']) > 0 ? Number(search['pagina']) : 1,
@@ -36,7 +39,7 @@ export const Route = createFileRoute("/noticias")({
 });
 
 function Noticias() {
-  const { busca, ano, pagina } = Route.useSearch();
+  const { busca = "", ano = "todos", pagina = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/noticias" });
 
   // Busca no banco; se ainda não houver registros, mostra o conteúdo fixo atual.
@@ -85,7 +88,7 @@ function Noticias() {
   const visiveis = filtradas.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA);
 
   /** Atualiza a URL preservando os demais parâmetros. */
-  function atualizar(novos: Partial<{ busca: string; ano: string; pagina: number }>) {
+  function atualizar(novos: BuscaNoticias) {
     void navigate({ search: (anterior) => ({ ...anterior, pagina: 1, ...novos }) });
   }
 

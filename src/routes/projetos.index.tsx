@@ -11,9 +11,12 @@ import talentoImg from "@/assets/talento-brasil.jpg";
 
 const POR_PAGINA = 6;
 
+/** Parâmetros de busca aceitos na URL (todos opcionais). */
+type BuscaProjetos = { busca?: string; area?: string; ano?: string; pagina?: number };
+
 export const Route = createFileRoute("/projetos/")({
   // Filtros, busca e paginação vivem na URL (link compartilhável)
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): BuscaProjetos => ({
     busca: typeof search['busca'] === "string" ? search['busca'] : "",
     area: typeof search['area'] === "string" ? search['area'] : "todas",
     ano: typeof search['ano'] === "string" ? search['ano'] : "todos",
@@ -37,7 +40,7 @@ export const Route = createFileRoute("/projetos/")({
 function ProjetosIndex() {
   const areas = useAreas();
   const projetos = useProjetos();
-  const { busca, area, ano, pagina } = Route.useSearch();
+  const { busca = "", area = "todas", ano = "todos", pagina = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/projetos" });
 
   const anos = useMemo(
@@ -63,9 +66,7 @@ function ProjetosIndex() {
   const visiveis = lista.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA);
 
   /** Atualiza a URL preservando os demais parâmetros (e volta para a página 1). */
-  function atualizar(
-    novos: Partial<{ busca: string; area: string; ano: string; pagina: number }>,
-  ) {
+  function atualizar(novos: BuscaProjetos) {
     void navigate({ search: (anterior) => ({ ...anterior, pagina: 1, ...novos }) });
   }
 
