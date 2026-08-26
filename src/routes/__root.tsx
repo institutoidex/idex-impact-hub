@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BotaoAcessibilidade } from "@/components/BotaoAcessibilidade";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { useRealtimeConteudo } from "@/hooks/useRealtimeConteudo";
 
@@ -140,6 +141,8 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      {/* Painel flutuante de acessibilidade */}
+      <BotaoAcessibilidade />
       <Toaster />
     </QueryClientProvider>
   );

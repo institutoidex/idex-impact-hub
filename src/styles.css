@@ -227,3 +227,40 @@
   opacity: 1;
   transform: none;
 }
+
+/* ===== Acessibilidade (painel flutuante) ============================== */
+
+/* Alto contraste: escurece fundos e força texto claro/escuro puro */
+html.acess-contraste {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.28 0 0);
+  --border: oklch(0.35 0 0);
+}
+html.acess-contraste body {
+  filter: contrast(1.25);
+}
+
+/* Escala de cinza para quem precisa remover ruído de cor */
+html.acess-cinza body {
+  filter: grayscale(1);
+}
+html.acess-cinza.acess-contraste body {
+  filter: grayscale(1) contrast(1.25);
+}
+
+/* Sublinhar links para não depender só da cor */
+html.acess-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Reduzir animações */
+html.acess-sem-animacao *,
+html.acess-sem-animacao *::before,
+html.acess-sem-animacao *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
