@@ -163,3 +163,19 @@ export const midiaQuery = queryOptions({
   queryKey: ["midia"],
   queryFn: () => listarMidia(),
 });
+
+/** Uma notícia publicada pelo slug (usada na página de detalhe). */
+export const noticiaQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ["noticias", "slug", slug],
+    queryFn: async (): Promise<NoticiaRow | null> => {
+      const { data, error } = await supabase
+        .from("noticias")
+        .select("*")
+        .eq("slug", slug)
+        .eq("publicado", true)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });

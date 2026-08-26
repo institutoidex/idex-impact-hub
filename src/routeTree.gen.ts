@@ -24,6 +24,8 @@ import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TransparenciaRouteImport } from './routes/transparencia'
 import { Route as AreasIndexRouteImport } from './routes/areas.index'
 import { Route as AreasSlugRouteImport } from './routes/areas.$slug'
+import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
+import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
 import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
 import { Route as ProjetosSlugRouteImport } from './routes/projetos.$slug'
 
@@ -102,6 +104,16 @@ const AreasSlugRoute = AreasSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => AreasRoute,
 } as any)
+const NoticiasIndexRoute = NoticiasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NoticiasRoute,
+} as any)
+const NoticiasSlugRoute = NoticiasSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NoticiasRoute,
+} as any)
 const ProjetosIndexRoute = ProjetosIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -121,15 +133,17 @@ export interface FileRoutesByFullPath {
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
-  '/noticias': typeof NoticiasRoute
+  '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas/': typeof AreasIndexRoute
+  '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
 }
 export interface FileRoutesByTo {
@@ -139,14 +153,15 @@ export interface FileRoutesByTo {
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
-  '/noticias': typeof NoticiasRoute
   '/painel': typeof PainelRoute
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas': typeof AreasIndexRoute
+  '/noticias': typeof NoticiasIndexRoute
   '/projetos': typeof ProjetosIndexRoute
 }
 export interface FileRoutesById {
@@ -158,15 +173,17 @@ export interface FileRoutesById {
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
-  '/noticias': typeof NoticiasRoute
+  '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/transparencia': typeof TransparenciaRoute
   '/areas/$slug': typeof AreasSlugRoute
+  '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/areas/': typeof AreasIndexRoute
+  '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
 }
 export interface FileRouteTypes {
@@ -186,8 +203,10 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas/'
+    | '/noticias/'
     | '/projetos/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -197,14 +216,15 @@ export interface FileRouteTypes {
     | '/como-ajudar'
     | '/contato'
     | '/login'
-    | '/noticias'
     | '/painel'
     | '/quem-somos'
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas'
+    | '/noticias'
     | '/projetos'
   id:
     | '__root__'
@@ -222,8 +242,10 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/transparencia'
     | '/areas/$slug'
+    | '/noticias/$slug'
     | '/projetos/$slug'
     | '/areas/'
+    | '/noticias/'
     | '/projetos/'
   fileRoutesById: FileRoutesById
 }
@@ -235,7 +257,7 @@ export interface RootRouteChildren {
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
   LoginRoute: typeof LoginRoute
-  NoticiasRoute: typeof NoticiasRoute
+  NoticiasRoute: typeof NoticiasRouteWithChildren
   PainelRoute: typeof PainelRoute
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
@@ -350,6 +372,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AreasSlugRouteImport
       parentRoute: typeof AreasRoute
     }
+    '/noticias/': {
+      id: '/noticias/'
+      path: '/'
+      fullPath: '/noticias/'
+      preLoaderRoute: typeof NoticiasIndexRouteImport
+      parentRoute: typeof NoticiasRoute
+    }
+    '/noticias/$slug': {
+      id: '/noticias/$slug'
+      path: '/$slug'
+      fullPath: '/noticias/$slug'
+      preLoaderRoute: typeof NoticiasSlugRouteImport
+      parentRoute: typeof NoticiasRoute
+    }
     '/projetos/': {
       id: '/projetos/'
       path: '/'
@@ -379,6 +415,20 @@ const AreasRouteChildren: AreasRouteChildren = {
 
 const AreasRouteWithChildren = AreasRoute._addFileChildren(AreasRouteChildren)
 
+interface NoticiasRouteChildren {
+  NoticiasSlugRoute: typeof NoticiasSlugRoute
+  NoticiasIndexRoute: typeof NoticiasIndexRoute
+}
+
+const NoticiasRouteChildren: NoticiasRouteChildren = {
+  NoticiasSlugRoute: NoticiasSlugRoute,
+  NoticiasIndexRoute: NoticiasIndexRoute,
+}
+
+const NoticiasRouteWithChildren = NoticiasRoute._addFileChildren(
+  NoticiasRouteChildren,
+)
+
 interface ProjetosRouteChildren {
   ProjetosSlugRoute: typeof ProjetosSlugRoute
   ProjetosIndexRoute: typeof ProjetosIndexRoute
@@ -401,7 +451,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
   LoginRoute: LoginRoute,
-  NoticiasRoute: NoticiasRoute,
+  NoticiasRoute: NoticiasRouteWithChildren,
   PainelRoute: PainelRoute,
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,
