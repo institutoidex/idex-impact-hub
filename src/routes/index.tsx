@@ -58,7 +58,7 @@ function Inicio() {
           <div className="max-w-3xl">
             <span
               className="entrada inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
-              style={{ "--d": "0ms" } as React.CSSProperties}
+              style={{ "--d": "0ms" } as CSSProperties}
             >
               Instituto IDEX · desde 2007
             </span>
@@ -71,13 +71,13 @@ function Inicio() {
 
             <p
               className="entrada mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
-              style={{ "--d": "500ms" } as React.CSSProperties}
+              style={{ "--d": "500ms" } as CSSProperties}
             >
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
             <div
               className="entrada mt-8 flex flex-wrap gap-3"
-              style={{ "--d": "650ms" } as React.CSSProperties}
+              style={{ "--d": "650ms" } as CSSProperties}
             >
               <Button asChild size="lg" className="rounded-full">
                 <Link to="/como-ajudar">
