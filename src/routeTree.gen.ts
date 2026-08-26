@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ComoAjudarRouteImport } from './routes/como-ajudar'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as NoticiasRouteImport } from './routes/noticias'
 import { Route as PainelRouteImport } from './routes/painel'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
@@ -62,6 +63,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NoticiasRoute = NoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PainelRoute = PainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -98,9 +104,9 @@ const AreasSlugRoute = AreasSlugRouteImport.update({
   getParentRoute: () => AreasRoute,
 } as any)
 const NoticiasIndexRoute = NoticiasIndexRouteImport.update({
-  id: '/noticias/',
-  path: '/noticias/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => NoticiasRoute,
 } as any)
 const ProjetosIndexRoute = ProjetosIndexRouteImport.update({
   id: '/',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
+  '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
@@ -158,6 +165,7 @@ export interface FileRoutesById {
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
+  '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
@@ -179,6 +187,7 @@ export interface FileRouteTypes {
     | '/como-ajudar'
     | '/contato'
     | '/login'
+    | '/noticias'
     | '/painel'
     | '/projetos'
     | '/quem-somos'
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/como-ajudar'
     | '/contato'
     | '/login'
+    | '/noticias'
     | '/painel'
     | '/projetos'
     | '/quem-somos'
@@ -235,12 +245,12 @@ export interface RootRouteChildren {
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
   LoginRoute: typeof LoginRoute
+  NoticiasRoute: typeof NoticiasRouteWithChildren
   PainelRoute: typeof PainelRoute
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   TransparenciaRoute: typeof TransparenciaRoute
-  NoticiasIndexRoute: typeof NoticiasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -294,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/noticias': {
+      id: '/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof NoticiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/painel': {
       id: '/painel'
       path: '/painel'
@@ -345,10 +362,10 @@ declare module '@tanstack/react-router' {
     }
     '/noticias/': {
       id: '/noticias/'
-      path: '/noticias'
+      path: '/'
       fullPath: '/noticias/'
       preLoaderRoute: typeof NoticiasIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof NoticiasRoute
     }
     '/projetos/': {
       id: '/projetos/'
@@ -379,6 +396,18 @@ const AreasRouteChildren: AreasRouteChildren = {
 
 const AreasRouteWithChildren = AreasRoute._addFileChildren(AreasRouteChildren)
 
+interface NoticiasRouteChildren {
+  NoticiasIndexRoute: typeof NoticiasIndexRoute
+}
+
+const NoticiasRouteChildren: NoticiasRouteChildren = {
+  NoticiasIndexRoute: NoticiasIndexRoute,
+}
+
+const NoticiasRouteWithChildren = NoticiasRoute._addFileChildren(
+  NoticiasRouteChildren,
+)
+
 interface ProjetosRouteChildren {
   ProjetosSlugRoute: typeof ProjetosSlugRoute
   ProjetosIndexRoute: typeof ProjetosIndexRoute
@@ -401,12 +430,12 @@ const rootRouteChildren: RootRouteChildren = {
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
   LoginRoute: LoginRoute,
+  NoticiasRoute: NoticiasRouteWithChildren,
   PainelRoute: PainelRoute,
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   TransparenciaRoute: TransparenciaRoute,
-  NoticiasIndexRoute: NoticiasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
