@@ -100,6 +100,7 @@ export function Header() {
           aberto ? "max-h-[32rem]" : "max-h-0",
         )}
       >
+        {/* Menu mobile: mesmos princípios de contraste, com área de toque ampla */}
         <nav className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
           {NAV.map((item) => (
             <Link
@@ -107,8 +108,8 @@ export function Header() {
               to={item.to}
               onClick={() => setAberto(false)}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "text-primary" }}
-              className="border-b border-border/60 py-3 text-sm font-medium last:border-0"
+              activeProps={{ className: "text-primary font-semibold" }}
+              className="border-b border-border/60 py-3 text-sm font-medium text-foreground transition-colors last:border-0 hover:text-primary"
             >
               {item.label}
             </Link>
