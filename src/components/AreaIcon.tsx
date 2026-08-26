@@ -19,6 +19,9 @@ const MAPA: Record<Area["icone"], LucideIcon> = {
   HeartPulse,
 };
 
+/** Nomes de ícones disponíveis — usado pelo seletor do painel. */
+export const ICONES_AREA = Object.keys(MAPA) as Area["icone"][];
+
 export function AreaIcon({
   icone,
   className,
