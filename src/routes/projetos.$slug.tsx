@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
-import { FOTO_TALENTO } from "@/data/fotos";
+import { FOTO_TALENTO, GALERIA } from "@/data/fotos";
 
 // Template de detalhe de projeto: lê do banco e cai para o conteúdo fixo.
 export const Route = createFileRoute("/projetos/$slug")({
