@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HandCoins, HeartHandshake, Building2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
@@ -69,12 +70,9 @@ function ComoAjudar() {
               <p className="mt-3 text-sm text-muted-foreground">
                 Doe tempo e habilidade: treinos, oficinas, apoio administrativo ou comunicação.
               </p>
-              <img
-                src={FOTO_VOLUNTARIADO.url}
-                alt={FOTO_VOLUNTARIADO.alt}
-                loading="lazy"
-                width={1400}
-                height={900}
+              <Imagem
+                foto={FOTO_VOLUNTARIADO}
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="mt-6 aspect-[4/3] w-full rounded-2xl object-cover"
               />
               <Button asChild className="mt-6 w-full rounded-full">

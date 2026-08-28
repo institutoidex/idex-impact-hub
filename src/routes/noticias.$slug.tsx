@@ -4,6 +4,7 @@ import { NOTICIAS } from "@/data/idex";
 import { formatarData } from "@/lib/queries";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL, urlAbsoluta, urlNoticia } from "@/lib/site";
+import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { FOTO_TALENTO } from "@/data/fotos";
 
@@ -136,11 +137,12 @@ function NoticiaDetalhePagina() {
   return (
     <article>
       <section className="relative overflow-hidden pt-28 pb-16">
-        <img
-          src={capa}
+        <Imagem
+          foto={noticia.imagem ? undefined : FOTO_TALENTO}
+          src={noticia.imagem ?? undefined}
           alt={noticia.titulo}
-          width={1400}
-          height={900}
+          prioridade
+          sizes="100vw"
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-ink/72" />
