@@ -155,8 +155,49 @@ export function BibliotecaMidia() {
     toast.success("Endereço copiado.");
   }
 
+  /** Extrai só as imagens de um evento de arraste. */
+  function imagensDoEvento(e: React.DragEvent) {
+    return Array.from(e.dataTransfer.files ?? []).filter((f) => f.type.startsWith("image/"));
+  }
+
+  /** O arraste em curso traz arquivos? (evita destacar ao arrastar texto) */
+  function temArquivos(e: React.DragEvent) {
+    return Array.from(e.dataTransfer.types ?? []).includes("Files");
+  }
+
   return (
-    <div className="space-y-6">
+    <div
+      className={`space-y-6 rounded-3xl transition-colors ${
+        arrastando && !pastaAlvo ? "bg-primary/5 outline-2 outline-dashed outline-primary/50" : ""
+      }`}
+      onDragOver={(e) => {
+        if (!temArquivos(e)) return;
+        e.preventDefault();
+        setArrastando(true);
+      }}
+      onDragLeave={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+        setArrastando(false);
+        setPastaAlvo(null);
+      }}
+      onDrop={(e) => {
+        if (!temArquivos(e)) return;
+        e.preventDefault();
+        setArrastando(false);
+        const alvo = pastaAlvo;
+        setPastaAlvo(null);
+        void enviar(imagensDoEvento(e), alvo ?? undefined);
+      }}
+    >
+      {/* Aviso durante o arraste */}
+      {arrastando && (
+        <p className="rounded-2xl border border-dashed border-primary/60 bg-primary/10 p-3 text-center text-sm text-primary">
+          {pastaAlvo
+            ? `Solte para enviar para “${pastaAlvo}”`
+            : "Solte as imagens para enviar para esta pasta"}
+        </p>
+      )}
+
       {/* Caminho atual (migalhas) */}
       <nav className="flex flex-wrap items-center gap-1 text-sm" aria-label="Caminho da pasta">
         <button
