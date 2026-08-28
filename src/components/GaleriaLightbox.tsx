@@ -2,7 +2,7 @@
 // zoom (+/-, roda do mouse, duplo clique) e arraste quando ampliada.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
-import Reveal from "@/components/Reveal";
+import { Reveal } from "@/components/Reveal";
 
 export type FotoGaleria = { url: string; alt: string };
 

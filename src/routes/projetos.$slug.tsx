@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
+import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_TALENTO, GALERIA } from "@/data/fotos";
 
 // Template de detalhe de projeto: lê do banco e cai para o conteúdo fixo.
@@ -127,18 +128,7 @@ function ProjetoDetalhe() {
           <Reveal>
             <h2 className="text-3xl sm:text-4xl">Galeria</h2>
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {GALERIA.map((f, i) => (
-              <Reveal key={f.url} delay={i * 50}>
-                <img
-                  src={f.url}
-                  alt={f.alt}
-                  loading="lazy"
-                  className="lift aspect-[4/3] w-full rounded-2xl object-cover"
-                />
-              </Reveal>
-            ))}
-          </div>
+          <GaleriaLightbox fotos={GALERIA} className="mt-8" />
         </section>
       )}
     </>
