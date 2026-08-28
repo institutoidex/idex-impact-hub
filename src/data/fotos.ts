@@ -32,9 +32,9 @@ export interface Foto {
   url: string;
   alt: string;
   /** Conjunto responsivo 480/960/1600 em WebP */
-  srcSet?: string;
-  largura?: number;
-  altura?: number;
+  srcSet?: string | undefined;
+  largura?: number | undefined;
+  altura?: number | undefined;
 }
 
 // Monta a foto já apontando para as variantes WebP responsivas quando existirem,

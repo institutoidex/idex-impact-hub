@@ -7,9 +7,9 @@ import type { Foto } from "@/data/fotos";
 
 type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet"> & {
   /** Foto do acervo (traz srcset responsivo) ou URL simples vinda do banco */
-  foto?: Foto;
-  src?: string;
-  alt?: string;
+  foto?: Foto | undefined;
+  src?: string | undefined;
+  alt?: string | undefined;
   /** true para a imagem principal da página (LCP): carrega já, sem lazy */
   prioridade?: boolean;
   /** Dica de largura renderizada, para o navegador escolher a variante certa */
