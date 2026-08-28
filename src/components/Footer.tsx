@@ -17,6 +17,10 @@ export function Footer() {
             <img
               src={logoAsset.url}
               alt="Instituto IDEX"
+              width={200}
+              height={80}
+              loading="lazy"
+              decoding="async"
               className="h-10 w-auto object-contain"
             />
           </div>
