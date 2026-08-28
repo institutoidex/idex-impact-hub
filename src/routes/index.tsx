@@ -30,7 +30,16 @@ export const Route = createFileRoute("/")({
       },
     ],
     // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
-    links: [{ rel: "preload", as: "image", href: FOTO_HERO.url, fetchPriority: "high" }],
+    links: [
+      {
+        rel: "preload",
+        as: "image",
+        href: FOTO_HERO.url,
+        imageSrcSet: FOTO_HERO.srcSet,
+        imageSizes: "100vw",
+        fetchPriority: "high",
+      },
+    ],
   }),
   component: Inicio,
 });

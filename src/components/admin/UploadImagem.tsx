@@ -52,6 +52,8 @@ export function UploadCapa({
       <div className="overflow-hidden rounded-2xl border border-dashed border-border bg-muted/50">
         {valor ? (
           <img
+                  loading="lazy"
+                  decoding="async"
             src={valor}
             alt="Pré-visualização da capa"
             className="aspect-[16/9] w-full object-cover"
@@ -150,6 +152,8 @@ export function UploadMidia({ pasta }: { pasta: string }) {
           {urls.map((url) => (
             <li key={url} className="space-y-1">
               <img
+                  loading="lazy"
+                  decoding="async"
                 src={url}
                 alt="Mídia enviada"
                 className="aspect-square w-full rounded-xl object-cover"
