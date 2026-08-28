@@ -7,7 +7,7 @@ import { Placeholder } from "@/components/Placeholder";
 import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import { Paginacao } from "@/components/Paginacao";
 import { FiltroBotao } from "@/components/FiltroBotao";
-import talentoImg from "@/assets/talento-brasil.jpg";
+import { FOTO_TALENTO } from "@/data/fotos";
 
 const POR_PAGINA = 6;
 
@@ -113,7 +113,7 @@ function ProjetosIndex() {
             <Reveal as="article" key={p.slug} delay={i * 80}>
               <div className="lift h-full overflow-hidden rounded-3xl border border-border bg-card">
                 <img
-                  src={p.imagem || talentoImg}
+                  src={p.imagem || FOTO_TALENTO.url}
                   alt={`Imagem do projeto ${p.nome}`}
                   loading="lazy"
                   width={1400}

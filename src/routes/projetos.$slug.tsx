@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
-import talentoImg from "@/assets/talento-brasil.jpg";
+import { FOTO_TALENTO } from "@/data/fotos";
 
 // Template de detalhe de projeto: lê do banco e cai para o conteúdo fixo.
 export const Route = createFileRoute("/projetos/$slug")({
@@ -78,7 +78,7 @@ function ProjetoDetalhe() {
     <>
       <section className="relative overflow-hidden pt-28 pb-16">
         <img
-          src={projeto.imagem || talentoImg}
+          src={projeto.imagem || FOTO_TALENTO.url}
           alt={`Foto do projeto ${projeto.nome}`}
           width={1400}
           height={900}
