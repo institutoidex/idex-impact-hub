@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, HeartHandshake } from "lucide-react";
-import heroImg from "@/assets/hero-esporte.jpg";
-import talentoImg from "@/assets/talento-brasil.jpg";
+// fotos reais do instituto (CDN)
+import { FOTO_HERO, FOTO_TALENTO, GALERIA } from "@/data/fotos";
 import { NOTICIAS } from "@/data/idex";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
