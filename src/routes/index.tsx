@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, HeartHandshake } from "lucide-react";
 // fotos reais do instituto (CDN)
+import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_HERO, FOTO_TALENTO, GALERIA } from "@/data/fotos";
 import { NOTICIAS } from "@/data/idex";
 import { Reveal } from "@/components/Reveal";
@@ -202,18 +203,7 @@ function Inicio() {
             Registros dos treinos, jogos e celebrações do Talento Brasil.
           </p>
         </Reveal>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {GALERIA.slice(0, 8).map((f, i) => (
-            <Reveal key={f.url} delay={i * 60}>
-              <img
-                src={f.url}
-                alt={f.alt}
-                loading="lazy"
-                className="lift aspect-[4/3] w-full rounded-2xl object-cover"
-              />
-            </Reveal>
-          ))}
-        </div>
+        <GaleriaLightbox fotos={GALERIA.slice(0, 8)} className="mt-8" />
       </section>
 
       {/* CTA final -------------------------------------------------------- */}
