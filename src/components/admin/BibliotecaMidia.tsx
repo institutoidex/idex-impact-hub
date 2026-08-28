@@ -259,6 +259,11 @@ export function BibliotecaMidia() {
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
           {enviando ? "Enviando..." : "Enviar imagens aqui"}
         </Button>
+
+        <p className="w-full text-xs text-muted-foreground">
+          Dica: arraste imagens do computador para esta área — solte sobre uma pasta para enviar
+          direto para ela.
+        </p>
       </div>
 
       {/* Formulário de nova pasta */}
