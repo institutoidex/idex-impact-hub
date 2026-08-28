@@ -305,7 +305,18 @@ export function BibliotecaMidia() {
           {pastasVisiveis.map((p) => (
             <li
               key={p.caminho}
-              className="flex items-center gap-2 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
+              className={`flex items-center gap-2 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/40 ${
+                pastaAlvo === p.caminho ? "border-primary bg-primary/10" : "border-border"
+              }`}
+              onDragOver={(e) => {
+                if (!temArquivos(e)) return;
+                e.preventDefault();
+                setPastaAlvo(p.caminho);
+              }}
+              onDragLeave={(e) => {
+                if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                setPastaAlvo((atual) => (atual === p.caminho ? null : atual));
+              }}
             >
               <button
                 type="button"
