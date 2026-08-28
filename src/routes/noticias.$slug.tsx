@@ -5,7 +5,7 @@ import { formatarData } from "@/lib/queries";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL, urlAbsoluta, urlNoticia } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
-import talentoImg from "@/assets/talento-brasil.jpg";
+import { FOTO_TALENTO } from "@/data/fotos";
 
 /** Formato usado pela página, vindo do banco ou do conteúdo fixo de apoio. */
 type NoticiaDetalhe = {
@@ -131,7 +131,7 @@ export const Route = createFileRoute("/noticias/$slug")({
 
 function NoticiaDetalhePagina() {
   const { noticia } = Route.useLoaderData();
-  const capa = noticia.imagem ?? talentoImg;
+  const capa = noticia.imagem ?? FOTO_TALENTO.url;
 
   return (
     <article>

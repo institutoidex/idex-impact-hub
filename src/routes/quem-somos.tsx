@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
-import culturaImg from "@/assets/comunidade-cultura.jpg";
+import { FOTO_EQUIPE } from "@/data/fotos";
 
 export const Route = createFileRoute("/quem-somos")({
   head: () => ({
@@ -51,8 +51,8 @@ function QuemSomos() {
         </Reveal>
         <Reveal delay={120}>
           <img
-            src={culturaImg}
-            alt="Oficina cultural com crianças em centro comunitário"
+            src={FOTO_EQUIPE.url}
+            alt={FOTO_EQUIPE.alt}
             loading="lazy"
             width={1400}
             height={900}

@@ -4,7 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
-import voluntariadoImg from "@/assets/voluntariado.jpg";
+import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 
 export const Route = createFileRoute("/como-ajudar")({
   head: () => ({
@@ -70,8 +70,8 @@ function ComoAjudar() {
                 Doe tempo e habilidade: treinos, oficinas, apoio administrativo ou comunicação.
               </p>
               <img
-                src={voluntariadoImg}
-                alt="Voluntários e crianças plantando mudas em praça"
+                src={FOTO_VOLUNTARIADO.url}
+                alt={FOTO_VOLUNTARIADO.alt}
                 loading="lazy"
                 width={1400}
                 height={900}

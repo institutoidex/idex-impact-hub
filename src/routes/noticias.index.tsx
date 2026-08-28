@@ -10,7 +10,7 @@ import { Placeholder } from "@/components/Placeholder";
 import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import { Paginacao } from "@/components/Paginacao";
 import { FiltroBotao } from "@/components/FiltroBotao";
-import talentoImg from "@/assets/talento-brasil.jpg";
+import { FOTO_TALENTO } from "@/data/fotos";
 
 const POR_PAGINA = 6;
 
@@ -58,7 +58,7 @@ function Noticias() {
             resumo: n.resumo,
             data: formatarData(n.publicado_em),
             ano: String(new Date(n.publicado_em).getFullYear()),
-            imagem: n.imagem_url ?? talentoImg,
+            imagem: n.imagem_url ?? FOTO_TALENTO.url,
             // vínculo opcional com um projeto (null = notícia geral)
             projeto: n.projeto_slug,
           }))
@@ -68,7 +68,7 @@ function Noticias() {
             resumo: n.resumo,
             data: n.data,
             ano: (n.data.match(/\d{4}/)?.[0] ?? ""),
-            imagem: talentoImg,
+            imagem: FOTO_TALENTO.url,
             // a notícia fixa é o lançamento do Talento Brasil
             projeto: "talento-brasil" as string | null,
           })),
