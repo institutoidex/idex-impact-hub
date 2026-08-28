@@ -59,6 +59,9 @@ export function BibliotecaMidia() {
   const [busca, setBusca] = useState("");
   const [criandoPasta, setCriandoPasta] = useState(false);
   const [nomePasta, setNomePasta] = useState("");
+  // arraste: destaca a área geral ou a pasta que está sob o cursor
+  const [arrastando, setArrastando] = useState(false);
+  const [pastaAlvo, setPastaAlvo] = useState<string | null>(null);
   const [aExcluir, setAExcluir] = useState<{
     tipo: "arquivo" | "pasta";
     caminho: string;
@@ -87,20 +90,22 @@ export function BibliotecaMidia() {
     await queryClient.invalidateQueries({ queryKey: ["midia"] });
   }
 
-  async function enviar(lista: FileList | null) {
-    if (!lista?.length) return;
+  async function enviar(lista: FileList | File[] | null, destino?: string) {
+    const arquivos = lista ? Array.from(lista) : [];
+    if (!arquivos.length) return;
+    const pasta = destino ?? caminho;
     setEnviando(true);
     try {
-      for (const arquivo of Array.from(lista)) {
+      for (const arquivo of arquivos) {
         const erro = validarImagem(arquivo);
         if (erro) {
           toast.error(`${arquivo.name}: ${erro}`);
           continue;
         }
-        await enviarImagem(arquivo, caminho || "site");
+        await enviarImagem(arquivo, pasta || "site");
       }
       await recarregar();
-      toast.success("Imagens enviadas para esta pasta.");
+      toast.success(`Imagens enviadas para ${pasta || "a biblioteca"}.`);
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível enviar.");
     } finally {
@@ -150,8 +155,49 @@ export function BibliotecaMidia() {
     toast.success("Endereço copiado.");
   }
 
+  /** Extrai só as imagens de um evento de arraste. */
+  function imagensDoEvento(e: React.DragEvent) {
+    return Array.from(e.dataTransfer.files ?? []).filter((f) => f.type.startsWith("image/"));
+  }
+
+  /** O arraste em curso traz arquivos? (evita destacar ao arrastar texto) */
+  function temArquivos(e: React.DragEvent) {
+    return Array.from(e.dataTransfer.types ?? []).includes("Files");
+  }
+
   return (
-    <div className="space-y-6">
+    <div
+      className={`space-y-6 rounded-3xl transition-colors ${
+        arrastando && !pastaAlvo ? "bg-primary/5 outline-2 outline-dashed outline-primary/50" : ""
+      }`}
+      onDragOver={(e) => {
+        if (!temArquivos(e)) return;
+        e.preventDefault();
+        setArrastando(true);
+      }}
+      onDragLeave={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+        setArrastando(false);
+        setPastaAlvo(null);
+      }}
+      onDrop={(e) => {
+        if (!temArquivos(e)) return;
+        e.preventDefault();
+        setArrastando(false);
+        const alvo = pastaAlvo;
+        setPastaAlvo(null);
+        void enviar(imagensDoEvento(e), alvo ?? undefined);
+      }}
+    >
+      {/* Aviso durante o arraste */}
+      {arrastando && (
+        <p className="rounded-2xl border border-dashed border-primary/60 bg-primary/10 p-3 text-center text-sm text-primary">
+          {pastaAlvo
+            ? `Solte para enviar para “${pastaAlvo}”`
+            : "Solte as imagens para enviar para esta pasta"}
+        </p>
+      )}
+
       {/* Caminho atual (migalhas) */}
       <nav className="flex flex-wrap items-center gap-1 text-sm" aria-label="Caminho da pasta">
         <button
@@ -213,6 +259,11 @@ export function BibliotecaMidia() {
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
           {enviando ? "Enviando..." : "Enviar imagens aqui"}
         </Button>
+
+        <p className="w-full text-xs text-muted-foreground">
+          Dica: arraste imagens do computador para esta área — solte sobre uma pasta para enviar
+          direto para ela.
+        </p>
       </div>
 
       {/* Formulário de nova pasta */}
@@ -259,7 +310,18 @@ export function BibliotecaMidia() {
           {pastasVisiveis.map((p) => (
             <li
               key={p.caminho}
-              className="flex items-center gap-2 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
+              className={`flex items-center gap-2 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/40 ${
+                pastaAlvo === p.caminho ? "border-primary bg-primary/10" : "border-border"
+              }`}
+              onDragOver={(e) => {
+                if (!temArquivos(e)) return;
+                e.preventDefault();
+                setPastaAlvo(p.caminho);
+              }}
+              onDragLeave={(e) => {
+                if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                setPastaAlvo((atual) => (atual === p.caminho ? null : atual));
+              }}
             >
               <button
                 type="button"
