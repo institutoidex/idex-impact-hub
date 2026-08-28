@@ -120,6 +120,28 @@ function ProjetoDetalhe() {
           </Button>
         </Reveal>
       </section>
+
+      {/* Galeria de fotos do projeto (apenas Talento Brasil, que tem acervo) */}
+      {projeto.slug === "talento-brasil" && (
+        <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+          <Reveal>
+            <h2 className="text-3xl sm:text-4xl">Galeria</h2>
+          </Reveal>
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {GALERIA.map((f, i) => (
+              <Reveal key={f.url} delay={i * 50}>
+                <img
+                  src={f.url}
+                  alt={f.alt}
+                  loading="lazy"
+                  className="lift aspect-[4/3] w-full rounded-2xl object-cover"
+                />
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
     </>
+
   );
 }
