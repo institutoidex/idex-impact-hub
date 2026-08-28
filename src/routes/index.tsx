@@ -109,6 +109,7 @@ function Inicio() {
           <Reveal>
             <Imagem
               foto={FOTO_TALENTO}
+              ampliavel
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="tilt-left w-full rounded-3xl object-cover shadow-[0_30px_60px_-40px_rgba(0,0,0,0.6)]"
             />

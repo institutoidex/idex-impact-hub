@@ -53,6 +53,7 @@ function QuemSomos() {
         <Reveal delay={120}>
           <Imagem
             foto={FOTO_EQUIPE}
+            ampliavel
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="tilt-right w-full rounded-3xl object-cover"
           />

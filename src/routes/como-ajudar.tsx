@@ -72,6 +72,7 @@ function ComoAjudar() {
               </p>
               <Imagem
                 foto={FOTO_VOLUNTARIADO}
+                ampliavel
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="mt-6 aspect-[4/3] w-full rounded-2xl object-cover"
               />
