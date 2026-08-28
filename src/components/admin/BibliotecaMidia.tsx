@@ -90,20 +90,22 @@ export function BibliotecaMidia() {
     await queryClient.invalidateQueries({ queryKey: ["midia"] });
   }
 
-  async function enviar(lista: FileList | null) {
-    if (!lista?.length) return;
+  async function enviar(lista: FileList | File[] | null, destino?: string) {
+    const arquivos = lista ? Array.from(lista) : [];
+    if (!arquivos.length) return;
+    const pasta = destino ?? caminho;
     setEnviando(true);
     try {
-      for (const arquivo of Array.from(lista)) {
+      for (const arquivo of arquivos) {
         const erro = validarImagem(arquivo);
         if (erro) {
           toast.error(`${arquivo.name}: ${erro}`);
           continue;
         }
-        await enviarImagem(arquivo, caminho || "site");
+        await enviarImagem(arquivo, pasta || "site");
       }
       await recarregar();
-      toast.success("Imagens enviadas para esta pasta.");
+      toast.success(`Imagens enviadas para ${pasta || "a biblioteca"}.`);
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível enviar.");
     } finally {
