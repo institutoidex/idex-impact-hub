@@ -142,13 +142,26 @@ export function BibliotecaMidia() {
   async function confirmarExclusao() {
     if (!aExcluir) return;
     try {
-      if (aExcluir.tipo === "pasta") await apagarPastaMidia(aExcluir.caminho);
-      else await apagarMidia(aExcluir.caminho);
-      await recarregar();
-      toast.success(aExcluir.tipo === "pasta" ? "Pasta apagada." : "Arquivo apagado.");
+      if (aExcluir.tipo === "selecao") {
+        setProcessando(true);
+        for (const c of selecionados) await apagarMidia(c);
+        setSelecionados([]);
+        await recarregar();
+        toast.success("Arquivos apagados.");
+      } else if (aExcluir.tipo === "pasta") {
+        await apagarPastaMidia(aExcluir.caminho);
+        await recarregar();
+        toast.success("Pasta apagada.");
+      } else {
+        await apagarMidia(aExcluir.caminho);
+        setSelecionados((s) => s.filter((c) => c !== aExcluir.caminho));
+        await recarregar();
+        toast.success("Arquivo apagado.");
+      }
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível apagar.");
     } finally {
+      setProcessando(false);
       setAExcluir(null);
     }
   }
@@ -156,6 +169,37 @@ export function BibliotecaMidia() {
   async function copiar(url: string) {
     await navigator.clipboard.writeText(url);
     toast.success("Endereço copiado.");
+  }
+
+  /** Marca ou desmarca um arquivo da seleção. */
+  function alternarSelecao(caminhoArquivo: string) {
+    setSelecionados((s) =>
+      s.includes(caminhoArquivo) ? s.filter((c) => c !== caminhoArquivo) : [...s, caminhoArquivo],
+    );
+  }
+
+  /** Move em massa todos os arquivos selecionados. */
+  async function moverSelecionados(destino: string) {
+    setProcessando(true);
+    try {
+      for (const c of selecionados) await moverMidia(c, destino === "__raiz__" ? "" : destino);
+      setSelecionados([]);
+      await recarregar();
+      toast.success("Arquivos movidos.");
+    } catch (e) {
+      toast.error((e as Error).message || "Não foi possível mover.");
+    } finally {
+      setProcessando(false);
+    }
+  }
+
+  /** Copia os endereços de todos os arquivos selecionados (um por linha). */
+  async function copiarSelecionados() {
+    const urls = (conteudo.data?.arquivos ?? [])
+      .filter((a) => selecionados.includes(a.caminho))
+      .map((a) => a.url);
+    await navigator.clipboard.writeText(urls.join("\n"));
+    toast.success(`${urls.length} endereço(s) copiado(s).`);
   }
 
   /** Extrai só as imagens de um evento de arraste. */
