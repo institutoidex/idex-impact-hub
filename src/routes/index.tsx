@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
       },
     ],
     // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
-    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
+    links: [{ rel: "preload", as: "image", href: FOTO_HERO.url, fetchPriority: "high" }],
   }),
   component: Inicio,
 });
@@ -39,8 +39,8 @@ function Inicio() {
       {/* Hero ------------------------------------------------------------ */}
       <section className="relative min-h-[88vh] overflow-hidden pt-28 pb-16">
         <img
-          src={heroImg}
-          alt="Crianças jogando futebol em campo de bairro ao entardecer"
+          src={FOTO_HERO.url}
+          alt={FOTO_HERO.alt}
           width={1600}
           height={1000}
           className="absolute inset-0 size-full object-cover"
@@ -98,8 +98,8 @@ function Inicio() {
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
           <Reveal>
             <img
-              src={talentoImg}
-              alt="Treino de futebol de base do projeto Talento Brasil"
+              src={FOTO_TALENTO.url}
+              alt={FOTO_TALENTO.alt}
               loading="lazy"
               width={1400}
               height={900}
@@ -189,6 +189,28 @@ function Inicio() {
                   Novos conteúdos serão publicados aqui.
                 </p>
               </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Galeria de fotos --------------------------------------------- */}
+      <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6">
+        <Reveal>
+          <h2 className="text-3xl sm:text-4xl">Nosso dia a dia em fotos</h2>
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            Registros dos treinos, jogos e celebrações do Talento Brasil.
+          </p>
+        </Reveal>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {GALERIA.slice(0, 8).map((f, i) => (
+            <Reveal key={f.url} delay={i * 60}>
+              <img
+                src={f.url}
+                alt={f.alt}
+                loading="lazy"
+                className="lift aspect-[4/3] w-full rounded-2xl object-cover"
+              />
             </Reveal>
           ))}
         </div>
