@@ -124,3 +124,109 @@ export function formatarTamanho(bytes: number | null) {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+/* ------------------------------------------------------------------ */
+/* Pastas e subpastas da biblioteca de imagens                         */
+/* ------------------------------------------------------------------ */
+
+/** Marcador usado pelo Supabase para manter uma pasta vazia visível. */
+const MARCADOR_PASTA = ".emptyFolderPlaceholder";
+
+/** Uma pasta (prefixo) dentro do bucket de mídia. */
+export type PastaMidia = { nome: string; caminho: string };
+
+/** Deixa o nome da pasta seguro para virar parte do caminho. */
+export function normalizarNomePasta(nome: string) {
+  return nome
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
+
+/** Lista somente o conteúdo direto de uma pasta: subpastas e arquivos. */
+export async function listarConteudoPasta(
+  prefixo = "",
+): Promise<{ pastas: PastaMidia[]; arquivos: ArquivoMidia[] }> {
+  const { data, error } = await supabase.storage.from(BUCKET_MIDIA).list(prefixo, {
+    limit: 500,
+    sortBy: { column: "name", order: "asc" },
+  });
+  if (error) throw error;
+
+  const pastas: PastaMidia[] = [];
+  const arquivos: ArquivoMidia[] = [];
+  for (const item of data ?? []) {
+    const caminho = prefixo ? `${prefixo}/${item.name}` : item.name;
+    if (!item.id) {
+      pastas.push({ nome: item.name, caminho });
+      continue;
+    }
+    if (item.name === MARCADOR_PASTA) continue;
+    const { data: pub } = supabase.storage.from(BUCKET_MIDIA).getPublicUrl(caminho);
+    arquivos.push({
+      caminho,
+      nome: item.name,
+      pasta: prefixo || "raiz",
+      url: pub.publicUrl,
+      tamanho: (item.metadata?.["size"] as number | undefined) ?? null,
+      atualizado_em: item.updated_at ?? item.created_at ?? null,
+      tipo: (item.metadata?.["mimetype"] as string | undefined) ?? null,
+    });
+  }
+  return { pastas, arquivos };
+}
+
+/** Lista todos os caminhos de pastas (para escolher destino ao mover). */
+export async function listarTodasPastas(prefixo = "", profundidade = 0): Promise<string[]> {
+  if (profundidade > 3) return [];
+  const { data, error } = await supabase.storage
+    .from(BUCKET_MIDIA)
+    .list(prefixo, { limit: 500, sortBy: { column: "name", order: "asc" } });
+  if (error) return [];
+  const caminhos: string[] = [];
+  for (const item of data ?? []) {
+    if (item.id) continue;
+    const caminho = prefixo ? `${prefixo}/${item.name}` : item.name;
+    caminhos.push(caminho);
+    caminhos.push(...(await listarTodasPastas(caminho, profundidade + 1)));
+  }
+  return caminhos;
+}
+
+/** Cria uma pasta (ou subpasta) gravando um marcador vazio dentro dela. */
+export async function criarPastaMidia(caminhoPai: string, nome: string) {
+  const seguro = normalizarNomePasta(nome);
+  if (!seguro) throw new Error("Informe um nome válido para a pasta.");
+  const caminho = caminhoPai ? `${caminhoPai}/${seguro}` : seguro;
+  const { error } = await supabase.storage
+    .from(BUCKET_MIDIA)
+    .upload(`${caminho}/${MARCADOR_PASTA}`, new Blob([""]), { upsert: true });
+  if (error) throw error;
+  return caminho;
+}
+
+/** Apaga a pasta e tudo que estiver dentro dela (inclusive subpastas). */
+export async function apagarPastaMidia(caminho: string) {
+  const arquivos = await listarMidia(caminho);
+  const marcadores = [caminho, ...(await listarTodasPastas(caminho))].map(
+    (p) => `${p}/${MARCADOR_PASTA}`,
+  );
+  const alvos = [...arquivos.map((a) => a.caminho), ...marcadores];
+  if (alvos.length) {
+    const { error } = await supabase.storage.from(BUCKET_MIDIA).remove(alvos);
+    if (error) throw error;
+  }
+}
+
+/** Move um arquivo para outra pasta do bucket. */
+export async function moverMidia(caminho: string, pastaDestino: string) {
+  const nome = caminho.split("/").pop()!;
+  const destino = pastaDestino ? `${pastaDestino}/${nome}` : nome;
+  if (destino === caminho) return destino;
+  const { error } = await supabase.storage.from(BUCKET_MIDIA).move(caminho, destino);
+  if (error) throw error;
+  return destino;
+}
