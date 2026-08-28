@@ -155,6 +155,20 @@ export const midiaQuery = queryOptions({
   queryFn: () => listarMidia(),
 });
 
+/** Painel: conteúdo direto de uma pasta da biblioteca (subpastas + arquivos). */
+export const pastaMidiaQuery = (prefixo: string) =>
+  queryOptions({
+    queryKey: ["midia", "pasta", prefixo],
+    queryFn: () => listarConteudoPasta(prefixo),
+  });
+
+/** Painel: todos os caminhos de pastas do bucket (para mover arquivos). */
+export const todasPastasMidiaQuery = queryOptions({
+  queryKey: ["midia", "pastas-todas"],
+  queryFn: () => listarTodasPastas(),
+});
+
+
 /** Uma notícia publicada pelo slug (usada na página de detalhe). */
 export const noticiaQuery = (slug: string) =>
   queryOptions({
