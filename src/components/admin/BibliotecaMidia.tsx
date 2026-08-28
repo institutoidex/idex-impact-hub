@@ -63,10 +63,13 @@ export function BibliotecaMidia() {
   const [arrastando, setArrastando] = useState(false);
   const [pastaAlvo, setPastaAlvo] = useState<string | null>(null);
   const [aExcluir, setAExcluir] = useState<{
-    tipo: "arquivo" | "pasta";
+    tipo: "arquivo" | "pasta" | "selecao";
     caminho: string;
     nome: string;
   } | null>(null);
+  // seleção múltipla de arquivos (caminhos marcados)
+  const [selecionados, setSelecionados] = useState<string[]>([]);
+  const [processando, setProcessando] = useState(false);
 
   const conteudo = useQuery(pastaMidiaQuery(caminho));
   const todasPastas = useQuery(todasPastasMidiaQuery);
