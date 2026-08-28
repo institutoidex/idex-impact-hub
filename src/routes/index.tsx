@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, HeartHandshake } from "lucide-react";
 // fotos reais do instituto (CDN)
+import { Imagem } from "@/components/Imagem";
 import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_HERO, FOTO_TALENTO, GALERIA } from "@/data/fotos";
 import { NOTICIAS } from "@/data/idex";
@@ -29,7 +30,16 @@ export const Route = createFileRoute("/")({
       },
     ],
     // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
-    links: [{ rel: "preload", as: "image", href: FOTO_HERO.url, fetchPriority: "high" }],
+    links: [
+      {
+        rel: "preload",
+        as: "image",
+        href: FOTO_HERO.url,
+        imageSrcSet: FOTO_HERO.srcSet,
+        imageSizes: "100vw",
+        fetchPriority: "high",
+      },
+    ],
   }),
   component: Inicio,
 });
@@ -39,11 +49,10 @@ function Inicio() {
     <>
       {/* Hero ------------------------------------------------------------ */}
       <section className="relative min-h-[88vh] overflow-hidden pt-28 pb-16">
-        <img
-          src={FOTO_HERO.url}
-          alt={FOTO_HERO.alt}
-          width={1600}
-          height={1000}
+        <Imagem
+          foto={FOTO_HERO}
+          prioridade
+          sizes="100vw"
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-ink/70" />
@@ -98,12 +107,9 @@ function Inicio() {
       <section className="bg-sand py-20">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
           <Reveal>
-            <img
-              src={FOTO_TALENTO.url}
-              alt={FOTO_TALENTO.alt}
-              loading="lazy"
-              width={1400}
-              height={900}
+            <Imagem
+              foto={FOTO_TALENTO}
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="tilt-left w-full rounded-3xl object-cover shadow-[0_30px_60px_-40px_rgba(0,0,0,0.6)]"
             />
           </Reveal>

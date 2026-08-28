@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
+import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { FOTO_EQUIPE } from "@/data/fotos";
@@ -50,12 +51,9 @@ function QuemSomos() {
           </p>
         </Reveal>
         <Reveal delay={120}>
-          <img
-            src={FOTO_EQUIPE.url}
-            alt={FOTO_EQUIPE.alt}
-            loading="lazy"
-            width={1400}
-            height={900}
+          <Imagem
+            foto={FOTO_EQUIPE}
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="tilt-right w-full rounded-3xl object-cover"
           />
         </Reveal>

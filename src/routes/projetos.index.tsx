@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useProjetos } from "@/lib/conteudo";
 import { PageHero } from "@/components/PageHero";
+import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { CampoBusca, normalizar } from "@/components/CampoBusca";
@@ -112,12 +113,11 @@ function ProjetosIndex() {
           {visiveis.map((p, i) => (
             <Reveal as="article" key={p.slug} delay={i * 80}>
               <div className="lift h-full overflow-hidden rounded-3xl border border-border bg-card">
-                <img
-                  src={p.imagem || FOTO_TALENTO.url}
+                <Imagem
+                  foto={p.imagem ? undefined : FOTO_TALENTO}
+                  src={p.imagem || undefined}
                   alt={`Imagem do projeto ${p.nome}`}
-                  loading="lazy"
-                  width={1400}
-                  height={900}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="p-7">

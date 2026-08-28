@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
+import { Imagem } from "@/components/Imagem";
 import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_TALENTO, GALERIA } from "@/data/fotos";
 
@@ -78,11 +79,12 @@ function ProjetoDetalhe() {
   return (
     <>
       <section className="relative overflow-hidden pt-28 pb-16">
-        <img
-          src={projeto.imagem || FOTO_TALENTO.url}
+        <Imagem
+          foto={projeto.imagem ? undefined : FOTO_TALENTO}
+          src={projeto.imagem || undefined}
           alt={`Foto do projeto ${projeto.nome}`}
-          width={1400}
-          height={900}
+          prioridade
+          sizes="100vw"
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-ink/72" />

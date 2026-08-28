@@ -46,6 +46,9 @@ export function Header() {
           <img
             src={logoAsset.url}
             alt="Instituto IDEX"
+            width={200}
+            height={80}
+            decoding="async"
             className="h-10 w-auto object-contain transition-transform group-hover:-rotate-1 sm:h-12"
           />
         </Link>

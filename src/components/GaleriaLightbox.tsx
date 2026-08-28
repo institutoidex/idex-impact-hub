@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
-export type FotoGaleria = { url: string; alt: string };
+import type { Foto } from "@/data/fotos";
+
+export type FotoGaleria = Foto;
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
@@ -88,8 +90,13 @@ export default function GaleriaLightbox({
             >
               <img
                 src={f.url}
+                srcSet={f.srcSet}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 alt={f.alt}
                 loading="lazy"
+                decoding="async"
+                width={f.largura ?? 1400}
+                height={f.altura ?? 900}
                 className="lift aspect-[4/3] w-full rounded-2xl object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
             </button>
@@ -162,7 +169,10 @@ export default function GaleriaLightbox({
 
             <img
               src={foto.url}
+              srcSet={foto.srcSet}
+              sizes="100vw"
               alt={foto.alt}
+              decoding="async"
               draggable={false}
               onDoubleClick={() => (zoom > 1 ? reset() : setZoom(2))}
               onPointerDown={(e) => {

@@ -5,6 +5,7 @@ import { NOTICIAS } from "@/data/idex";
 import { formatarData, noticiasQuery } from "@/lib/queries";
 import { SITE_URL } from "@/lib/site";
 import { PageHero } from "@/components/PageHero";
+import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
 import { CampoBusca, normalizar } from "@/components/CampoBusca";
@@ -146,12 +147,10 @@ function Noticias() {
           {visiveis.map((n, i) => (
             <Reveal as="article" key={n.slug} delay={i * 80}>
               <div className="lift h-full overflow-hidden rounded-3xl border border-border bg-card">
-                <img
+                <Imagem
                   src={n.imagem}
                   alt={n.titulo}
-                  loading="lazy"
-                  width={1400}
-                  height={900}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="p-7">

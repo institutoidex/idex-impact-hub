@@ -25,12 +25,30 @@ import f20 from "@/assets/fotos/idex-20.jpg.asset.json";
 import f21 from "@/assets/fotos/idex-21.jpg.asset.json";
 import f22 from "@/assets/fotos/idex-22.jpg.asset.json";
 
+import { VARIANTES } from "@/data/fotos-variantes";
+
 export interface Foto {
+  /** URL padrão (WebP grande) usada como src */
   url: string;
   alt: string;
+  /** Conjunto responsivo 480/960/1600 em WebP */
+  srcSet?: string | undefined;
+  largura?: number | undefined;
+  altura?: number | undefined;
 }
 
-const foto = (a: { url: string }, alt: string): Foto => ({ url: a.url, alt });
+// Monta a foto já apontando para as variantes WebP responsivas quando existirem,
+// caindo para o JPEG original quando não houver variante gerada.
+const foto = (a: { url: string; original_filename: string }, alt: string): Foto => {
+  const v = VARIANTES[a.original_filename];
+  return {
+    url: v?.padrao ?? a.url,
+    alt,
+    srcSet: v?.srcSet,
+    largura: v?.largura,
+    altura: v?.altura,
+  };
+};
 
 /** Todas as fotos enviadas, com descrição. */
 export const FOTOS: Foto[] = [
