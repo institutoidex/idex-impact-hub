@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
-import { listarMidia } from "./storage";
+import { listarConteudoPasta, listarMidia, listarTodasPastas } from "./storage";
 import type {
   AuditoriaRow,
   DocumentoRow,
