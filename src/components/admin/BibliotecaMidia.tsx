@@ -1,6 +1,18 @@
 import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, ImagePlus, Loader2, Search, Trash2, ExternalLink } from "lucide-react";
+import {
+  ChevronRight,
+  Copy,
+  ExternalLink,
+  Folder,
+  FolderPlus,
+  Home,
+  ImagePlus,
+  Loader2,
+  MoveRight,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,37 +33,59 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { midiaQuery } from "@/lib/queries";
-import { apagarMidia, enviarImagem, formatarTamanho, validarImagem } from "@/lib/storage";
+import { pastaMidiaQuery, todasPastasMidiaQuery } from "@/lib/queries";
+import {
+  apagarMidia,
+  apagarPastaMidia,
+  criarPastaMidia,
+  enviarImagem,
+  formatarTamanho,
+  moverMidia,
+  validarImagem,
+} from "@/lib/storage";
 
 /**
- * Biblioteca de imagens do site: envia, procura, copia o endereço e apaga
- * arquivos guardados no armazenamento público.
+ * Biblioteca de imagens do site organizada em pastas e subpastas.
+ * Permite navegar, criar pastas, enviar imagens na pasta atual,
+ * mover arquivos entre pastas, copiar o endereço e apagar.
  */
 export function BibliotecaMidia() {
   const queryClient = useQueryClient();
-  const arquivos = useQuery(midiaQuery);
   const inputArquivo = useRef<HTMLInputElement>(null);
 
+  // caminho da pasta aberta ("" = raiz da biblioteca)
+  const [caminho, setCaminho] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [pastaEnvio, setPastaEnvio] = useState("site");
   const [busca, setBusca] = useState("");
-  const [filtroPasta, setFiltroPasta] = useState("todas");
-  const [aExcluir, setAExcluir] = useState<{ caminho: string; nome: string } | null>(null);
+  const [criandoPasta, setCriandoPasta] = useState(false);
+  const [nomePasta, setNomePasta] = useState("");
+  const [aExcluir, setAExcluir] = useState<{
+    tipo: "arquivo" | "pasta";
+    caminho: string;
+    nome: string;
+  } | null>(null);
 
-  const pastas = useMemo(() => {
-    const lista = new Set((arquivos.data ?? []).map((a) => a.pasta));
-    return ["todas", ...Array.from(lista).sort()];
-  }, [arquivos.data]);
+  const conteudo = useQuery(pastaMidiaQuery(caminho));
+  const todasPastas = useQuery(todasPastasMidiaQuery);
 
-  const visiveis = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    return (arquivos.data ?? []).filter(
-      (a) =>
-        (filtroPasta === "todas" || a.pasta === filtroPasta) &&
-        (!termo || a.nome.toLowerCase().includes(termo) || a.pasta.toLowerCase().includes(termo)),
-    );
-  }, [arquivos.data, busca, filtroPasta]);
+  // Migalhas de pão para voltar aos níveis anteriores
+  const trilha = useMemo(() => {
+    const partes = caminho ? caminho.split("/") : [];
+    return partes.map((nome, i) => ({ nome, caminho: partes.slice(0, i + 1).join("/") }));
+  }, [caminho]);
+
+  const termo = busca.trim().toLowerCase();
+  const pastasVisiveis = (conteudo.data?.pastas ?? []).filter(
+    (p) => !termo || p.nome.toLowerCase().includes(termo),
+  );
+  const arquivosVisiveis = (conteudo.data?.arquivos ?? []).filter(
+    (a) => !termo || a.nome.toLowerCase().includes(termo),
+  );
+
+  /** Recarrega listagens após qualquer mudança no armazenamento. */
+  async function recarregar() {
+    await queryClient.invalidateQueries({ queryKey: ["midia"] });
+  }
 
   async function enviar(lista: FileList | null) {
     if (!lista?.length) return;
@@ -63,10 +97,10 @@ export function BibliotecaMidia() {
           toast.error(`${arquivo.name}: ${erro}`);
           continue;
         }
-        await enviarImagem(arquivo, pastaEnvio);
+        await enviarImagem(arquivo, caminho || "site");
       }
-      await queryClient.invalidateQueries({ queryKey: ["midia"] });
-      toast.success("Imagens enviadas para a biblioteca.");
+      await recarregar();
+      toast.success("Imagens enviadas para esta pasta.");
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível enviar.");
     } finally {
@@ -75,12 +109,35 @@ export function BibliotecaMidia() {
     }
   }
 
+  async function criarPasta() {
+    try {
+      await criarPastaMidia(caminho, nomePasta);
+      await recarregar();
+      setNomePasta("");
+      setCriandoPasta(false);
+      toast.success("Pasta criada.");
+    } catch (e) {
+      toast.error((e as Error).message || "Não foi possível criar a pasta.");
+    }
+  }
+
+  async function mover(caminhoArquivo: string, destino: string) {
+    try {
+      await moverMidia(caminhoArquivo, destino === "__raiz__" ? "" : destino);
+      await recarregar();
+      toast.success("Arquivo movido.");
+    } catch (e) {
+      toast.error((e as Error).message || "Não foi possível mover.");
+    }
+  }
+
   async function confirmarExclusao() {
     if (!aExcluir) return;
     try {
-      await apagarMidia(aExcluir.caminho);
-      await queryClient.invalidateQueries({ queryKey: ["midia"] });
-      toast.success("Arquivo apagado.");
+      if (aExcluir.tipo === "pasta") await apagarPastaMidia(aExcluir.caminho);
+      else await apagarMidia(aExcluir.caminho);
+      await recarregar();
+      toast.success(aExcluir.tipo === "pasta" ? "Pasta apagada." : "Arquivo apagado.");
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível apagar.");
     } finally {
@@ -95,11 +152,34 @@ export function BibliotecaMidia() {
 
   return (
     <div className="space-y-6">
-      {/* Barra de envio e filtros */}
+      {/* Caminho atual (migalhas) */}
+      <nav className="flex flex-wrap items-center gap-1 text-sm" aria-label="Caminho da pasta">
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 rounded-full px-2 py-1 hover:bg-muted"
+          onClick={() => setCaminho("")}
+        >
+          <Home className="size-4" /> Biblioteca
+        </button>
+        {trilha.map((p) => (
+          <span key={p.caminho} className="inline-flex items-center gap-1">
+            <ChevronRight className="size-4 text-muted-foreground" />
+            <button
+              type="button"
+              className="rounded-full px-2 py-1 hover:bg-muted"
+              onClick={() => setCaminho(p.caminho)}
+            >
+              {p.nome}
+            </button>
+          </span>
+        ))}
+      </nav>
+
+      {/* Barra de ações */}
       <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4">
         <div className="min-w-40 flex-1">
           <label className="text-xs text-muted-foreground" htmlFor="m-busca">
-            Procurar por nome
+            Procurar nesta pasta
           </label>
           <div className="relative mt-1">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -113,36 +193,9 @@ export function BibliotecaMidia() {
           </div>
         </div>
 
-        <div className="w-40">
-          <label className="text-xs text-muted-foreground">Pasta</label>
-          <Select value={filtroPasta} onValueChange={setFiltroPasta}>
-            <SelectTrigger className="mt-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {pastas.map((p) => (
-                <SelectItem key={p} value={p}>
-                  {p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-40">
-          <label className="text-xs text-muted-foreground">Enviar para</label>
-          <Select value={pastaEnvio} onValueChange={setPastaEnvio}>
-            <SelectTrigger className="mt-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="site">site</SelectItem>
-              <SelectItem value="projetos">projetos</SelectItem>
-              <SelectItem value="noticias">noticias</SelectItem>
-              <SelectItem value="equipe">equipe</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Button variant="outline" className="rounded-full" onClick={() => setCriandoPasta(true)}>
+          <FolderPlus className="size-4" /> Nova pasta
+        </Button>
 
         <input
           ref={inputArquivo}
@@ -158,22 +211,90 @@ export function BibliotecaMidia() {
           onClick={() => inputArquivo.current?.click()}
         >
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
-          {enviando ? "Enviando..." : "Enviar imagens"}
+          {enviando ? "Enviando..." : "Enviar imagens aqui"}
         </Button>
       </div>
 
-      {arquivos.isLoading && <p className="text-sm text-muted-foreground">Carregando imagens...</p>}
-      {arquivos.error && (
+      {/* Formulário de nova pasta */}
+      {criandoPasta && (
+        <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-dashed border-border bg-muted/40 p-4">
+          <div className="min-w-48 flex-1">
+            <label className="text-xs text-muted-foreground" htmlFor="m-nova-pasta">
+              Nome da {caminho ? "subpasta" : "pasta"}
+              {caminho ? ` dentro de “${caminho}”` : ""}
+            </label>
+            <Input
+              id="m-nova-pasta"
+              className="mt-1"
+              placeholder="ex.: talento-brasil-2026"
+              value={nomePasta}
+              onChange={(e) => setNomePasta(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void criarPasta()}
+            />
+          </div>
+          <Button className="rounded-full" onClick={() => void criarPasta()}>
+            Criar
+          </Button>
+          <Button
+            variant="ghost"
+            className="rounded-full"
+            onClick={() => {
+              setCriandoPasta(false);
+              setNomePasta("");
+            }}
+          >
+            Cancelar
+          </Button>
+        </div>
+      )}
+
+      {conteudo.isLoading && <p className="text-sm text-muted-foreground">Carregando pasta...</p>}
+      {conteudo.error && (
         <p className="text-sm text-destructive">Não foi possível listar a biblioteca.</p>
       )}
-      {arquivos.data && visiveis.length === 0 && (
+
+      {/* Subpastas */}
+      {pastasVisiveis.length > 0 && (
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {pastasVisiveis.map((p) => (
+            <li
+              key={p.caminho}
+              className="flex items-center gap-2 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
+            >
+              <button
+                type="button"
+                className="flex flex-1 items-center gap-2 text-left"
+                onClick={() => {
+                  setCaminho(p.caminho);
+                  setBusca("");
+                }}
+              >
+                <Folder className="size-5 text-primary" />
+                <span className="truncate text-sm font-medium">{p.nome}</span>
+              </button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="rounded-full"
+                aria-label={`Apagar pasta ${p.nome}`}
+                onClick={() => setAExcluir({ tipo: "pasta", caminho: p.caminho, nome: p.nome })}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {conteudo.data && pastasVisiveis.length === 0 && arquivosVisiveis.length === 0 && (
         <p className="rounded-2xl border border-dashed border-border bg-muted/50 p-6 text-sm text-muted-foreground">
-          Nenhuma imagem encontrada.
+          Esta pasta está vazia. Crie uma subpasta ou envie imagens.
         </p>
       )}
 
+      {/* Arquivos da pasta atual */}
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {visiveis.map((a) => (
+        {arquivosVisiveis.map((a) => (
           <li key={a.caminho} className="overflow-hidden rounded-2xl border border-border bg-card">
             <img
               src={a.url}
@@ -185,9 +306,27 @@ export function BibliotecaMidia() {
               <p className="truncate text-sm" title={a.nome}>
                 {a.nome}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {a.pasta} · {formatarTamanho(a.tamanho)}
-              </p>
+              <p className="text-xs text-muted-foreground">{formatarTamanho(a.tamanho)}</p>
+
+              {/* Mover para outra pasta */}
+              <Select value="" onValueChange={(destino) => void mover(a.caminho, destino)}>
+                <SelectTrigger className="h-8 rounded-full text-xs">
+                  <span className="inline-flex items-center gap-1">
+                    <MoveRight className="size-3" /> Mover para...
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__raiz__">Biblioteca (raiz)</SelectItem>
+                  {(todasPastas.data ?? [])
+                    .filter((p) => p !== (caminho || "__nada__"))
+                    .map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+
               <div className="flex gap-1">
                 <Button
                   size="sm"
@@ -207,7 +346,7 @@ export function BibliotecaMidia() {
                   variant="outline"
                   className="rounded-full"
                   aria-label={`Apagar ${a.nome}`}
-                  onClick={() => setAExcluir({ caminho: a.caminho, nome: a.nome })}
+                  onClick={() => setAExcluir({ tipo: "arquivo", caminho: a.caminho, nome: a.nome })}
                 >
                   <Trash2 className="size-4" />
                 </Button>
@@ -222,7 +361,9 @@ export function BibliotecaMidia() {
           <AlertDialogHeader>
             <AlertDialogTitle>Apagar “{aExcluir?.nome}”?</AlertDialogTitle>
             <AlertDialogDescription>
-              Se essa imagem estiver em uso em alguma página, o espaço vai ficar vazio.
+              {aExcluir?.tipo === "pasta"
+                ? "Tudo que estiver dentro dela, inclusive subpastas, será apagado."
+                : "Se essa imagem estiver em uso em alguma página, o espaço vai ficar vazio."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
