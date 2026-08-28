@@ -579,7 +579,9 @@ export function BibliotecaMidia() {
             <AlertDialogDescription>
               {aExcluir?.tipo === "pasta"
                 ? "Tudo que estiver dentro dela, inclusive subpastas, será apagado."
-                : "Se essa imagem estiver em uso em alguma página, o espaço vai ficar vazio."}
+                : aExcluir?.tipo === "selecao"
+                  ? "Todos os arquivos selecionados serão apagados. Se algum estiver em uso em alguma página, o espaço vai ficar vazio."
+                  : "Se essa imagem estiver em uso em alguma página, o espaço vai ficar vazio."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
