@@ -171,10 +171,9 @@ export default function VisorFotos({
         )}
       </div>
 
-      {/* legenda + dica de atalhos */}
+      {/* dica de atalhos (sem legenda da foto) */}
       <div className="px-6 pb-6 text-center text-sm text-white/80" onClick={(e) => e.stopPropagation()}>
-        <p>{foto.alt}</p>
-        <p className="mt-1 text-xs text-white/50">
+        <p className="text-xs text-white/50">
           {varias ? "Setas para navegar · " : ""}+ / − para zoom · 0 para redefinir · Esc para fechar
         </p>
       </div>
