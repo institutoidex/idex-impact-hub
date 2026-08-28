@@ -88,6 +88,15 @@ export function BibliotecaMidia() {
     (a) => !termo || a.nome.toLowerCase().includes(termo),
   );
 
+  // Todos os arquivos visíveis estão marcados?
+  const todosMarcados =
+    arquivosVisiveis.length > 0 && arquivosVisiveis.every((a) => selecionados.includes(a.caminho));
+
+  // Ao trocar de pasta, a seleção anterior deixa de fazer sentido
+  useEffect(() => {
+    setSelecionados([]);
+  }, [caminho]);
+
   /** Recarrega listagens após qualquer mudança no armazenamento. */
   async function recarregar() {
     await queryClient.invalidateQueries({ queryKey: ["midia"] });
