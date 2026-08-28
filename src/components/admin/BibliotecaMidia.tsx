@@ -401,16 +401,113 @@ export function BibliotecaMidia() {
         </p>
       )}
 
+      {/* Barra de ações em massa */}
+      {arquivosVisiveis.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-muted/40 p-3">
+          <label className="inline-flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={todosMarcados}
+              onCheckedChange={(v) =>
+                setSelecionados(v === true ? arquivosVisiveis.map((a) => a.caminho) : [])
+              }
+              aria-label="Selecionar todos os arquivos desta pasta"
+            />
+            Selecionar todos
+          </label>
+
+          <span className="text-sm text-muted-foreground">
+            {selecionados.length} selecionado(s)
+          </span>
+
+          {selecionados.length > 0 && (
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              {processando && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
+              <Select
+                value=""
+                disabled={processando}
+                onValueChange={(destino) => void moverSelecionados(destino)}
+              >
+                <SelectTrigger className="h-9 w-48 rounded-full text-xs">
+                  <span className="inline-flex items-center gap-1">
+                    <MoveRight className="size-3" /> Mover selecionados...
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__raiz__">Biblioteca (raiz)</SelectItem>
+                  {(todasPastas.data ?? [])
+                    .filter((p) => p !== (caminho || "__nada__"))
+                    .map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full"
+                disabled={processando}
+                onClick={() => void copiarSelecionados()}
+              >
+                <Copy className="size-3" /> Copiar endereços
+              </Button>
+
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full"
+                disabled={processando}
+                onClick={() =>
+                  setAExcluir({
+                    tipo: "selecao",
+                    caminho: "",
+                    nome: `${selecionados.length} arquivo(s)`,
+                  })
+                }
+              >
+                <Trash2 className="size-3" /> Apagar
+              </Button>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                className="rounded-full"
+                onClick={() => setSelecionados([])}
+              >
+                Limpar seleção
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Arquivos da pasta atual */}
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {arquivosVisiveis.map((a) => (
-          <li key={a.caminho} className="overflow-hidden rounded-2xl border border-border bg-card">
-            <img
-              src={a.url}
-              alt={a.nome}
-              loading="lazy"
-              className="aspect-[4/3] w-full bg-muted object-cover"
-            />
+          <li
+            key={a.caminho}
+            className={`overflow-hidden rounded-2xl border bg-card ${
+              selecionados.includes(a.caminho) ? "border-primary ring-2 ring-primary/30" : "border-border"
+            }`}
+          >
+            <div className="relative">
+              <img
+                src={a.url}
+                alt={a.nome}
+                loading="lazy"
+                className="aspect-[4/3] w-full cursor-pointer bg-muted object-cover"
+                onClick={() => alternarSelecao(a.caminho)}
+              />
+              <span className="absolute top-2 left-2 rounded-md bg-background/90 p-1 shadow-sm">
+                <Checkbox
+                  checked={selecionados.includes(a.caminho)}
+                  onCheckedChange={() => alternarSelecao(a.caminho)}
+                  aria-label={`Selecionar ${a.nome}`}
+                />
+              </span>
+            </div>
             <div className="space-y-2 p-3">
               <p className="truncate text-sm" title={a.nome}>
                 {a.nome}
