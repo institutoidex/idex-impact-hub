@@ -59,6 +59,9 @@ export function BibliotecaMidia() {
   const [busca, setBusca] = useState("");
   const [criandoPasta, setCriandoPasta] = useState(false);
   const [nomePasta, setNomePasta] = useState("");
+  // arraste: destaca a área geral ou a pasta que está sob o cursor
+  const [arrastando, setArrastando] = useState(false);
+  const [pastaAlvo, setPastaAlvo] = useState<string | null>(null);
   const [aExcluir, setAExcluir] = useState<{
     tipo: "arquivo" | "pasta";
     caminho: string;
