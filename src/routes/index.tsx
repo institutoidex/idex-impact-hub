@@ -103,9 +103,11 @@ function Inicio() {
       <section className="bg-sand">
         <div className="grid lg:grid-cols-2">
           <div className="relative min-h-72 sm:min-h-96">
+            {/* sem `ampliavel` aqui: a foto preenche a faixa inteira com
+                posicionamento absoluto, e a galeria ampliável fica na página
+                do projeto */}
             <Imagem
               foto={FOTO_TALENTO}
-              ampliavel
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="absolute inset-0 size-full object-cover"
             />
