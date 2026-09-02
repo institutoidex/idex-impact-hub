@@ -15,7 +15,7 @@ interface EntradaSitemap {
 const ROTAS_FIXAS: EntradaSitemap[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/quem-somos", changefreq: "monthly", priority: "0.8" },
-  { path: "/projetos", changefreq: "weekly", priority: "0.8" },
+  // /projetos está oculto no site, por isso fora do sitemap
   { path: "/noticias", changefreq: "daily", priority: "0.8" },
   { path: "/transparencia", changefreq: "monthly", priority: "0.7" },
   { path: "/como-ajudar", changefreq: "monthly", priority: "0.9" },
