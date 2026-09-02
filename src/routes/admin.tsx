@@ -159,9 +159,6 @@ function Painel() {
           <TabsTrigger value="visao">
             <Gauge className="size-4" /> Visão geral
           </TabsTrigger>
-          <TabsTrigger value="projetos">
-            <FolderKanban className="size-4" /> Projetos
-          </TabsTrigger>
           <TabsTrigger value="noticias">
             <Newspaper className="size-4" /> Notícias
           </TabsTrigger>
@@ -191,11 +188,6 @@ function Painel() {
         <TabsContent value="visao" className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Cartao
-              titulo="Projetos"
-              total={projetos.data?.length}
-              detalhe={`${(projetos.data ?? []).filter((p) => p.publicado).length} publicados`}
-            />
-            <Cartao
               titulo="Notícias"
               total={noticias.data?.length}
               detalhe={`${(noticias.data ?? []).filter((n) => n.publicado).length} publicadas`}
@@ -223,72 +215,6 @@ function Painel() {
               <Historico limite={5} />
             </div>
           </div>
-        </TabsContent>
-
-        {/* ---------------- Projetos ---------------- */}
-        <TabsContent value="projetos" className="mt-6 space-y-4">
-          <div className="flex justify-end">
-            <Button
-              className="rounded-full"
-              onClick={() => setEditorProjeto({ aberto: true, item: null })}
-            >
-              <Plus className="size-4" /> Novo projeto
-            </Button>
-          </div>
-
-          {projetos.isLoading && <Vazio texto="Carregando projetos..." />}
-          {projetos.error && <Vazio texto="Não foi possível carregar os projetos." />}
-          {projetos.data?.length === 0 && <Vazio texto="Nenhum projeto cadastrado ainda." />}
-
-          {projetos.data?.map((p) => (
-            <article
-              key={p.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
-            >
-              {p.imagem_url && (
-                <img
-                  src={p.imagem_url}
-                  alt=""
-                  className="h-16 w-24 rounded-xl object-cover"
-                  loading="lazy"
-                />
-              )}
-              <div className="min-w-56 flex-1">
-                <h2 className="text-lg">{p.titulo}</h2>
-                <p className="text-sm text-muted-foreground">{p.resumo}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  /{p.slug}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Switch
-                    checked={p.publicado}
-                    onCheckedChange={(v) => publicarProjeto.mutate({ id: p.id, publicado: v })}
-                  />
-                  {p.publicado ? "Publicado" : "Rascunho"}
-                </label>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full"
-                  aria-label={`Editar ${p.titulo}`}
-                  onClick={() => setEditorProjeto({ aberto: true, item: p })}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full"
-                  aria-label={`Apagar ${p.titulo}`}
-                  onClick={() => setAExcluir({ tabela: "projetos", id: p.id, titulo: p.titulo })}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            </article>
-          ))}
         </TabsContent>
 
         {/* ---------------- Notícias ---------------- */}
