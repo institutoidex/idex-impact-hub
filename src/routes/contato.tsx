@@ -38,8 +38,25 @@ const esquemaContato = z.object({
   mensagem: z.string().trim().min(5, "Escreva sua mensagem").max(2000),
 });
 
+// Ordem dos campos usada para focar o primeiro erro na submissão.
+const CAMPOS = ["nome", "email", "assunto", "mensagem"] as const;
+
+type ErrosContato = Partial<Record<(typeof CAMPOS)[number], string>>;
+
 function Contato() {
   const [enviando, setEnviando] = useState(false);
+  const [erros, setErros] = useState<ErrosContato>({});
+  const refs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
+
+  // Limpa o erro de um campo assim que o usuário começa a corrigi-lo.
+  function aoMudar(campo: keyof ErrosContato) {
+    setErros((anteriores) => {
+      if (!anteriores[campo]) return anteriores;
+      const novo = { ...anteriores };
+      delete novo[campo];
+      return novo;
+    });
+  }
 
   // Grava a mensagem na tabela `mensagens` (leitura só pela equipe logada).
   async function aoEnviar(e: React.FormEvent<HTMLFormElement>) {
@@ -52,11 +69,25 @@ function Contato() {
       assunto: dados.get("assunto"),
       mensagem: dados.get("mensagem"),
     });
+
     if (!parsed.success) {
+      const novosErros: ErrosContato = {};
+      for (const issue of parsed.error.issues) {
+        const campo = issue.path[0] as keyof ErrosContato;
+        if (!novosErros[campo]) novosErros[campo] = issue.message;
+      }
+      setErros(novosErros);
       toast.error(parsed.error.issues[0]?.message ?? "Confira os campos");
+
+      // Foca no primeiro campo com erro, na ordem do formulário.
+      const primeiroErro = CAMPOS.find((campo) => novosErros[campo]);
+      if (primeiroErro) {
+        refs.current[primeiroErro]?.focus();
+      }
       return;
     }
 
+    setErros({});
     setEnviando(true);
     const { error } = await supabase.from("mensagens").insert([parsed.data]);
     setEnviando(false);
