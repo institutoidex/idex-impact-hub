@@ -72,7 +72,13 @@ function Contato() {
 
   return (
     <>
-      <PageHero titulo="Fala com a gente" descricao="Dúvidas, parcerias ou vontade de ajudar.">
+      {/* Variante fotográfica: mãos unidas em círculo, símbolo do time */}
+      <PageHero
+        variante="foto"
+        foto={FOTO_VOLUNTARIADO}
+        titulo="Fala com a gente"
+        descricao="Dúvidas, parcerias ou vontade de ajudar."
+      >
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
           Contato
         </span>

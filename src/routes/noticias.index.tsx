@@ -105,7 +105,9 @@ function Noticias() {
 
   return (
     <>
+      {/* Variante invertida: texto à direita para quebrar a cadência */}
       <PageHero
+        variante="invertida"
         titulo="O que anda acontecendo"
         descricao="Registros das ações e anúncios do instituto."
       >

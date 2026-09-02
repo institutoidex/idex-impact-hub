@@ -71,7 +71,10 @@ function ProjetosIndex() {
 
   return (
     <>
+      {/* Variante fotográfica: lance real do Talento Brasil em largura total */}
       <PageHero
+        variante="foto"
+        foto={FOTO_TALENTO}
         titulo="Projetos que acontecem no campo, não no papel"
         descricao="Hoje temos um projeto ativo publicado. Novos projetos entram nesta lista conforme forem lançados."
       >

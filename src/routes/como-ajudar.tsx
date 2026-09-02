@@ -26,7 +26,9 @@ export const Route = createFileRoute("/como-ajudar")({
 function ComoAjudar() {
   return (
     <>
+      {/* Variante invertida: convite com texto à direita */}
       <PageHero
+        variante="invertida"
         titulo="Três jeitos de fazer diferença"
         descricao="Escolha o que combina com você — todos chegam na mesma criança."
       >
