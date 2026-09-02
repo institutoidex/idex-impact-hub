@@ -80,7 +80,7 @@ export function Header() {
           <div className="hidden sm:block">
             <BuscaDocumentos />
           </div>
-          <Button asChild className="hidden rounded-full sm:inline-flex">
+          <Button asChild variant="idex" className="hidden sm:inline-flex">
             <Link to="/como-ajudar">
               <HeartHandshake className="size-4" />
               Como Ajudar
@@ -90,8 +90,8 @@ export function Header() {
           {!carregando && (
             <Button
               asChild
-              variant="outline"
-              className="hidden rounded-full sm:inline-flex"
+              variant="idexContorno"
+              className="hidden sm:inline-flex"
               aria-label={sessao ? "Ir para o painel administrativo" : "Entrar na área da equipe"}
             >
               <Link to={sessao ? "/admin" : "/auth"}>

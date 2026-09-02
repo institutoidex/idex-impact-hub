@@ -78,7 +78,7 @@ function ComoAjudar() {
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="mt-6 aspect-[4/3] w-full rounded-2xl object-cover"
               />
-              <Button asChild className="mt-6 w-full rounded-full">
+              <Button asChild variant="idex" className="mt-6 w-full">
                 <Link to="/contato">Quero ser voluntário</Link>
               </Button>
             </div>
@@ -95,7 +95,7 @@ function ComoAjudar() {
               <div className="mt-6 rounded-2xl bg-ink-card p-5 text-sm text-ink-foreground/80">
                 Entre em contato para conversarmos sobre o formato de apoio ideal.
               </div>
-              <Button asChild variant="secondary" className="mt-6 w-full rounded-full">
+              <Button asChild variant="idexSecundario" className="mt-6 w-full">
                 <Link to="/contato">Falar com o instituto</Link>
               </Button>
             </div>
