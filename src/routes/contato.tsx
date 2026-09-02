@@ -125,20 +125,78 @@ function Contato() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome</Label>
-                <Input id="nome" name="nome" required placeholder="Seu nome" />
+                <Input
+                  id="nome"
+                  name="nome"
+                  required
+                  placeholder="Seu nome"
+                  aria-invalid={!!erros.nome}
+                  aria-describedby={erros.nome ? "erro-nome" : undefined}
+                  ref={(el) => { refs.current.nome = el; }}
+                  onChange={() => aoMudar("nome")}
+                />
+                {erros.nome && (
+                  <p id="erro-nome" className="text-sm text-destructive">
+                    {erros.nome}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required placeholder="voce@email.com" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="voce@email.com"
+                  aria-invalid={!!erros.email}
+                  aria-describedby={erros.email ? "erro-email" : undefined}
+                  ref={(el) => { refs.current.email = el; }}
+                  onChange={() => aoMudar("email")}
+                />
+                {erros.email && (
+                  <p id="erro-email" className="text-sm text-destructive">
+                    {erros.email}
+                  </p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="assunto">Assunto</Label>
-              <Input id="assunto" name="assunto" required placeholder="Sobre o que quer falar?" />
+              <Input
+                id="assunto"
+                name="assunto"
+                required
+                placeholder="Sobre o que quer falar?"
+                aria-invalid={!!erros.assunto}
+                aria-describedby={erros.assunto ? "erro-assunto" : undefined}
+                ref={(el) => { refs.current.assunto = el; }}
+                onChange={() => aoMudar("assunto")}
+              />
+              {erros.assunto && (
+                <p id="erro-assunto" className="text-sm text-destructive">
+                  {erros.assunto}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="mensagem">Mensagem</Label>
-              <Textarea id="mensagem" name="mensagem" required rows={6} placeholder="Escreva aqui" />
+              <Textarea
+                id="mensagem"
+                name="mensagem"
+                required
+                rows={6}
+                placeholder="Escreva aqui"
+                aria-invalid={!!erros.mensagem}
+                aria-describedby={erros.mensagem ? "erro-mensagem" : undefined}
+                ref={(el) => { refs.current.mensagem = el; }}
+                onChange={() => aoMudar("mensagem")}
+              />
+              {erros.mensagem && (
+                <p id="erro-mensagem" className="text-sm text-destructive">
+                  {erros.mensagem}
+                </p>
+              )}
             </div>
             <Button type="submit" size="lg" variant="idex" disabled={enviando}>
               {enviando ? "Enviando..." : "Enviar mensagem"}
