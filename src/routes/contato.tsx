@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
@@ -38,8 +38,25 @@ const esquemaContato = z.object({
   mensagem: z.string().trim().min(5, "Escreva sua mensagem").max(2000),
 });
 
+// Ordem dos campos usada para focar o primeiro erro na submissão.
+const CAMPOS = ["nome", "email", "assunto", "mensagem"] as const;
+
+type ErrosContato = Partial<Record<(typeof CAMPOS)[number], string>>;
+
 function Contato() {
   const [enviando, setEnviando] = useState(false);
+  const [erros, setErros] = useState<ErrosContato>({});
+  const refs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
+
+  // Limpa o erro de um campo assim que o usuário começa a corrigi-lo.
+  function aoMudar(campo: keyof ErrosContato) {
+    setErros((anteriores) => {
+      if (!anteriores[campo]) return anteriores;
+      const novo = { ...anteriores };
+      delete novo[campo];
+      return novo;
+    });
+  }
 
   // Grava a mensagem na tabela `mensagens` (leitura só pela equipe logada).
   async function aoEnviar(e: React.FormEvent<HTMLFormElement>) {
@@ -52,11 +69,25 @@ function Contato() {
       assunto: dados.get("assunto"),
       mensagem: dados.get("mensagem"),
     });
+
     if (!parsed.success) {
+      const novosErros: ErrosContato = {};
+      for (const issue of parsed.error.issues) {
+        const campo = issue.path[0] as keyof ErrosContato;
+        if (!novosErros[campo]) novosErros[campo] = issue.message;
+      }
+      setErros(novosErros);
       toast.error(parsed.error.issues[0]?.message ?? "Confira os campos");
+
+      // Foca no primeiro campo com erro, na ordem do formulário.
+      const primeiroErro = CAMPOS.find((campo) => novosErros[campo]);
+      if (primeiroErro) {
+        refs.current[primeiroErro]?.focus();
+      }
       return;
     }
 
+    setErros({});
     setEnviando(true);
     const { error } = await supabase.from("mensagens").insert([parsed.data]);
     setEnviando(false);
@@ -94,20 +125,78 @@ function Contato() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome</Label>
-                <Input id="nome" name="nome" required placeholder="Seu nome" />
+                <Input
+                  id="nome"
+                  name="nome"
+                  required
+                  placeholder="Seu nome"
+                  aria-invalid={!!erros.nome}
+                  aria-describedby={erros.nome ? "erro-nome" : undefined}
+                  ref={(el) => { refs.current.nome = el; }}
+                  onChange={() => aoMudar("nome")}
+                />
+                {erros.nome && (
+                  <p id="erro-nome" className="text-sm text-destructive">
+                    {erros.nome}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required placeholder="voce@email.com" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="voce@email.com"
+                  aria-invalid={!!erros.email}
+                  aria-describedby={erros.email ? "erro-email" : undefined}
+                  ref={(el) => { refs.current.email = el; }}
+                  onChange={() => aoMudar("email")}
+                />
+                {erros.email && (
+                  <p id="erro-email" className="text-sm text-destructive">
+                    {erros.email}
+                  </p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="assunto">Assunto</Label>
-              <Input id="assunto" name="assunto" required placeholder="Sobre o que quer falar?" />
+              <Input
+                id="assunto"
+                name="assunto"
+                required
+                placeholder="Sobre o que quer falar?"
+                aria-invalid={!!erros.assunto}
+                aria-describedby={erros.assunto ? "erro-assunto" : undefined}
+                ref={(el) => { refs.current.assunto = el; }}
+                onChange={() => aoMudar("assunto")}
+              />
+              {erros.assunto && (
+                <p id="erro-assunto" className="text-sm text-destructive">
+                  {erros.assunto}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="mensagem">Mensagem</Label>
-              <Textarea id="mensagem" name="mensagem" required rows={6} placeholder="Escreva aqui" />
+              <Textarea
+                id="mensagem"
+                name="mensagem"
+                required
+                rows={6}
+                placeholder="Escreva aqui"
+                aria-invalid={!!erros.mensagem}
+                aria-describedby={erros.mensagem ? "erro-mensagem" : undefined}
+                ref={(el) => { refs.current.mensagem = el; }}
+                onChange={() => aoMudar("mensagem")}
+              />
+              {erros.mensagem && (
+                <p id="erro-mensagem" className="text-sm text-destructive">
+                  {erros.mensagem}
+                </p>
+              )}
             </div>
             <Button type="submit" size="lg" variant="idex" disabled={enviando}>
               {enviando ? "Enviando..." : "Enviar mensagem"}
