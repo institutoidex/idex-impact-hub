@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, HeartHandshake, LogIn, LayoutDashboard } from "lucide-react";
+import { Menu, X, HeartHandshake, LogIn, LayoutDashboard, ChevronDown } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { usePastas } from "@/lib/conteudo";
 import { montarArvore, PASTAS_BASE } from "@/lib/pastas";
