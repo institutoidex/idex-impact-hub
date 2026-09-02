@@ -118,7 +118,7 @@ function ProjetoDetalhe() {
         </Reveal>
 
         <Reveal className="mt-10">
-          <Button asChild className="rounded-full">
+          <Button asChild variant="idex">
             <Link to="/como-ajudar">Apoiar este projeto</Link>
           </Button>
         </Reveal>

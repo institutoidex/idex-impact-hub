@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { MapPin, Instagram, Facebook, Phone, Mail } from "lucide-react";
 import { CONTATO } from "@/data/idex";
+import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Placeholder } from "@/components/Placeholder";
@@ -72,7 +73,13 @@ function Contato() {
 
   return (
     <>
-      <PageHero titulo="Fala com a gente" descricao="Dúvidas, parcerias ou vontade de ajudar.">
+      {/* Variante fotográfica: mãos unidas em círculo, símbolo do time */}
+      <PageHero
+        variante="foto"
+        foto={FOTO_VOLUNTARIADO}
+        titulo="Fala com a gente"
+        descricao="Dúvidas, parcerias ou vontade de ajudar."
+      >
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
           Contato
         </span>
@@ -102,7 +109,7 @@ function Contato() {
               <Label htmlFor="mensagem">Mensagem</Label>
               <Textarea id="mensagem" name="mensagem" required rows={6} placeholder="Escreva aqui" />
             </div>
-            <Button type="submit" size="lg" className="rounded-full" disabled={enviando}>
+            <Button type="submit" size="lg" variant="idex" disabled={enviando}>
               {enviando ? "Enviando..." : "Enviar mensagem"}
             </Button>
             <p className="text-xs text-muted-foreground">

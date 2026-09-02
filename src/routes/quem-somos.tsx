@@ -27,7 +27,9 @@ export const Route = createFileRoute("/quem-somos")({
 function QuemSomos() {
   return (
     <>
+      {/* Variante editorial: filete amarelo da marca + texto à esquerda */}
       <PageHero
+        variante="editorial"
         titulo="Uma história que começou no comércio e virou comunidade"
         descricao="O Instituto IDEX foi fundado em 2007."
       >

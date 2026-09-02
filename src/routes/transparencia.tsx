@@ -76,7 +76,9 @@ function Transparencia() {
 
   return (
     <>
+      {/* Variante editorial: sóbria, combinando com a página de documentos */}
       <PageHero
+        variante="editorial"
         titulo="Conta aberta com quem apoia"
         descricao="Os documentos do instituto ficam organizados em pastas. Clique para navegar e baixar os arquivos."
       >

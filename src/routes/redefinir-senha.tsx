@@ -99,7 +99,7 @@ function RedefinirSenha() {
                 autoComplete="new-password"
               />
             </div>
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+            <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               <KeyRound className="size-4" />
               {enviando ? "Salvando..." : "Salvar nova senha"}
             </Button>
@@ -110,7 +110,7 @@ function RedefinirSenha() {
               Validando seu link de redefinição… Se a página não avançar, o link pode ter
               expirado — peça um novo na tela de login.
             </p>
-            <Button asChild variant="outline" className="w-full rounded-full">
+            <Button asChild variant="idexContorno" className="w-full">
               <Link to="/auth">Voltar ao login</Link>
             </Button>
           </div>

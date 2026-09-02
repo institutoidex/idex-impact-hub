@@ -143,7 +143,7 @@ function Login() {
                 autoComplete="current-password"
               />
             </div>
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+            <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               <LogIn className="size-4" />
               {enviando ? "Entrando..." : "Entrar"}
             </Button>
@@ -164,7 +164,7 @@ function Login() {
                 Você receberá um link para definir uma nova senha.
               </p>
             </div>
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={enviando}>
+            <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               {enviando ? "Enviando..." : "Enviar link de redefinição"}
             </Button>
             <button
