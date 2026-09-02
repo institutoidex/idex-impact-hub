@@ -85,17 +85,12 @@ function Inicio() {
               className="entrada mt-8 flex flex-wrap gap-3"
               style={{ "--d": "650ms" } as CSSProperties}
             >
-              <Button asChild size="lg" className="rounded-full">
+              <Button asChild size="lg" variant="idex">
                 <Link to="/como-ajudar">
                   <HeartHandshake className="size-4" /> Quero ajudar
                 </Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full border-ink-foreground/30 bg-ink-card/40 text-ink-foreground hover:bg-ink-card"
-              >
+              <Button asChild size="lg" variant="idexClaro">
                 <Link to="/projetos">Ver projetos</Link>
               </Button>
             </div>
@@ -103,54 +98,58 @@ function Inicio() {
         </div>
       </section>
 
-      {/* Projeto em destaque --------------------------------------------- */}
-      <section className="bg-sand py-20">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
-          <Reveal>
+      {/* Projeto em destaque: faixa com a foto sangrando até as bordas da tela,
+          sem card arredondado ao redor — quebra a pilha de caixas */}
+      <section className="bg-sand">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-72 sm:min-h-96">
             <Imagem
               foto={FOTO_TALENTO}
               ampliavel
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="tilt-left w-full rounded-3xl object-cover shadow-[0_30px_60px_-40px_rgba(0,0,0,0.6)]"
+              className="absolute inset-0 size-full object-cover"
             />
-          </Reveal>
-          <Reveal delay={120}>
-            <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-              Projeto em destaque
-            </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl">Talento Brasil</h2>
-            <p className="mt-4 text-muted-foreground">
-              Treinamento de futebol gratuito para 200 crianças e jovens nas categorias de base, em
-              parceria com o Clube Esportivo Penha. Lançado em 26/06/2017, na Câmara dos Vereadores
-              de Santa Cruz do Rio Pardo.
-            </p>
-            <Button asChild className="mt-7 rounded-full">
-              <Link to="/projetos/$slug" params={{ slug: "talento-brasil" }}>
-                Conhecer o projeto <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </Reveal>
+          </div>
+          <div className="flex items-center px-4 py-14 sm:px-10 lg:py-24 lg:pl-16 lg:pr-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+            <Reveal delay={120}>
+              <span className="text-xs font-semibold tracking-widest text-primary uppercase">
+                Projeto em destaque
+              </span>
+              <h2 className="mt-3 text-3xl sm:text-4xl">Talento Brasil</h2>
+              <p className="mt-4 text-muted-foreground">
+                Treinamento de futebol gratuito para 200 crianças e jovens nas categorias de base,
+                em parceria com o Clube Esportivo Penha. Lançado em 26/06/2017, na Câmara dos
+                Vereadores de Santa Cruz do Rio Pardo.
+              </p>
+              <Button asChild variant="idex" className="mt-7">
+                <Link to="/projetos/$slug" params={{ slug: "talento-brasil" }}>
+                  Conhecer o projeto <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* Números ---------------------------------------------------------- */}
+      {/* Números: conteúdo solto direto no fundo da página, sem caixa ao redor.
+          O filete amarelo da marca marca cada número. */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <div className="grid gap-6 rounded-3xl bg-ink p-8 text-ink-foreground sm:grid-cols-3 sm:p-10">
+        <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
           {[
             { v: 2007, sep: false, t: "ano de fundação" },
             { v: 19, sep: true, t: "anos de atuação" },
             { v: 200, sep: true, t: "crianças no Talento Brasil" },
           ].map((item, i) => (
             <Reveal key={item.t} delay={i * 100}>
-              <div className="h-full rounded-2xl bg-ink-card p-7">
-                <p className="font-display text-5xl text-primary">
+              <div>
+                <div className="h-1 w-12 bg-brand-yellow" aria-hidden />
+                <p className="mt-5 font-display text-6xl text-foreground">
                   {item.sep ? <Counter valor={item.v} /> : item.v}
                 </p>
-                <p className="mt-2 text-sm text-ink-foreground/70">{item.t}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{item.t}</p>
               </div>
             </Reveal>
           ))}
-
         </div>
       </section>
 
@@ -213,28 +212,28 @@ function Inicio() {
         <GaleriaLightbox fotos={GALERIA.slice(0, 8)} className="mt-8" />
       </section>
 
-      {/* CTA final -------------------------------------------------------- */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <Reveal>
-          <div className="grid gap-6 rounded-3xl bg-primary/10 p-8 sm:p-12 lg:grid-cols-[1.4fr_1fr] lg:items-center">
-            <div>
-              <h2 className="text-3xl sm:text-4xl">Vem junto com a gente</h2>
-              <p className="mt-3 max-w-xl text-muted-foreground">
-                Doe ou seja voluntário e ajude a transformar vidas na comunidade.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 lg:justify-end">
-              <Button asChild size="lg" className="rounded-full">
-                <Link to="/como-ajudar">
-                  <HeartHandshake className="size-4" /> Doar
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary" className="rounded-full">
-                <Link to="/contato">Falar com o instituto</Link>
-              </Button>
-            </div>
-          </div>
-        </Reveal>
+      {/* CTA final: faixa escura de largura total com o filete amarelo da marca,
+          em vez de mais um card arredondado */}
+      <section className="bg-ink text-ink-foreground">
+        <div className="rule-yellow" aria-hidden />
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+          <Reveal>
+            <h2 className="text-3xl sm:text-4xl">Vem junto com a gente</h2>
+            <p className="mt-3 max-w-xl text-ink-foreground/75">
+              Doe ou seja voluntário e ajude a transformar vidas na comunidade.
+            </p>
+          </Reveal>
+          <Reveal delay={120} className="flex flex-wrap gap-3 lg:justify-end">
+            <Button asChild size="lg" variant="idex">
+              <Link to="/como-ajudar">
+                <HeartHandshake className="size-4" /> Doar
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="idexClaro">
+              <Link to="/contato">Falar com o instituto</Link>
+            </Button>
+          </Reveal>
+        </div>
       </section>
     </>
   );
