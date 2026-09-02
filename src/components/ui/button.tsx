@@ -4,6 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+// Identidade de botão do IDEX: pílula com peso 600, leve subida no hover e
+// retorno no active. Os formatos (raio, peso, movimento) vivem aqui uma única
+// vez — as páginas só escolhem a variante, sem `rounded-full` avulso.
+const identidadeIdex =
+  "rounded-full font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm";
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
@@ -16,11 +22,18 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Variantes da marca (pílulas):
+        idex: `${identidadeIdex} bg-primary text-primary-foreground hover:bg-primary/90`,
+        idexSecundario: `${identidadeIdex} bg-secondary text-secondary-foreground hover:bg-secondary/90`,
+        /** Contorno para fundos claros */
+        idexContorno: `${identidadeIdex} border-2 border-primary bg-transparent text-primary shadow-none hover:bg-primary hover:text-primary-foreground`,
+        /** Contorno claro para uso sobre foto/fundo escuro */
+        idexClaro: `${identidadeIdex} border border-ink-foreground/40 bg-ink-card/40 text-ink-foreground backdrop-blur-sm hover:bg-ink-card hover:border-ink-foreground/60`,
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
+        lg: "h-10 px-8",
         icon: "h-9 w-9",
       },
     },
