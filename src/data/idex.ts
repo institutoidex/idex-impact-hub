@@ -69,8 +69,7 @@ export const CONTATO = {
 export const NAV = [
   { to: "/", label: "Início" },
   { to: "/quem-somos", label: "Quem Somos" },
-  
-  { to: "/projetos", label: "Projetos" },
+  // Projetos está oculto no site por enquanto (a pedido da diretoria)
   { to: "/transparencia", label: "Transparência" },
   { to: "/noticias", label: "Notícias" },
   { to: "/contato", label: "Contato" },
