@@ -132,7 +132,7 @@ function Contato() {
                   placeholder="Seu nome"
                   aria-invalid={!!erros.nome}
                   aria-describedby={erros.nome ? "erro-nome" : undefined}
-                  ref={(el) => { refs.current.nome = el; }}
+                  ref={(el) => { refs.current['nome'] = el; }}
                   onChange={() => aoMudar("nome")}
                 />
                 {erros.nome && (
@@ -151,7 +151,7 @@ function Contato() {
                   placeholder="voce@email.com"
                   aria-invalid={!!erros.email}
                   aria-describedby={erros.email ? "erro-email" : undefined}
-                  ref={(el) => { refs.current.email = el; }}
+                  ref={(el) => { refs.current['email'] = el; }}
                   onChange={() => aoMudar("email")}
                 />
                 {erros.email && (
@@ -170,7 +170,7 @@ function Contato() {
                 placeholder="Sobre o que quer falar?"
                 aria-invalid={!!erros.assunto}
                 aria-describedby={erros.assunto ? "erro-assunto" : undefined}
-                ref={(el) => { refs.current.assunto = el; }}
+                ref={(el) => { refs.current['assunto'] = el; }}
                 onChange={() => aoMudar("assunto")}
               />
               {erros.assunto && (
@@ -189,7 +189,7 @@ function Contato() {
                 placeholder="Escreva aqui"
                 aria-invalid={!!erros.mensagem}
                 aria-describedby={erros.mensagem ? "erro-mensagem" : undefined}
-                ref={(el) => { refs.current.mensagem = el; }}
+                ref={(el) => { refs.current['mensagem'] = el; }}
                 onChange={() => aoMudar("mensagem")}
               />
               {erros.mensagem && (

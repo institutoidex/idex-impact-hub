@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Mail,
   Newspaper,
-  FolderKanban,
   FolderTree,
   Plus,
   Pencil,
@@ -25,7 +24,6 @@ import {
   mensagensQuery,
   midiaQuery,
   noticiasAdminQuery,
-  projetosAdminQuery,
 } from "@/lib/queries";
 import {
   useAlternarPublicacao,
@@ -37,7 +35,6 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
-import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
 import { GerenciadorPastas } from "@/components/admin/GerenciadorPastas";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
@@ -54,7 +51,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
+import type { DocumentoRow, NoticiaRow } from "@/lib/db-types";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -105,7 +102,6 @@ function Painel() {
   const logado = Boolean(sessao);
   const mensagens = useQuery({ ...mensagensQuery, enabled: logado });
   const noticias = useQuery({ ...noticiasAdminQuery, enabled: logado });
-  const projetos = useQuery({ ...projetosAdminQuery, enabled: logado });
   const documentos = useQuery({ ...documentosAdminQuery, enabled: logado });
   const midia = useQuery({ ...midiaQuery, enabled: logado });
 
@@ -114,10 +110,7 @@ function Painel() {
     aberto: false,
     item: null,
   });
-  const [editorProjeto, setEditorProjeto] = useState<{ aberto: boolean; item: ProjetoRow | null }>({
-    aberto: false,
-    item: null,
-  });
+  // Editor de projetos removido: a área de Projetos está oculta no site
   const [pastaDoNovoDocumento, setPastaDoNovoDocumento] = useState<string | null>(null);
   const [editorDocumento, setEditorDocumento] = useState<{
     aberto: boolean;
@@ -126,16 +119,13 @@ function Painel() {
   const [aExcluir, setAExcluir] = useState<Exclusao | null>(null);
 
   const publicarNoticia = useAlternarPublicacao("noticias");
-  const publicarProjeto = useAlternarPublicacao("projetos");
   const apagarNoticia = useApagarRegistro("noticias");
-  const apagarProjeto = useApagarRegistro("projetos");
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
 
   function confirmarExclusao() {
     if (!aExcluir) return;
     if (aExcluir.tabela === "noticias") apagarNoticia.mutate(aExcluir.id);
-    if (aExcluir.tabela === "projetos") apagarProjeto.mutate(aExcluir.id);
     if (aExcluir.tabela === "documentos") acoesDocumento.apagar.mutate(aExcluir.id);
     if (aExcluir.tabela === "mensagens") acoesMensagem.apagar.mutate(aExcluir.id);
     setAExcluir(null);
@@ -158,9 +148,6 @@ function Painel() {
         <TabsList className="flex h-auto flex-wrap justify-start gap-1">
           <TabsTrigger value="visao">
             <Gauge className="size-4" /> Visão geral
-          </TabsTrigger>
-          <TabsTrigger value="projetos">
-            <FolderKanban className="size-4" /> Projetos
           </TabsTrigger>
           <TabsTrigger value="noticias">
             <Newspaper className="size-4" /> Notícias
@@ -191,11 +178,6 @@ function Painel() {
         <TabsContent value="visao" className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Cartao
-              titulo="Projetos"
-              total={projetos.data?.length}
-              detalhe={`${(projetos.data ?? []).filter((p) => p.publicado).length} publicados`}
-            />
-            <Cartao
               titulo="Notícias"
               total={noticias.data?.length}
               detalhe={`${(noticias.data ?? []).filter((n) => n.publicado).length} publicadas`}
@@ -223,72 +205,6 @@ function Painel() {
               <Historico limite={5} />
             </div>
           </div>
-        </TabsContent>
-
-        {/* ---------------- Projetos ---------------- */}
-        <TabsContent value="projetos" className="mt-6 space-y-4">
-          <div className="flex justify-end">
-            <Button
-              className="rounded-full"
-              onClick={() => setEditorProjeto({ aberto: true, item: null })}
-            >
-              <Plus className="size-4" /> Novo projeto
-            </Button>
-          </div>
-
-          {projetos.isLoading && <Vazio texto="Carregando projetos..." />}
-          {projetos.error && <Vazio texto="Não foi possível carregar os projetos." />}
-          {projetos.data?.length === 0 && <Vazio texto="Nenhum projeto cadastrado ainda." />}
-
-          {projetos.data?.map((p) => (
-            <article
-              key={p.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6"
-            >
-              {p.imagem_url && (
-                <img
-                  src={p.imagem_url}
-                  alt=""
-                  className="h-16 w-24 rounded-xl object-cover"
-                  loading="lazy"
-                />
-              )}
-              <div className="min-w-56 flex-1">
-                <h2 className="text-lg">{p.titulo}</h2>
-                <p className="text-sm text-muted-foreground">{p.resumo}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  /{p.slug}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Switch
-                    checked={p.publicado}
-                    onCheckedChange={(v) => publicarProjeto.mutate({ id: p.id, publicado: v })}
-                  />
-                  {p.publicado ? "Publicado" : "Rascunho"}
-                </label>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full"
-                  aria-label={`Editar ${p.titulo}`}
-                  onClick={() => setEditorProjeto({ aberto: true, item: p })}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full"
-                  aria-label={`Apagar ${p.titulo}`}
-                  onClick={() => setAExcluir({ tabela: "projetos", id: p.id, titulo: p.titulo })}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            </article>
-          ))}
         </TabsContent>
 
         {/* ---------------- Notícias ---------------- */}
@@ -516,11 +432,6 @@ function Painel() {
         aberto={editorNoticia.aberto}
         noticia={editorNoticia.item}
         aoFechar={() => setEditorNoticia({ aberto: false, item: null })}
-      />
-      <EditorProjeto
-        aberto={editorProjeto.aberto}
-        projeto={editorProjeto.item}
-        aoFechar={() => setEditorProjeto({ aberto: false, item: null })}
       />
       <EditorDocumento
         aberto={editorDocumento.aberto}

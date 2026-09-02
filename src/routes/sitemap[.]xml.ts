@@ -15,7 +15,7 @@ interface EntradaSitemap {
 const ROTAS_FIXAS: EntradaSitemap[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/quem-somos", changefreq: "monthly", priority: "0.8" },
-  { path: "/projetos", changefreq: "weekly", priority: "0.8" },
+  // /projetos está oculto no site, por isso fora do sitemap
   { path: "/noticias", changefreq: "daily", priority: "0.8" },
   { path: "/transparencia", changefreq: "monthly", priority: "0.7" },
   { path: "/como-ajudar", changefreq: "monthly", priority: "0.9" },
@@ -30,14 +30,9 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Conteúdo dinâmico publicado (mesmos filtros dos loaders das páginas)
         try {
-          const [projetos, noticias] = await Promise.all([
-            supabase.from("projetos").select("slug").eq("publicado", true),
-            supabase.from("noticias").select("slug").eq("publicado", true),
-          ]);
+          // Apenas notícias: as páginas de projeto estão ocultas
+          const noticias = await supabase.from("noticias").select("slug").eq("publicado", true);
 
-          for (const p of projetos.data ?? []) {
-            if (p.slug) entries.push({ path: `/projetos/${p.slug}`, changefreq: "monthly", priority: "0.7" });
-          }
           for (const n of noticias.data ?? []) {
             if (n.slug) entries.push({ path: `/noticias/${n.slug}`, changefreq: "monthly", priority: "0.6" });
           }

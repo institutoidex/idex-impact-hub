@@ -91,21 +91,18 @@ function Inicio() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="idexClaro">
-                <Link to="/projetos">Ver projetos</Link>
+                <Link to="/noticias">Ver notícias</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Projeto em destaque: faixa com a foto sangrando até as bordas da tela,
-          sem card arredondado ao redor — quebra a pilha de caixas */}
+      {/* Faixa com foto sangrando até as bordas — a chamada de projeto
+          foi retirada enquanto a área de Projetos estiver oculta */}
       <section className="bg-sand">
         <div className="grid lg:grid-cols-2">
           <div className="relative min-h-72 sm:min-h-96">
-            {/* sem `ampliavel` aqui: a foto preenche a faixa inteira com
-                posicionamento absoluto, e a galeria ampliável fica na página
-                do projeto */}
             <Imagem
               foto={FOTO_TALENTO}
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -115,17 +112,16 @@ function Inicio() {
           <div className="flex items-center px-4 py-14 sm:px-10 lg:py-24 lg:pl-16 lg:pr-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
             <Reveal delay={120}>
               <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-                Projeto em destaque
+                No dia a dia
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl">Talento Brasil</h2>
+              <h2 className="mt-3 text-3xl sm:text-4xl">Esporte que aproxima</h2>
               <p className="mt-4 text-muted-foreground">
-                Treinamento de futebol gratuito para 200 crianças e jovens nas categorias de base,
-                em parceria com o Clube Esportivo Penha. Lançado em 26/06/2017, na Câmara dos
-                Vereadores de Santa Cruz do Rio Pardo.
+                Treinos gratuitos de futebol para 200 crianças e jovens das categorias de base, em
+                parceria com o Clube Esportivo Penha, desde 2017.
               </p>
               <Button asChild variant="idex" className="mt-7">
-                <Link to="/projetos/$slug" params={{ slug: "talento-brasil" }}>
-                  Conhecer o projeto <ArrowRight className="size-4" />
+                <Link to="/como-ajudar">
+                  Quero apoiar <ArrowRight className="size-4" />
                 </Link>
               </Button>
             </Reveal>

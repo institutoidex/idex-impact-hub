@@ -169,7 +169,6 @@ function Noticias() {
                     </Link>
                   </h2>
                   <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-                  {/* Link para o projeto só aparece quando a notícia está vinculada a um */}
                   <div className="mt-4 flex flex-wrap items-center gap-4">
                     <Link
                       to="/noticias/$slug"
@@ -178,15 +177,6 @@ function Noticias() {
                     >
                       Ler a notícia
                     </Link>
-                  {n.projeto && (
-                    <Link
-                      to="/projetos/$slug"
-                      params={{ slug: n.projeto }}
-                      className="text-sm font-semibold text-primary hover:underline"
-                    >
-                      Ver o projeto
-                    </Link>
-                  )}
                   </div>
                 </div>
               </div>

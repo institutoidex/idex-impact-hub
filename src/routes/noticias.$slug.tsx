@@ -176,23 +176,6 @@ function NoticiaDetalhePagina() {
           )}
         </Reveal>
 
-        {/* Link só existe quando a notícia está vinculada a um projeto */}
-        {noticia.projeto && (
-          <Reveal delay={80}>
-            <div className="mt-10 rounded-3xl border border-border bg-card p-7">
-              <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                Projeto relacionado
-              </p>
-              <Link
-                to="/projetos/$slug"
-                params={{ slug: noticia.projeto }}
-                className="mt-2 inline-block font-semibold text-primary hover:underline"
-              >
-                Ver o projeto
-              </Link>
-            </div>
-          </Reveal>
-        )}
       </section>
     </article>
   );

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -13,15 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { gerarSlug, useSalvarNoticia, type NoticiaForm } from "@/lib/mutations";
-import { projetosAdminQuery } from "@/lib/queries";
 import type { NoticiaRow } from "@/lib/db-types";
 import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
 
@@ -38,8 +29,6 @@ export function EditorNoticia({
 }) {
   const salvar = useSalvarNoticia();
   const [form, setForm] = useState<NoticiaForm>(vazia());
-  // Lista de projetos para o vínculo opcional da notícia
-  const { data: projetos } = useQuery(projetosAdminQuery);
 
   // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
@@ -141,28 +130,6 @@ export function EditorNoticia({
 
           <UploadMidia pasta="noticias" />
 
-          {/* Vínculo opcional: a notícia pode ser sobre um projeto ou geral */}
-          <div className="space-y-2">
-            <Label htmlFor="projeto">Projeto relacionado (opcional)</Label>
-            <Select
-              value={form.projeto_slug ?? "nenhum"}
-              onValueChange={(v) =>
-                setForm((f) => ({ ...f, projeto_slug: v === "nenhum" ? null : v }))
-              }
-            >
-              <SelectTrigger id="projeto">
-                <SelectValue placeholder="Nenhum — notícia geral do instituto" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="nenhum">Nenhum — notícia geral do instituto</SelectItem>
-                {(projetos ?? []).map((p) => (
-                  <SelectItem key={p.id} value={p.slug}>
-                    {p.titulo}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           <div className="space-y-2">
             <Label htmlFor="data">Data de publicação</Label>
