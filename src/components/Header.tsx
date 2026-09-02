@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, HeartHandshake, LogIn, LayoutDashboard } from "lucide-react";
+import { Menu, X, HeartHandshake, LogIn, LayoutDashboard, ChevronDown } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { usePastas } from "@/lib/conteudo";
 import { montarArvore, PASTAS_BASE } from "@/lib/pastas";
@@ -154,7 +154,11 @@ export function Header() {
   );
 }
 
-/** Menu suspenso de Transparência com as pastas de primeiro nível. */
+/**
+ * Item "Transparência": o texto é um link normal que SEMPRE navega para a
+ * página geral; o menu de atalhos das pastas abre por um botão de seta
+ * separado (Radix não intercepta mais o clique do link).
+ */
 function MenuTransparencia({ rotulo }: { rotulo: string }) {
   const pastas = usePastas();
   const raizes = montarArvore(pastas);
@@ -163,25 +167,35 @@ function MenuTransparencia({ rotulo }: { rotulo: string }) {
     : PASTAS_BASE;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Link
-          to="/transparencia"
-          activeProps={{ className: "nav-link-ativo" }}
-          className="nav-link"
-        >
-          {rotulo}
-        </Link>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-60">
-        {itens.map((item) => (
-          <DropdownMenuItem key={item.slug} asChild>
-            <Link to="/transparencia" search={{ pasta: item.slug, doc: "" }}>
-              {item.nome}
-            </Link>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <span className="flex items-center">
+      <Link
+        to="/transparencia"
+        activeProps={{ className: "nav-link-ativo" }}
+        className="nav-link"
+      >
+        {rotulo}
+      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            aria-label="Abrir atalhos das pastas de Transparência"
+            className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+          >
+            <ChevronDown className="size-4" aria-hidden />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-60">
+          {itens.map((item) => (
+            <DropdownMenuItem key={item.slug} asChild>
+              <Link to="/transparencia" search={{ pasta: item.slug, doc: "" }}>
+                {item.nome}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </span>
   );
 }
+
