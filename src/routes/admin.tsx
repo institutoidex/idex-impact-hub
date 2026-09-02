@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Mail,
   Newspaper,
-  FolderKanban,
   FolderTree,
   Plus,
   Pencil,
@@ -25,7 +24,6 @@ import {
   mensagensQuery,
   midiaQuery,
   noticiasAdminQuery,
-  projetosAdminQuery,
 } from "@/lib/queries";
 import {
   useAlternarPublicacao,
@@ -37,7 +35,6 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
-import { EditorProjeto } from "@/components/admin/EditorProjeto";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
 import { GerenciadorPastas } from "@/components/admin/GerenciadorPastas";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
@@ -54,7 +51,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { DocumentoRow, NoticiaRow, ProjetoRow } from "@/lib/db-types";
+import type { DocumentoRow, NoticiaRow } from "@/lib/db-types";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -105,7 +102,6 @@ function Painel() {
   const logado = Boolean(sessao);
   const mensagens = useQuery({ ...mensagensQuery, enabled: logado });
   const noticias = useQuery({ ...noticiasAdminQuery, enabled: logado });
-  const projetos = useQuery({ ...projetosAdminQuery, enabled: logado });
   const documentos = useQuery({ ...documentosAdminQuery, enabled: logado });
   const midia = useQuery({ ...midiaQuery, enabled: logado });
 
@@ -114,7 +110,7 @@ function Painel() {
     aberto: false,
     item: null,
   });
-  const [editorProjeto, setEditorProjeto] = useState<{ aberto: boolean; item: ProjetoRow | null }>({
+  const [__editorProjetoRemovido] = useState<{ aberto: boolean }>({
     aberto: false,
     item: null,
   });
@@ -126,16 +122,13 @@ function Painel() {
   const [aExcluir, setAExcluir] = useState<Exclusao | null>(null);
 
   const publicarNoticia = useAlternarPublicacao("noticias");
-  const publicarProjeto = useAlternarPublicacao("projetos");
   const apagarNoticia = useApagarRegistro("noticias");
-  const apagarProjeto = useApagarRegistro("projetos");
   const acoesDocumento = useDocumentoAcoes();
   const acoesMensagem = useMensagemAcoes();
 
   function confirmarExclusao() {
     if (!aExcluir) return;
     if (aExcluir.tabela === "noticias") apagarNoticia.mutate(aExcluir.id);
-    if (aExcluir.tabela === "projetos") apagarProjeto.mutate(aExcluir.id);
     if (aExcluir.tabela === "documentos") acoesDocumento.apagar.mutate(aExcluir.id);
     if (aExcluir.tabela === "mensagens") acoesMensagem.apagar.mutate(aExcluir.id);
     setAExcluir(null);
@@ -442,11 +435,6 @@ function Painel() {
         aberto={editorNoticia.aberto}
         noticia={editorNoticia.item}
         aoFechar={() => setEditorNoticia({ aberto: false, item: null })}
-      />
-      <EditorProjeto
-        aberto={editorProjeto.aberto}
-        projeto={editorProjeto.item}
-        aoFechar={() => setEditorProjeto({ aberto: false, item: null })}
       />
       <EditorDocumento
         aberto={editorDocumento.aberto}
