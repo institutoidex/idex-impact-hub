@@ -110,10 +110,7 @@ function Painel() {
     aberto: false,
     item: null,
   });
-  const [__editorProjetoRemovido] = useState<{ aberto: boolean }>({
-    aberto: false,
-    item: null,
-  });
+  // Editor de projetos removido: a área de Projetos está oculta no site
   const [pastaDoNovoDocumento, setPastaDoNovoDocumento] = useState<string | null>(null);
   const [editorDocumento, setEditorDocumento] = useState<{
     aberto: boolean;
