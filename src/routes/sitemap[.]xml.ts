@@ -30,14 +30,9 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Conteúdo dinâmico publicado (mesmos filtros dos loaders das páginas)
         try {
-          const [projetos, noticias] = await Promise.all([
-            supabase.from("projetos").select("slug").eq("publicado", true),
-            supabase.from("noticias").select("slug").eq("publicado", true),
-          ]);
+          // Apenas notícias: as páginas de projeto estão ocultas
+          const noticias = await supabase.from("noticias").select("slug").eq("publicado", true);
 
-          for (const p of projetos.data ?? []) {
-            if (p.slug) entries.push({ path: `/projetos/${p.slug}`, changefreq: "monthly", priority: "0.7" });
-          }
           for (const n of noticias.data ?? []) {
             if (n.slug) entries.push({ path: `/noticias/${n.slug}`, changefreq: "monthly", priority: "0.6" });
           }
