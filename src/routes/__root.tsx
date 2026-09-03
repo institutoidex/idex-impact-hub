@@ -188,6 +188,8 @@ function RootComponent() {
       <BotaoAcessibilidade />
       {/* Intérprete de Libras (VLibras) — canto inferior esquerdo */}
       <VLibras />
+      {/* Fontes da marca carregadas sem bloquear a renderização */}
+      <FontesWeb />
       <Toaster />
     </QueryClientProvider>
   );
