@@ -32,10 +32,28 @@ export function VLibras() {
     // para não brigar com nosso botão de acessibilidade (canto inferior direito)
     window.VLibrasWidget = { path: URL_APP, position: "l" };
 
-    const script = document.createElement("script");
-    script.src = URL_SCRIPT;
-    script.async = true;
-    document.body.appendChild(script);
+    // Carrega só depois que a página terminou de carregar: em navegadores com
+    // bloqueador embutido (Opera GX) a requisição pode ficar pendurada e segurar
+    // o indicador de carregamento da aba.
+    let cancelado = false;
+    const carregar = () => {
+      if (cancelado) return;
+      const script = document.createElement("script");
+      script.src = URL_SCRIPT;
+      script.async = true;
+      script.onerror = () => script.remove(); // falha no widget não afeta o site
+      document.body.appendChild(script);
+    };
+
+    if (document.readyState === "complete") {
+      setTimeout(carregar, 1200);
+    } else {
+      window.addEventListener("load", () => setTimeout(carregar, 1200), { once: true });
+    }
+
+    return () => {
+      cancelado = true;
+    };
   }, []);
 
   // O botão e o painel do intérprete são montados pelo script oficial
