@@ -132,10 +132,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Public+Sans:wght@400;500;600;700&display=swap",
-      },
+      // As fontes do Google são injetadas pelo componente <FontesWeb /> após a
+      // hidratação, para não bloquear a renderização em navegadores com
+      // bloqueador embutido (Opera GX, Brave etc.).
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
     // Dados estruturados JSON-LD: Organização e WebSite (válidos em todas as páginas)
