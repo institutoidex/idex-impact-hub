@@ -31,7 +31,15 @@ export function Header() {
   }, []);
 
   return (
-    <
+    <header
+      className={cn(
+        // site-cabecalho: alvo do filtro de escala de cinza da acessibilidade
+        "site-cabecalho fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        rolou
+          ? "border-b border-border bg-background/95 shadow-[0_12px_32px_-24px_rgba(36,35,35,0.55)] backdrop-blur"
+          : "border-b border-transparent bg-background/85 backdrop-blur-sm",
+      )}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         {/* Logo à esquerda */}
         <Link to="/" className="group flex shrink-0 items-center gap-2" onClick={() => setAberto(false)}>
