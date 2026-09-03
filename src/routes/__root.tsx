@@ -15,6 +15,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BotaoAcessibilidade } from "@/components/BotaoAcessibilidade";
 import { VLibras } from "@/components/VLibras";
+import { FontesWeb } from "@/components/FontesWeb";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { useRealtimeConteudo } from "@/hooks/useRealtimeConteudo";
 
