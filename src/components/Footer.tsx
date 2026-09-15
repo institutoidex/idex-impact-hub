@@ -12,7 +12,7 @@ export function Footer() {
       <div className="rule-yellow" />
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-1">
-          <div className="inline-flex items-center rounded-md bg-background px-3 py-2">
+          <div className="inline-flex min-h-20 items-center justify-center rounded-md bg-background px-3 py-2 sm:min-h-24 sm:px-4">
             {/* Logo oficial no rodapé */}
             <img
               src={logoAsset.url}
@@ -21,7 +21,7 @@ export function Footer() {
               height={905}
               loading="lazy"
               decoding="async"
-              className="h-20 w-auto max-w-[9rem] object-contain sm:max-w-[10rem]"
+              className="h-auto w-36 object-contain sm:w-40"
             />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">

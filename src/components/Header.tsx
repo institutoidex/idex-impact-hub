@@ -40,9 +40,13 @@ export function Header() {
           : "border-b border-transparent bg-background/85 backdrop-blur-sm",
       )}
     >
-      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:min-h-24 sm:px-6">
+      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 sm:min-h-24 sm:gap-4 sm:px-6 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         {/* Logo à esquerda */}
-        <Link to="/" className="group flex shrink-0 items-center gap-2" onClick={() => setAberto(false)}>
+        <Link
+          to="/"
+          className="group flex min-w-0 items-center justify-self-start"
+          onClick={() => setAberto(false)}
+        >
           {/* Logo oficial do Instituto IDEX */}
           <img
             src={logoAsset.url}
@@ -50,12 +54,12 @@ export function Header() {
             width={1626}
             height={905}
             decoding="async"
-            className="h-[3.6rem] w-auto max-w-[6.5rem] object-contain transition-transform group-hover:-rotate-1 sm:h-[4.6rem] sm:max-w-[8.25rem]"
+            className="h-auto w-28 shrink-0 object-contain transition-transform group-hover:-rotate-1 sm:w-32 xl:w-36"
           />
         </Link>
 
         {/* Navegação desktop centralizada */}
-        <nav className="hidden items-center gap-0.5 xl:flex">
+        <nav className="hidden items-center justify-self-center gap-0.5 xl:flex">
           {NAV.map((item) =>
             item.to === "/transparencia" ? (
               <MenuTransparencia key={item.to} rotulo={item.label} />
@@ -74,7 +78,7 @@ export function Header() {
         </nav>
 
         {/* Ações à direita: busca, CTA e acesso à equipe */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center justify-self-end gap-2">
           {/* Busca sutil de documentos — visível a partir de sm */}
           <div className="hidden sm:block">
             <BuscaDocumentos />
