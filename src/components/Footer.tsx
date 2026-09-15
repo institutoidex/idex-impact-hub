@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, MapPin } from "lucide-react";
 import { NAV, CONTATO } from "@/data/idex";
-import logoAsset from "@/assets/logo-idex-horizontal-colorida.png.asset.json";
+import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 /** Rodapé escuro com filete amarelo no topo (elemento da identidade atual). */
 export function Footer() {
@@ -12,16 +12,16 @@ export function Footer() {
       <div className="rule-yellow" />
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-1">
-          <div className="flex items-center gap-2">
+          <div className="inline-flex items-center rounded-md bg-background px-3 py-2">
             {/* Logo oficial no rodapé */}
             <img
               src={logoAsset.url}
               alt="Instituto IDEX"
-              width={200}
-              height={80}
+              width={1626}
+              height={905}
               loading="lazy"
               decoding="async"
-              className="h-14 w-auto max-w-full object-contain"
+              className="h-20 w-auto max-w-[9rem] object-contain sm:max-w-[10rem]"
             />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">

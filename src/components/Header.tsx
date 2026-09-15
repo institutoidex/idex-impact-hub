@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
 import { useSessao } from "@/hooks/useSessao";
-import logoAsset from "@/assets/logo-idex-horizontal-colorida.png.asset.json";
+import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
 export function Header() {
@@ -40,17 +40,17 @@ export function Header() {
           : "border-b border-transparent bg-background/85 backdrop-blur-sm",
       )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:min-h-24 sm:px-6">
         {/* Logo à esquerda */}
         <Link to="/" className="group flex shrink-0 items-center gap-2" onClick={() => setAberto(false)}>
           {/* Logo oficial do Instituto IDEX */}
           <img
             src={logoAsset.url}
             alt="Instituto IDEX"
-            width={200}
-            height={80}
+            width={1626}
+            height={905}
             decoding="async"
-            className="h-11 w-auto max-w-[11rem] object-contain transition-transform group-hover:-rotate-1 sm:h-14 sm:max-w-[14rem]"
+            className="h-[3.6rem] w-auto max-w-[6.5rem] object-contain transition-transform group-hover:-rotate-1 sm:h-[4.6rem] sm:max-w-[8.25rem]"
           />
         </Link>
 
