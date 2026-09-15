@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 export const Route = createFileRoute("/redefinir-senha")({
   ssr: false,
@@ -78,6 +79,15 @@ function RedefinirSenha() {
   return (
     <section className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-24">
       <div className="rounded-3xl border border-border bg-card p-8">
+        {/* Mesma proporção de marca usada no login e no painel. */}
+        <img
+          src={logoAsset.url}
+          alt="Instituto IDEX"
+          width={1626}
+          height={905}
+          decoding="async"
+          className="mb-7 h-auto w-36 object-contain"
+        />
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
           Área da equipe
         </span>

@@ -18,6 +18,8 @@ import { VLibras } from "@/components/VLibras";
 import { FontesWeb } from "@/components/FontesWeb";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { useRealtimeConteudo } from "@/hooks/useRealtimeConteudo";
+import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
+import compartilhamentoAsset from "@/assets/compartilhamento-idex-v2.jpg.asset.json";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -84,6 +86,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 // URL pública oficial do site (usada em canonicals, og:url e dados estruturados)
 export const SITE_URL = "https://idex-impact-hub.lovable.app";
 
+// Arquivos oficiais com URL absoluta para buscadores e compartilhamentos sociais.
+const LOGO_URL = `${SITE_URL}${logoAsset.url}`;
+const IMAGEM_COMPARTILHAMENTO_URL = `${SITE_URL}${compartilhamentoAsset.url}`;
+
 // Dados estruturados (JSON-LD) globais: Organization + WebSite.
 // Melhoram a exibição do instituto nos resultados de busca (nome, logo, redes).
 const jsonLdOrganizacao = {
@@ -92,7 +98,7 @@ const jsonLdOrganizacao = {
   "@id": `${SITE_URL}/#organizacao`,
   name: "Instituto IDEX",
   url: SITE_URL,
-  logo: `${SITE_URL}/favicon.png`,
+  logo: LOGO_URL,
   foundingDate: "2007",
   description:
     "ONG brasileira que atua em educação, cultura, esportes, meio ambiente, negócios e saúde desde 2007.",
@@ -127,7 +133,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "f41Di7u7feDIM43P6vFZUwTAlxVsjqowHAfM-jHS7AM",
       },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Instituto IDEX" },
+      { property: "og:image", content: IMAGEM_COMPARTILHAMENTO_URL },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Logotipo do Instituto IDEX" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: IMAGEM_COMPARTILHAMENTO_URL },
+      { name: "twitter:image:alt", content: "Logotipo do Instituto IDEX" },
+      { name: "theme-color", content: "#00A859" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -136,7 +150,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // As fontes do Google são injetadas pelo componente <FontesWeb /> após a
       // hidratação, para não bloquear a renderização em navegadores com
       // bloqueador embutido (Opera GX, Brave etc.).
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      // O sufixo v2 renova ícones antigos mantidos em cache pelo Opera GX e Chrome.
+      { rel: "icon", href: "/favicon-v2.ico", sizes: "any" },
+      { rel: "icon", href: "/favicon-v2-16.png", type: "image/png", sizes: "16x16" },
+      { rel: "icon", href: "/favicon-v2-32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-v2-64.png", type: "image/png", sizes: "64x64" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon-v2.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest?v=2" },
     ],
     // Dados estruturados JSON-LD: Organização e WebSite (válidos em todas as páginas)
     scripts: [
