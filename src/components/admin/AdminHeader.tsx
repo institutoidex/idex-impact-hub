@@ -3,7 +3,7 @@ import { LogOut, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSessao } from "@/hooks/useSessao";
 import { supabase } from "@/lib/supabase";
-import logoAsset from "@/assets/logo-idex.png.asset.json";
+import logoAsset from "@/assets/logo-idex-horizontal-colorida.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 
 /**
@@ -34,7 +34,7 @@ export function AdminHeader() {
             <img
               src={logoAsset.url}
               alt="Instituto IDEX"
-              className="h-9 w-auto object-contain sm:h-10"
+              className="h-10 w-auto max-w-[10rem] object-contain sm:h-12 sm:max-w-[12rem]"
             />
           </Link>
           <div className="hidden sm:block">
