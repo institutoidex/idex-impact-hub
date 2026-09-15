@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
 import { useSessao } from "@/hooks/useSessao";
-import logoAsset from "@/assets/logo-idex.png.asset.json";
+import logoAsset from "@/assets/logo-idex-horizontal-colorida.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
 export function Header() {
@@ -50,7 +50,7 @@ export function Header() {
             width={200}
             height={80}
             decoding="async"
-            className="h-10 w-auto object-contain transition-transform group-hover:-rotate-1 sm:h-12"
+            className="h-11 w-auto max-w-[11rem] object-contain transition-transform group-hover:-rotate-1 sm:h-14 sm:max-w-[14rem]"
           />
         </Link>
 

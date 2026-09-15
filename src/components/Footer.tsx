@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, MapPin } from "lucide-react";
 import { NAV, CONTATO } from "@/data/idex";
-import logoAsset from "@/assets/logo-idex.png.asset.json";
+import logoAsset from "@/assets/logo-idex-horizontal-colorida.png.asset.json";
 
 /** Rodapé escuro com filete amarelo no topo (elemento da identidade atual). */
 export function Footer() {
@@ -21,7 +21,7 @@ export function Footer() {
               height={80}
               loading="lazy"
               decoding="async"
-              className="h-10 w-auto object-contain"
+              className="h-14 w-auto max-w-full object-contain"
             />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">
