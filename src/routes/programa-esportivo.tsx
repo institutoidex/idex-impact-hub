@@ -175,11 +175,11 @@ function ProgramaEsportivo() {
               {/* Logo ao lado do texto em qualquer largura de tela; quadro cresce no desktop */}
               <article id={p.numero} className="scroll-mt-28 grid grid-cols-[auto_minmax(0,1fr)] gap-4 sm:gap-6">
                 {/* Logo clicável: abre o visor em tela cheia */}
-              <button
-                type="button"
-                onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
-                aria-label={`Ampliar logo do projeto ${p.nome}`}
-                className="group relative flex size-20 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-24 sm:p-2.5 md:size-28"
+                <button
+                  type="button"
+                  onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
+                  aria-label={`Ampliar logo do projeto ${p.nome}`}
+                  className="group relative flex size-20 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-24 sm:p-2.5 md:size-28"
                 >
                   <img
                     src={p.logo}
