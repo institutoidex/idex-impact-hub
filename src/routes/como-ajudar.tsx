@@ -6,8 +6,9 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 
-// Marca única dos programas de fomento (imagem oficial enviada pelo instituto)
-import logosIncentivo from "@/assets/incentivo/logos-lei-incentivo.png.asset.json";
+// Marca única dos programas de fomento (imagem oficial enviada pelo instituto,
+// com as margens brancas aparadas para ocupar melhor o espaço)
+import logosIncentivo from "@/assets/incentivo/logos-lei-incentivo-v2.png.asset.json";
 
 export const Route = createFileRoute("/como-ajudar")({
   head: () => ({
