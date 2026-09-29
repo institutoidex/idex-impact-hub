@@ -5,7 +5,8 @@ import { ArrowRight, HeartHandshake } from "lucide-react";
 import { Imagem } from "@/components/Imagem";
 import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_HERO, FOTO_TALENTO, GALERIA } from "@/data/fotos";
-import { NOTICIAS } from "@/data/idex";
+import { useQuery } from "@tanstack/react-query";
+import { formatarData, noticiasQuery } from "@/lib/queries";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
 import { Counter } from "@/components/motion/Counter";
@@ -162,41 +163,7 @@ function Inicio() {
             Ver todas
           </Link>
         </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {NOTICIAS.map((n, i) => (
-            <Reveal as="article" key={n.slug} delay={i * 90}>
-              <TiltCard>
-                <div className="lift h-full rounded-3xl border border-border bg-card p-7">
-                  <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                    {n.data}
-                  </p>
-                  <h3 className="mt-3 text-xl">
-                    {/* cada notícia tem endereço próprio em /noticias/slug */}
-                    <Link
-                      to="/noticias/$slug"
-                      params={{ slug: n.slug }}
-                      className="hover:text-primary"
-                    >
-                      {n.titulo}
-                    </Link>
-                  </h3>
-                  <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-                </div>
-              </TiltCard>
-            </Reveal>
-
-          ))}
-          {[0, 1].map((i) => (
-            <Reveal as="article" key={i} delay={(i + 1) * 120}>
-              <div className="flex h-full flex-col justify-center rounded-3xl border border-dashed border-border bg-muted/50 p-7">
-                <Placeholder>notícia em breve</Placeholder>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Novos conteúdos serão publicados aqui.
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <NoticiasRecentes />
       </section>
 
       {/* Galeria de fotos --------------------------------------------- */}
@@ -234,5 +201,54 @@ function Inicio() {
         </div>
       </section>
     </>
+  );
+}
+
+/**
+ * Notícias recentes da Home: somente as publicadas no banco (as 3 mais novas).
+ * Carregando, erro de conexão e lista vazia têm mensagens próprias.
+ */
+function NoticiasRecentes() {
+  const { data, isPending, isError } = useQuery(noticiasQuery(3));
+
+  if (isPending) {
+    return <p className="mt-10 text-sm text-muted-foreground" aria-live="polite">Carregando notícias...</p>;
+  }
+  if (isError) {
+    return (
+      <p className="mt-10 text-sm text-muted-foreground" aria-live="polite">
+        Não foi possível carregar as notícias agora.
+      </p>
+    );
+  }
+  if (data.length === 0) {
+    return (
+      <p className="mt-10 text-sm text-muted-foreground">
+        Ainda não há notícias publicadas. Volte em breve.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-10 grid gap-6 md:grid-cols-3">
+      {data.map((n, i) => (
+        <Reveal as="article" key={n.slug} delay={i * 90}>
+          <TiltCard>
+            <div className="lift h-full rounded-3xl border border-border bg-card p-7">
+              <p className="text-xs font-semibold tracking-widest text-primary uppercase">
+                {formatarData(n.publicado_em)}
+              </p>
+              <h3 className="mt-3 text-xl">
+                {/* cada notícia tem endereço próprio em /noticias/slug */}
+                <Link to="/noticias/$slug" params={{ slug: n.slug }} className="hover:text-primary">
+                  {n.titulo}
+                </Link>
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+            </div>
+          </TiltCard>
+        </Reveal>
+      ))}
+    </div>
   );
 }

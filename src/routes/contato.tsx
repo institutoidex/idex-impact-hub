@@ -8,7 +8,6 @@ import { CONTATO } from "@/data/idex";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

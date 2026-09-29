@@ -1,6 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { NOTICIAS } from "@/data/idex";
 import { formatarData } from "@/lib/queries";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL, urlAbsoluta, urlNoticia } from "@/lib/site";
@@ -8,7 +7,7 @@ import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { FOTO_TALENTO } from "@/data/fotos";
 
-/** Formato usado pela página, vindo do banco ou do conteúdo fixo de apoio. */
+/** Formato usado pela página, vindo sempre do banco (somente publicadas). */
 type NoticiaDetalhe = {
   slug: string;
   titulo: string;
@@ -24,44 +23,27 @@ type NoticiaDetalhe = {
 
 export const Route = createFileRoute("/noticias/$slug")({
   loader: async ({ params }): Promise<{ noticia: NoticiaDetalhe }> => {
-    // Primeiro tenta o banco; se não houver registro, usa a notícia fixa de apoio.
-    try {
-      const { data } = await supabase
-        .from("noticias")
-        .select("*")
-        .eq("slug", params.slug)
-        .eq("publicado", true)
-        .maybeSingle();
-      if (data) {
-        return {
-          noticia: {
-            slug: data.slug,
-            titulo: data.titulo,
-            resumo: data.resumo,
-            conteudo: data.conteudo,
-            imagem: data.imagem_url,
-            publicadoEm: data.publicado_em,
-            data: formatarData(data.publicado_em),
-            projeto: data.projeto_slug,
-          },
-        };
-      }
-    } catch {
-      // Sem conexão com o banco: seguimos para o conteúdo fixo.
-    }
-
-    const fixa = NOTICIAS.find((n) => n.slug === params.slug);
-    if (!fixa) throw notFound();
+    // Regra: só existe página para notícia PUBLICADA no banco.
+    // Falha de conexão vira erro (tela de erro), nunca conteúdo fixo;
+    // notícia inexistente ou despublicada vira 404.
+    const { data, error } = await supabase
+      .from("noticias")
+      .select("*")
+      .eq("slug", params.slug)
+      .eq("publicado", true)
+      .maybeSingle();
+    if (error) throw new Error("Não foi possível carregar a notícia agora.");
+    if (!data) throw notFound();
     return {
       noticia: {
-        slug: fixa.slug,
-        titulo: fixa.titulo,
-        resumo: fixa.resumo,
-        conteudo: null,
-        imagem: null,
-        publicadoEm: null,
-        data: fixa.data,
-        projeto: "talento-brasil",
+        slug: data.slug,
+        titulo: data.titulo,
+        resumo: data.resumo,
+        conteudo: data.conteudo,
+        imagem: data.imagem_url,
+        publicadoEm: data.publicado_em,
+        data: formatarData(data.publicado_em),
+        projeto: data.projeto_slug,
       },
     };
   },
@@ -127,6 +109,7 @@ export const Route = createFileRoute("/noticias/$slug")({
   },
 
   component: NoticiaDetalhePagina,
+  errorComponent: NoticiaErro,
   notFoundComponent: NoticiaNaoEncontrada,
 });
 
@@ -187,6 +170,21 @@ function NoticiaNaoEncontrada() {
       <h1 className="text-3xl">Notícia não encontrada</h1>
       <p className="mt-3 text-muted-foreground">
         Ela pode ter sido despublicada ou o endereço está incorreto.
+      </p>
+      <Link to="/noticias" className="mt-6 inline-block font-semibold text-primary hover:underline">
+        Voltar para as notícias
+      </Link>
+    </section>
+  );
+}
+
+/** Falha de conexão com o banco: não confundir com notícia inexistente. */
+function NoticiaErro() {
+  return (
+    <section className="mx-auto max-w-3xl px-4 py-32 text-center sm:px-6">
+      <h1 className="text-3xl">Não foi possível carregar a notícia</h1>
+      <p className="mt-3 text-muted-foreground">
+        Estamos com dificuldade para acessar as notícias agora. Tente novamente em instantes.
       </p>
       <Link to="/noticias" className="mt-6 inline-block font-semibold text-primary hover:underline">
         Voltar para as notícias

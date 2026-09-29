@@ -3,7 +3,6 @@ import { HandCoins, HeartHandshake, Building2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 

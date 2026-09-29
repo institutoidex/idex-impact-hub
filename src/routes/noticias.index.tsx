@@ -1,13 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { NOTICIAS } from "@/data/idex";
 import { formatarData, noticiasQuery } from "@/lib/queries";
 import { SITE_URL } from "@/lib/site";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder } from "@/components/Placeholder";
 import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import { Paginacao } from "@/components/Paginacao";
 import { FiltroBotao } from "@/components/FiltroBotao";
@@ -31,7 +29,7 @@ export const Route = createFileRoute("/noticias/")({
       {
         name: "description",
         content:
-          "Notícias do Instituto IDEX, incluindo o lançamento do projeto Talento Brasil em 26/06/2017.",
+          "Notícias e novidades publicadas pelo Instituto IDEX.",
       },
       { property: "og:title", content: "Notícias — Instituto IDEX" },
       { property: "og:description", content: "Acompanhe as novidades do instituto." },
@@ -47,32 +45,21 @@ function Noticias() {
   const { busca = "", ano = "todos", pagina = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/noticias/" });
 
-  // Busca no banco; se ainda não houver registros, mostra o conteúdo fixo atual.
-  const { data } = useQuery(noticiasQuery());
+  // Somente notícias publicadas no banco — sem conteúdo fixo de reserva.
+  const { data, isPending, isError, refetch } = useQuery(noticiasQuery());
 
   const itens = useMemo(
     () =>
-       data && data.length > 0
-        ? data.map((n) => ({
-            slug: n.slug,
-            titulo: n.titulo,
-            resumo: n.resumo,
-            data: formatarData(n.publicado_em),
-            ano: String(new Date(n.publicado_em).getFullYear()),
-            imagem: n.imagem_url ?? FOTO_TALENTO.url,
-            // vínculo opcional com um projeto (null = notícia geral)
-            projeto: n.projeto_slug,
-          }))
-        : NOTICIAS.map((n) => ({
-            slug: n.slug,
-            titulo: n.titulo,
-            resumo: n.resumo,
-            data: n.data,
-            ano: (n.data.match(/\d{4}/)?.[0] ?? ""),
-            imagem: FOTO_TALENTO.url,
-            // a notícia fixa é o lançamento do Talento Brasil
-            projeto: "talento-brasil" as string | null,
-          })),
+      (data ?? []).map((n) => ({
+        slug: n.slug,
+        titulo: n.titulo,
+        resumo: n.resumo,
+        data: formatarData(n.publicado_em),
+        ano: String(new Date(n.publicado_em).getFullYear()),
+        imagem: n.imagem_url ?? FOTO_TALENTO.url,
+        // vínculo opcional com um projeto (null = notícia geral)
+        projeto: n.projeto_slug,
+      })),
     [data],
   );
 
@@ -100,8 +87,6 @@ function Noticias() {
   function atualizar(novos: BuscaNoticias) {
     void navigate({ search: (anterior) => ({ ...anterior, pagina: 1, ...novos }) });
   }
-
-  const vazios = Math.max(0, 3 - visiveis.length);
 
   return (
     <>
@@ -139,11 +124,29 @@ function Noticias() {
           )}
         </Reveal>
 
-        <p className="mt-6 text-sm text-muted-foreground" aria-live="polite">
-          {filtradas.length === 0
-            ? "Nenhuma notícia encontrada."
-            : `${filtradas.length} ${filtradas.length === 1 ? "notícia" : "notícias"} · página ${paginaAtual} de ${totalPaginas}`}
-        </p>
+        {/* Estados separados: carregando, erro de conexão, nenhuma publicada */}
+        <div className="mt-6 text-sm text-muted-foreground" aria-live="polite">
+          {isPending ? (
+            <p>Carregando notícias...</p>
+          ) : isError ? (
+            <p>
+              Não foi possível carregar as notícias agora.{" "}
+              <button
+                type="button"
+                onClick={() => void refetch()}
+                className="font-semibold text-primary hover:underline"
+              >
+                Tentar de novo
+              </button>
+            </p>
+          ) : itens.length === 0 ? (
+            <p>Ainda não há notícias publicadas. Volte em breve.</p>
+          ) : filtradas.length === 0 ? (
+            <p>Nenhuma notícia encontrada para essa busca.</p>
+          ) : (
+            <p>{`${filtradas.length} ${filtradas.length === 1 ? "notícia" : "notícias"} · página ${paginaAtual} de ${totalPaginas}`}</p>
+          )}
+        </div>
 
         <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {visiveis.map((n, i) => (
@@ -183,23 +186,15 @@ function Noticias() {
             </Reveal>
           ))}
 
-          {Array.from({ length: vazios }).map((_, i) => (
-            <Reveal as="article" key={`vazio-${i}`} delay={(i + 1) * 70}>
-              <div className="flex h-full min-h-64 flex-col justify-center rounded-3xl border border-dashed border-border bg-muted/50 p-7">
-                <Placeholder>notícia em breve</Placeholder>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Espaço reservado para os próximos conteúdos.
-                </p>
-              </div>
-            </Reveal>
-          ))}
         </div>
 
+        {filtradas.length > 0 && (
         <Paginacao
           pagina={paginaAtual}
           totalPaginas={totalPaginas}
           aoMudar={(p) => atualizar({ pagina: p })}
         />
+        )}
       </section>
     </>
   );
