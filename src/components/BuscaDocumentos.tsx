@@ -3,6 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Download, FileText, Search } from "lucide-react";
 import { documentosQuery } from "@/lib/queries";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   CommandDialog,
   CommandEmpty,
@@ -32,7 +34,7 @@ function urlDeDownload(url: string) {
  * Busca discreta no cabeçalho: encontra documentos publicados e permite
  * abrir (indo até ele na página de Transparência) ou baixar na hora.
  */
-export function BuscaDocumentos() {
+export function BuscaDocumentos({ expandida = false }: { expandida?: boolean }) {
   const [aberto, setAberto] = useState(false);
   const navigate = useNavigate();
   const { data: documentos = [] } = useQuery({ ...documentosQuery, enabled: aberto });
@@ -57,19 +59,30 @@ export function BuscaDocumentos() {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={() => setAberto(true)}
         aria-label="Buscar documentos"
-        className="flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        className={cn(
+          "rounded-full bg-card/60 text-muted-foreground shadow-none hover:border-primary hover:bg-accent hover:text-primary",
+          expandida && "h-11 w-full justify-start rounded-md px-4",
+        )}
       >
         <Search className="size-4" />
-        <span className="hidden lg:inline">Buscar documentos</span>
+        <span className={cn("hidden min-[1440px]:inline", expandida && "inline")}>
+          Buscar documentos
+        </span>
         {/* Atalho de teclado só em telas bem largas, para não apertar o cabeçalho */}
-        <kbd className="hidden rounded border border-border px-1.5 text-[10px] 2xl:inline">
+        <kbd
+          className={cn(
+            "hidden rounded border border-border px-1.5 text-[10px] min-[1536px]:inline",
+            expandida && "ml-auto sm:inline",
+          )}
+        >
           Ctrl K
         </kbd>
-      </button>
+      </Button>
 
       <CommandDialog
         open={aberto}

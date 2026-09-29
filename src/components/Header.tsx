@@ -30,6 +30,16 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Fecha o menu ao ampliar a tela e evita que ele permaneça aberto fora do mobile.
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1280px)");
+    const fecharEmTelaGrande = (evento: MediaQueryListEvent) => {
+      if (evento.matches) setAberto(false);
+    };
+    media.addEventListener("change", fecharEmTelaGrande);
+    return () => media.removeEventListener("change", fecharEmTelaGrande);
+  }, []);
+
   return (
     <header
       className={cn(
@@ -40,11 +50,11 @@ export function Header() {
           : "border-b border-transparent bg-background/85 backdrop-blur-sm",
       )}
     >
-      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 sm:min-h-24 sm:gap-4 sm:px-6 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <div className="mx-auto flex h-20 max-w-[90rem] items-center gap-3 px-4 sm:h-24 sm:gap-4 sm:px-6 xl:h-20 xl:px-8">
         {/* Logo à esquerda */}
         <Link
           to="/"
-          className="group flex min-w-0 items-center justify-self-start"
+          className="group flex min-w-0 shrink-0 items-center"
           onClick={() => setAberto(false)}
         >
           {/* Logo oficial do Instituto IDEX */}
@@ -54,12 +64,12 @@ export function Header() {
             width={1626}
             height={905}
             decoding="async"
-            className="h-auto w-28 shrink-0 object-contain transition-transform group-hover:-rotate-1 sm:w-32 xl:w-36"
+            className="h-auto w-28 shrink-0 object-contain transition-transform group-hover:-rotate-1 sm:w-32 xl:w-[8.25rem]"
           />
         </Link>
 
         {/* Navegação desktop centralizada */}
-        <nav className="hidden items-center justify-self-center gap-0.5 xl:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 xl:flex" aria-label="Navegação principal">
           {NAV.map((item) =>
             item.to === "/transparencia" ? (
               <MenuTransparencia key={item.to} rotulo={item.label} />
@@ -78,12 +88,12 @@ export function Header() {
         </nav>
 
         {/* Ações à direita: busca, CTA e acesso à equipe */}
-        <div className="flex shrink-0 items-center justify-self-end gap-2">
-          {/* Busca sutil de documentos — visível a partir de sm */}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* A busca permanece compacta até haver espaço para o rótulo completo. */}
           <div className="hidden sm:block">
             <BuscaDocumentos />
           </div>
-          <Button asChild variant="idex" className="hidden sm:inline-flex">
+          <Button asChild variant="idex" className="hidden lg:inline-flex">
             <Link to="/como-ajudar">
               <HeartHandshake className="size-4" />
               Como Ajudar
@@ -103,55 +113,71 @@ export function Header() {
               </Link>
             </Button>
           )}
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             aria-label={aberto ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={aberto}
+            aria-controls="menu-principal-mobile"
             onClick={() => setAberto((v) => !v)}
-            className="grid size-10 place-items-center rounded-xl border border-border xl:hidden"
+            className="size-10 rounded-md shadow-none xl:hidden"
           >
             {aberto ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Menu mobile */}
       <div
+        id="menu-principal-mobile"
         className={cn(
-          "overflow-hidden border-t border-border bg-background transition-[max-height] duration-300 xl:hidden",
-          aberto ? "max-h-[32rem]" : "max-h-0",
+          "grid border-t bg-background transition-[grid-template-rows,border-color] duration-300 xl:hidden",
+          aberto ? "grid-rows-[1fr] border-border" : "grid-rows-[0fr] border-transparent",
         )}
       >
-        {/* Menu mobile: mesmos princípios de contraste, com área de toque ampla */}
-        <nav className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setAberto(false)}
-              activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "text-primary font-semibold" }}
-              className="border-b border-border/60 py-3 text-sm font-medium text-foreground transition-colors last:border-0 hover:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link
-            to="/como-ajudar"
-            onClick={() => setAberto(false)}
-            className="mt-3 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
-          >
-            Como Ajudar
-          </Link>
-          {/* Acesso da equipe também no menu mobile */}
-          <Link
-            to={sessao ? "/admin" : "/auth"}
-            onClick={() => setAberto(false)}
-            className="mt-2 mb-3 flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-center text-sm font-semibold"
-          >
-            {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
-            {sessao ? "Painel" : "Área da equipe"}
-          </Link>
-        </nav>
+        <div className="min-h-0 overflow-hidden">
+          {/* Menu mobile com busca, links e ações em áreas de toque confortáveis. */}
+          <nav className="mx-auto flex max-w-[90rem] flex-col px-4 py-4 sm:px-6" aria-label="Navegação móvel">
+            <div className="mb-2 sm:hidden">
+              <BuscaDocumentos expandida />
+            </div>
+            {NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setAberto(false)}
+                activeOptions={{ exact: item.to === "/" }}
+                activeProps={{ className: "text-primary font-semibold bg-accent" }}
+                className="rounded-md border-b border-border/60 px-3 py-3 text-sm font-medium text-foreground transition-colors last:border-0 hover:bg-muted hover:text-primary"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:hidden">
+              <Button asChild variant="idex" className="h-11">
+                <Link to="/como-ajudar" onClick={() => setAberto(false)}>
+                  <HeartHandshake className="size-4" />
+                  Como Ajudar
+                </Link>
+              </Button>
+              <Button asChild variant="idexContorno" className="h-11">
+                <Link to={sessao ? "/admin" : "/auth"} onClick={() => setAberto(false)}>
+                  {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
+                  {sessao ? "Painel" : "Área da equipe"}
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-4 hidden lg:block xl:hidden">
+              <Button asChild variant="idexContorno" className="h-11 w-full">
+                <Link to={sessao ? "/admin" : "/auth"} onClick={() => setAberto(false)}>
+                  {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
+                  {sessao ? "Painel" : "Área da equipe"}
+                </Link>
+              </Button>
+            </div>
+          </nav>
+        </div>
       </div>
     </header>
   );
@@ -180,13 +206,15 @@ function MenuTransparencia({ rotulo }: { rotulo: string }) {
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             aria-label="Abrir atalhos das pastas de Transparência"
-            className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+            className="size-7 text-muted-foreground hover:bg-muted hover:text-primary"
           >
             <ChevronDown className="size-4" aria-hidden />
-          </button>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-60">
           {itens.map((item) => (
