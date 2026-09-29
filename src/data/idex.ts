@@ -54,6 +54,7 @@ export const CONTATO = {
 export const NAV = [
   { to: "/", label: "Início" },
   { to: "/quem-somos", label: "Quem Somos" },
+  { to: "/programa-esportivo", label: "Programa Esportivo" },
   // Projetos está oculto no site por enquanto (a pedido da diretoria)
   { to: "/transparencia", label: "Transparência" },
   { to: "/noticias", label: "Notícias" },

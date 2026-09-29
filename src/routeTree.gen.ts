@@ -17,6 +17,7 @@ import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticiasRouteImport } from './routes/noticias'
 import { Route as PainelRouteImport } from './routes/painel'
+import { Route as ProgramaEsportivoRouteImport } from './routes/programa-esportivo'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as QuemSomosRouteImport } from './routes/quem-somos'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
@@ -65,6 +66,11 @@ const NoticiasRoute = NoticiasRouteImport.update({
 const PainelRoute = PainelRouteImport.update({
   id: '/painel',
   path: '/painel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramaEsportivoRoute = ProgramaEsportivoRouteImport.update({
+  id: '/programa-esportivo',
+  path: '/programa-esportivo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjetosRoute = ProjetosRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
+  '/programa-esportivo': typeof ProgramaEsportivoRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
+  '/programa-esportivo': typeof ProgramaEsportivoRoute
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
+  '/programa-esportivo': typeof ProgramaEsportivoRoute
   '/projetos': typeof ProjetosRouteWithChildren
   '/quem-somos': typeof QuemSomosRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/noticias'
     | '/painel'
+    | '/programa-esportivo'
     | '/projetos'
     | '/quem-somos'
     | '/redefinir-senha'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/login'
     | '/painel'
+    | '/programa-esportivo'
     | '/quem-somos'
     | '/redefinir-senha'
     | '/sitemap.xml'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/noticias'
     | '/painel'
+    | '/programa-esportivo'
     | '/projetos'
     | '/quem-somos'
     | '/redefinir-senha'
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NoticiasRoute: typeof NoticiasRouteWithChildren
   PainelRoute: typeof PainelRoute
+  ProgramaEsportivoRoute: typeof ProgramaEsportivoRoute
   ProjetosRoute: typeof ProjetosRouteWithChildren
   QuemSomosRoute: typeof QuemSomosRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/painel'
       fullPath: '/painel'
       preLoaderRoute: typeof PainelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programa-esportivo': {
+      id: '/programa-esportivo'
+      path: '/programa-esportivo'
+      fullPath: '/programa-esportivo'
+      preLoaderRoute: typeof ProgramaEsportivoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projetos': {
@@ -404,6 +424,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NoticiasRoute: NoticiasRouteWithChildren,
   PainelRoute: PainelRoute,
+  ProgramaEsportivoRoute: ProgramaEsportivoRoute,
   ProjetosRoute: ProjetosRouteWithChildren,
   QuemSomosRoute: QuemSomosRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
