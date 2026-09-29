@@ -37,24 +37,7 @@ export const PROJETOS: Projeto[] = [
   },
 ];
 
-export interface Noticia {
-  slug: string;
-  titulo: string;
-  data: string;
-  resumo: string;
-  real: boolean;
-}
-
-export const NOTICIAS: Noticia[] = [
-  {
-    slug: "lancamento-talento-brasil",
-    titulo: "Lançamento do projeto Talento Brasil",
-    data: "26/06/2017",
-    resumo:
-      "O projeto Talento Brasil foi lançado na Câmara dos Vereadores de Santa Cruz do Rio Pardo, em parceria com o Clube Esportivo Penha.",
-    real: true,
-  },
-];
+// Notícias vêm somente do banco (publicadas); não há mais notícia fixa aqui.
 
 export const CONTATO = {
   endereco: "Rua Armando Cardoso Alves, 106 — Penha",
@@ -62,8 +45,10 @@ export const CONTATO = {
   instagramUrl: "https://instagram.com/idexbrasil",
   facebook: "/idexsocial",
   facebookUrl: "https://facebook.com/idexsocial",
-  telefone: "[telefone a definir]",
-  email: "[e-mail a definir]",
+  // Telefone e e-mail oficiais ainda não foram informados: ficam fora do site
+  // até o instituto confirmar (não inventar).
+  telefone: null as string | null,
+  email: null as string | null,
 };
 
 export const NAV = [
