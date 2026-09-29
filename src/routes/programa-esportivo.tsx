@@ -132,11 +132,11 @@ function ProgramaEsportivo() {
       {/* Jornada resumida (tabela da metodologia) */}
       <section className="bg-ink py-16 text-ink-foreground">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-3xl text-ink-foreground">Os projetos do IDEX</h2>
+          <h2 className="text-center text-3xl text-ink-foreground sm:text-4xl">Os projetos do IDEX</h2>
           {/* Grade da jornada: 1 coluna no celular, 2 no tablet e 4 no desktop */}
-          <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
-              <li key={p.nome} className="border-t-2 border-primary pt-4">
+              <li key={p.nome} className="flex flex-col items-center border-t-2 border-primary pt-6 text-center">
                 {/* Logo clicável: abre o visor em tela cheia (navegação fica no nome) */}
                 <button
                   type="button"
@@ -144,7 +144,7 @@ function ProgramaEsportivo() {
                   aria-label={`Ampliar logo do projeto ${p.nome}`}
                   className="group relative inline-flex cursor-zoom-in rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
-                  <span className="flex size-14 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-16 sm:p-2">
+                  <span className="flex size-16 items-center justify-center rounded-md border border-border bg-background p-2 sm:size-20 sm:p-2.5">
                     <img
                       src={p.logo}
                       alt=""
@@ -157,10 +157,10 @@ function ProgramaEsportivo() {
                     <Maximize2 className="size-3" />
                   </span>
                 </button>
-                <a href={`#${p.numero}`} className="mt-3 block text-lg font-semibold hover:underline">
+                <a href={`#${p.numero}`} className="mt-4 block text-xl font-semibold hover:underline">
                   {p.nome}
                 </a>
-                <p className="mt-1 text-sm text-ink-foreground/80">{p.etapa}</p>
+                <p className="mt-2 max-w-64 text-base text-ink-foreground/80">{p.etapa}</p>
               </li>
             ))}
           </ol>
@@ -179,7 +179,7 @@ function ProgramaEsportivo() {
                   type="button"
                   onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
                   aria-label={`Ampliar logo do projeto ${p.nome}`}
-                  className="group relative flex size-16 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-20 sm:p-2 md:size-24"
+                  className="group relative flex size-20 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-24 sm:p-2.5 md:size-28"
                 >
                   <img
                     src={p.logo}
