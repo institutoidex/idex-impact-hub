@@ -134,8 +134,13 @@ function ProgramaEsportivo() {
           <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
               <li key={p.nome} className="border-t-2 border-primary pt-4">
-                {/* Logo do projeto, com quadro que acompanha a largura da tela */}
-                <a href={`#${p.numero}`} className="inline-flex" aria-label={p.nome}>
+                {/* Logo clicável: abre o visor em tela cheia (navegação fica no nome) */}
+                <button
+                  type="button"
+                  onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
+                  aria-label={`Ampliar logo do projeto ${p.nome}`}
+                  className="group relative inline-flex cursor-zoom-in rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
                   <span className="flex size-14 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-16 sm:p-2">
                     <img
                       src={p.logo}
@@ -144,7 +149,11 @@ function ProgramaEsportivo() {
                       loading="lazy"
                     />
                   </span>
-                </a>
+                  {/* dica visual de que dá para expandir */}
+                  <span className="pointer-events-none absolute -right-1.5 -top-1.5 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Maximize2 className="size-3" />
+                  </span>
+                </button>
                 <a href={`#${p.numero}`} className="mt-3 block text-lg font-semibold hover:underline">
                   {p.nome}
                 </a>
