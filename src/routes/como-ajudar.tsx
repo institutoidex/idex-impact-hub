@@ -115,11 +115,7 @@ function ComoAjudar() {
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
         <Reveal>
           <div className="rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
-            <h2 className="text-2xl">Leis de incentivo e fomento</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
-              Nossos programas podem ser viabilizados por leis de incentivo ao
-              esporte e por parcerias institucionais.
-            </p>
+            <h2 className="text-2xl">MECANISMOS DE INCENTIVO</h2>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
               <img
                 src={logoGovernoSp.url}
