@@ -6,12 +6,8 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 
-// Marcas dos programas de fomento que podem viabilizar os projetos
-// (imagem oficial enviada pelo instituto, recortada por logo).
-import logoGovernoSp from "@/assets/incentivo/logo-governo-sp.png.asset.json";
-import logoLeiIncentivo from "@/assets/incentivo/logo-lei-incentivo-esporte.png.asset.json";
-import logoMinisterio from "@/assets/incentivo/logo-ministerio-do-esporte.png.asset.json";
-import logoSpLei from "@/assets/incentivo/logo-sp-lei-incentivo.png.asset.json";
+// Marca única dos programas de fomento (imagem oficial enviada pelo instituto)
+import logosIncentivo from "@/assets/incentivo/logos-lei-incentivo.png.asset.json";
 
 export const Route = createFileRoute("/como-ajudar")({
   head: () => ({
@@ -116,32 +112,12 @@ function ComoAjudar() {
         <Reveal>
           <div className="rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
             <h2 className="text-2xl">MECANISMOS DE INCENTIVO</h2>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+            {/* Layout vertical: marcas empilhadas e centralizadas */}
+            <div className="mt-8 flex flex-col items-center justify-center gap-6">
               <img
-                src={logoGovernoSp.url}
-                alt="Governo do Estado de São Paulo — Secretaria de Esportes"
-                className="h-28 w-auto sm:h-32"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src={logoLeiIncentivo.url}
-                alt="Lei de Incentivo ao Esporte (governo federal)"
-                className="h-24 w-auto sm:h-28"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src={logoMinisterio.url}
-                alt="Ministério do Esporte"
-                className="h-32 w-auto sm:h-36"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src={logoSpLei.url}
-                alt="SP — Lei de Incentivo ao Esporte (Estado de São Paulo)"
-                className="h-20 w-auto sm:h-24"
+                src={logosIncentivo.url}
+                alt="Governo do Estado de São Paulo — Secretaria de Esportes, Lei de Incentivo ao Esporte, Ministério do Esporte e SP — Lei de Incentivo ao Esporte"
+                className="w-full max-w-sm sm:max-w-md lg:max-w-lg"
                 loading="lazy"
                 decoding="async"
               />
