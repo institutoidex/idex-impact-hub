@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Instagram, Facebook, Phone, Mail } from "lucide-react";
+import { MapPin, Instagram, Facebook, Phone, Building2 } from "lucide-react";
 import { CONTATO } from "@/data/idex";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 import { PageHero } from "@/components/PageHero";
