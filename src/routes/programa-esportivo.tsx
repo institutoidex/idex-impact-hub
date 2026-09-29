@@ -171,15 +171,24 @@ function ProgramaEsportivo() {
             <Reveal key={p.nome}>
               {/* Logo ao lado do texto em qualquer largura de tela; quadro cresce no desktop */}
               <article id={p.numero} className="scroll-mt-28 grid grid-cols-[auto_minmax(0,1fr)] gap-4 sm:gap-6">
-                {/* Quadro branco neutro para as logos coloridas dos projetos */}
-                <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-20 sm:p-2 md:size-24">
+                {/* Logo clicável: abre o visor em tela cheia */}
+                <button
+                  type="button"
+                  onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
+                  aria-label={`Ampliar logo do projeto ${p.nome}`}
+                  className="group relative flex size-16 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-20 sm:p-2 md:size-24"
+                >
                   <img
                     src={p.logo}
                     alt={`Logo do projeto ${p.nome}`}
                     className="max-h-full max-w-full object-contain"
                     loading="lazy"
                   />
-                </div>
+                  {/* dica visual de que dá para expandir */}
+                  <span className="pointer-events-none absolute -right-1.5 -top-1.5 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Maximize2 className="size-3" />
+                  </span>
+                </button>
                 <div>
                   <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                     Projeto {p.numero} · {p.etapa}
