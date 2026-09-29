@@ -264,7 +264,7 @@ export function BibliotecaMidia() {
           <button
             type="button"
             className="mr-1 inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 font-medium hover:border-primary/60"
-            onClick={() => setCaminho(trilha.length > 1 ? trilha[trilha.length - 2].caminho : "")}
+            onClick={() => setCaminho(trilha[trilha.length - 2]?.caminho ?? "")}
           >
             <ChevronRight className="size-4 rotate-180" /> Voltar
           </button>
