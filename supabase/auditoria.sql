@@ -13,14 +13,17 @@ create table if not exists public.auditoria (
   criado_em timestamptz not null default now()
 );
 
--- Acesso: leitura apenas para pessoas logadas no painel; escrita só pelo gatilho/serviço.
+-- Acesso: leitura apenas para administradores; escrita só pelo gatilho/serviço.
 grant select on public.auditoria to authenticated;
 grant all on public.auditoria to service_role;
 alter table public.auditoria enable row level security;
 
+-- Substitui a política permissiva anterior ("auditoria leitura autenticada", USING (true)):
+-- o histórico contém autor_email e valores antes/depois, então só admin pode ler.
 drop policy if exists "auditoria leitura autenticada" on public.auditoria;
-create policy "auditoria leitura autenticada" on public.auditoria
-  for select to authenticated using (true);
+drop policy if exists "auditoria leitura admin" on public.auditoria;
+create policy "auditoria leitura admin" on public.auditoria
+  for select to authenticated using (public.has_role(auth.uid(), 'admin'));
 
 create index if not exists auditoria_criado_em_idx on public.auditoria (criado_em desc);
 

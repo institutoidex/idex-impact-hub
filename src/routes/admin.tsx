@@ -422,7 +422,7 @@ function Painel() {
         {/* ---------------- Histórico / auditoria ---------------- */}
         <TabsContent value="historico" className="mt-6 space-y-4">
           <p className="text-sm text-muted-foreground">
-            Registro de tudo que foi criado, editado, publicado ou apagado no site.
+            Registro de tudo que foi criado, editado, publicado ou apagado em notícias, projetos, documentos e áreas.
           </p>
           <Historico />
         </TabsContent>
