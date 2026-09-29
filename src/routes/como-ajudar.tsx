@@ -6,8 +6,9 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 
-// Marca única dos programas de fomento (imagem oficial enviada pelo instituto)
-import logosIncentivo from "@/assets/incentivo/logos-lei-incentivo.png.asset.json";
+// Marca única dos programas de fomento (imagem oficial enviada pelo instituto,
+// com as margens brancas aparadas para ocupar melhor o espaço)
+import logosIncentivo from "@/assets/incentivo/logos-lei-incentivo-v2.png.asset.json";
 
 export const Route = createFileRoute("/como-ajudar")({
   head: () => ({
@@ -113,7 +114,7 @@ function ComoAjudar() {
           <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
             <h2 className="text-2xl">MECANISMOS DE INCENTIVO</h2>
             {/* Layout vertical: marcas empilhadas e centralizadas */}
-            <div className="mt-8 flex flex-col items-center justify-center gap-6">
+            <div className="mt-4 flex flex-col items-center justify-center gap-6">
               <img
                 src={logosIncentivo.url}
                 alt="Governo do Estado de São Paulo — Secretaria de Esportes, Lei de Incentivo ao Esporte, Ministério do Esporte e SP — Lei de Incentivo ao Esporte"
