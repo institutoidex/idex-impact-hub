@@ -6,6 +6,13 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
 
+// Marcas dos programas de fomento que podem viabilizar os projetos
+// (imagem oficial enviada pelo instituto, recortada por logo).
+import logoGovernoSp from "@/assets/incentivo/logo-governo-sp.png.asset.json";
+import logoLeiIncentivo from "@/assets/incentivo/logo-lei-incentivo-esporte.png.asset.json";
+import logoMinisterio from "@/assets/incentivo/logo-ministerio-do-esporte.png.asset.json";
+import logoSpLei from "@/assets/incentivo/logo-sp-lei-incentivo.png.asset.json";
+
 export const Route = createFileRoute("/como-ajudar")({
   head: () => ({
     meta: [
