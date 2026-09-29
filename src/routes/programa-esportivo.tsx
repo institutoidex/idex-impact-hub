@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HeartHandshake } from "lucide-react";
+import { HeartHandshake, Maximize2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
-import { FOTO_HERO, FOTO_TALENTO } from "@/data/fotos";
+import VisorFotos from "@/components/VisorFotos";
+import { FOTO_HERO, FOTO_TALENTO, type Foto } from "@/data/fotos";
 
 // Logos oficiais dos quatro projetos (substituem os ícones genéricos).
 import logoTalentoEmCampo from "@/assets/projetos/logo-talento-em-campo.png.asset.json";
