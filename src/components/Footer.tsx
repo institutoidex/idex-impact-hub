@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <footer className="mt-24 bg-ink text-ink-foreground">
-      <div className="rule-yellow" />
+      <div className="rule-green" />
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-1">
           <div className="inline-flex min-h-20 items-center justify-center rounded-md bg-background px-3 py-2 sm:min-h-24 sm:px-4">

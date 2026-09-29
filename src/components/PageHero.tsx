@@ -71,7 +71,7 @@ export function PageHero({
               {descricao}
             </p>
           )}
-          <div className="mt-6 h-1 w-20 bg-brand-yellow" aria-hidden />
+          <div className="mt-6 h-1 w-20 bg-brand-green" aria-hidden />
         </div>
       </section>
     );
@@ -80,7 +80,7 @@ export function PageHero({
   // editorial (padrão): filete amarelo no topo + texto à esquerda
   return (
     <section className="bg-sand pt-28 pb-14">
-      <div className="rule-yellow" aria-hidden />
+      <div className="rule-green" aria-hidden />
       <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
         {selo}
         <h1 className="mt-4 max-w-3xl text-4xl leading-tight sm:text-5xl">{titulo}</h1>
