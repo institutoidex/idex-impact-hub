@@ -121,7 +121,10 @@ export default function VisorFotos({
       {/* imagem */}
       <div
         className="relative flex flex-1 items-center justify-center overflow-hidden px-2 pb-4"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          // clicar no fundo escuro (fora da imagem e dos botões) também fecha
+          if (e.target === e.currentTarget) onFechar();
+        }}
         onWheel={(e) => ajustarZoom(e.deltaY < 0 ? 0.25 : -0.25)}
       >
         {varias && (
