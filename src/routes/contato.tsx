@@ -215,14 +215,26 @@ function Contato() {
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
                 {CONTATO.endereco}
               </p>
-              <div className="mt-5 space-y-3 rounded-2xl bg-ink-card p-5 text-sm">
-                <p className="flex items-center gap-3 text-ink-foreground/70">
-                  <Phone className="size-4 text-primary" /> {CONTATO.telefone}
+              {/* telefone e e-mail só aparecem quando houver dados oficiais;
+                  até lá, os canais confirmados são o formulário e as redes */}
+              {(CONTATO.telefone || CONTATO.email) ? (
+                <div className="mt-5 space-y-3 rounded-2xl bg-ink-card p-5 text-sm">
+                  {CONTATO.telefone && (
+                    <p className="flex items-center gap-3 text-ink-foreground/70">
+                      <Phone className="size-4 text-primary" /> {CONTATO.telefone}
+                    </p>
+                  )}
+                  {CONTATO.email && (
+                    <p className="flex items-center gap-3 text-ink-foreground/70">
+                      <Mail className="size-4 text-primary" /> {CONTATO.email}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-5 rounded-2xl bg-ink-card p-5 text-sm text-ink-foreground/80">
+                  Fale com a gente pelo formulário ao lado ou pelas redes sociais abaixo.
                 </p>
-                <p className="flex items-center gap-3 text-ink-foreground/70">
-                  <Mail className="size-4 text-primary" /> {CONTATO.email}
-                </p>
-              </div>
+              )}
             </div>
 
             <a

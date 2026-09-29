@@ -47,20 +47,21 @@ function ComoAjudar() {
               <p className="mt-3 text-sm text-muted-foreground">
                 Contribuições diretas sustentam materiais, uniformes e a rotina dos treinos.
               </p>
-              <dl className="mt-6 space-y-3 rounded-2xl bg-muted/60 p-5 text-sm">
-                <div>
-                  <dt className="font-semibold">Chave Pix</dt>
-                  <dd className="mt-1">
-                    <Placeholder>[chave Pix a definir]</Placeholder>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="font-semibold">Dados bancários</dt>
-                  <dd className="mt-1">
-                    <Placeholder>[banco, agência e conta a definir]</Placeholder>
-                  </dd>
-                </div>
-              </dl>
+              {/* Sem dados bancários oficiais: orientamos o contato antes da doação,
+                  para ninguém transferir para uma conta errada */}
+              <div className="mt-6 rounded-2xl bg-muted/60 p-5 text-sm">
+                <p className="font-semibold">Antes de doar, fale com a gente</p>
+                <p className="mt-2 text-muted-foreground">
+                  Para garantir que sua doação chegue ao instituto, entre em contato e
+                  passaremos os dados oficiais para a contribuição.
+                </p>
+                <Link
+                  to="/contato"
+                  className="mt-3 inline-block font-semibold text-primary hover:underline"
+                >
+                  Entrar em contato
+                </Link>
+              </div>
             </div>
           </Reveal>
 

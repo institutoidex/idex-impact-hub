@@ -68,6 +68,19 @@ export function validarDocumento(arquivo: File): string | null {
  */
 export async function enviarImagem(arquivo: File, pasta: string): Promise<string> {
   const caminho = caminhoDoArquivo(pasta, arquivo, false);
+  const nomeArquivo = caminho.split("/").pop() ?? "";
+
+  // Arquivos antigos foram guardados com prefixo numérico ("1790687470165-foto.jpg").
+  // O storage não os enxerga como duplicados, então conferimos o nome visível
+  // (sem o prefixo) antes de enviar. Nada é renomeado ou apagado.
+  const { data: existentes, error: erroLista } = await supabase.storage
+    .from(BUCKET_MIDIA)
+    .list(pasta, { search: nomeArquivo, limit: 1000 });
+  if (erroLista) throw erroLista;
+  if ((existentes ?? []).some((obj) => obj.id && nomeLimpo(obj.name) === nomeArquivo)) {
+    throw new Error(`Já existe uma imagem chamada “${nomeArquivo}” nesta pasta. Renomeie o arquivo e envie de novo.`);
+  }
+
   const { error } = await supabase.storage
     .from(BUCKET_MIDIA)
     .upload(caminho, arquivo, { cacheControl: "31536000", upsert: false });

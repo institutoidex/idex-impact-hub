@@ -62,8 +62,10 @@ export const CONTATO = {
   instagramUrl: "https://instagram.com/idexbrasil",
   facebook: "/idexsocial",
   facebookUrl: "https://facebook.com/idexsocial",
-  telefone: "[telefone a definir]",
-  email: "[e-mail a definir]",
+  // Telefone e e-mail oficiais ainda não foram informados: ficam fora do site
+  // até o instituto confirmar (não inventar).
+  telefone: null as string | null,
+  email: null as string | null,
 };
 
 export const NAV = [
