@@ -202,11 +202,11 @@
   }
 }
 
-/* Filete fino amarelo (elemento real da identidade atual) */
-@utility rule-yellow {
+/* Filete fino verde (elemento da identidade, antes em amarelo) */
+@utility rule-green {
   height: 4px;
   width: 100%;
-  background: var(--brand-yellow);
+  background: var(--brand-green);
 }
 
 /* Cartão levemente inclinado — quebra a grade rígida */

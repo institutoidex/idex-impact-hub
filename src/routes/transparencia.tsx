@@ -135,7 +135,7 @@ function Transparencia() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 sm:p-8">
-              <span className="absolute inset-x-0 top-0 h-1 bg-brand-yellow" aria-hidden />
+              <span className="absolute inset-x-0 top-0 h-1 bg-brand-green" aria-hidden />
               <h2 className="font-display text-2xl sm:text-3xl">
                 {pastaAtual ? `Buscar em ${pastaAtual.nome}` : "Buscar em todos os documentos"}
               </h2>
@@ -249,7 +249,7 @@ function Transparencia() {
                 {documentosVisiveis.length} arquivo(s)
               </span>
             </div>
-            <div className="mt-3 h-1 w-16 bg-brand-yellow" aria-hidden />
+            <div className="mt-3 h-1 w-16 bg-brand-green" aria-hidden />
           </Reveal>
 
           {/* Subpastas: cards com ícone por assunto e tamanhos alternados */}
@@ -272,7 +272,7 @@ function Transparencia() {
                       className="lift group relative flex h-full w-full items-center gap-4 overflow-hidden rounded-2xl border border-border bg-card p-5 text-left"
                     >
                       <span
-                        className="absolute inset-y-0 left-0 w-1 bg-brand-yellow opacity-0 transition-opacity group-hover:opacity-100"
+                        className="absolute inset-y-0 left-0 w-1 bg-brand-green opacity-0 transition-opacity group-hover:opacity-100"
                         aria-hidden
                       />
                       <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10">
@@ -310,7 +310,7 @@ function Transparencia() {
                   )}
                 >
                   <span
-                    className="absolute inset-y-0 left-0 w-1 bg-secondary/70 transition-colors group-hover:bg-brand-yellow"
+                    className="absolute inset-y-0 left-0 w-1 bg-secondary/70 transition-colors group-hover:bg-brand-green"
                     aria-hidden
                   />
                   <span className="ml-1 grid size-11 shrink-0 place-items-center rounded-xl bg-muted">

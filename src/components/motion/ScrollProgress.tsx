@@ -37,7 +37,7 @@ export function ScrollProgress() {
     >
       <div
         ref={ref}
-        className="h-full origin-left scale-x-0 bg-brand-yellow"
+        className="h-full origin-left scale-x-0 bg-brand-green"
       />
     </div>
   );
