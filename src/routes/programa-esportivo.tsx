@@ -145,30 +145,33 @@ function ProgramaEsportivo() {
       {/* Detalhe de cada programa */}
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
         <div className="space-y-16">
-          {PROGRAMAS.map((p) => {
-            const Icone = p.icone;
-            return (
-              <Reveal key={p.nome}>
-                <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
-                  <div className="flex size-14 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icone className="size-7" aria-hidden />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-                      Projeto {p.numero} · {p.etapa}
+          {PROGRAMAS.map((p) => (
+            <Reveal key={p.nome}>
+              <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
+                {/* Quadro branco neutro para as logos coloridas dos projetos */}
+                <div className="flex size-20 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
+                  <img
+                    src={p.logo}
+                    alt={`Logo do projeto ${p.nome}`}
+                    className="max-h-full max-w-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+                    Projeto {p.numero} · {p.etapa}
+                  </p>
+                  <h3 className="mt-2 text-3xl">{p.nome}</h3>
+                  <p className="mt-1 font-display text-xl text-primary italic">{p.lema}</p>
+                  {p.textos.map((t) => (
+                    <p key={t.slice(0, 24)} className="mt-4 text-muted-foreground">
+                      {t}
                     </p>
-                    <h3 className="mt-2 text-3xl">{p.nome}</h3>
-                    <p className="mt-1 font-display text-xl text-primary italic">{p.lema}</p>
-                    {p.textos.map((t) => (
-                      <p key={t.slice(0, 24)} className="mt-4 text-muted-foreground">
-                        {t}
-                      </p>
-                    ))}
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
+                  ))}
+                </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
       </section>
 
