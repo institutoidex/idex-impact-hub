@@ -25,7 +25,7 @@ export const Route = createFileRoute("/programa-esportivo")({
   component: ProgramaEsportivo,
 });
 
-/** Programas na ordem da jornada do atleta (conteúdo oficial enviado pelo instituto). */
+/** Projetos na ordem da jornada do atleta (conteúdo oficial enviado pelo instituto). */
 const PROGRAMAS = [
   {
     numero: "01",
@@ -121,7 +121,7 @@ function ProgramaEsportivo() {
       {/* Jornada resumida (tabela da metodologia) */}
       <section className="bg-ink py-16 text-ink-foreground">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-3xl text-ink-foreground">A metodologia IDEX em quatro etapas</h2>
+          <h2 className="text-3xl text-ink-foreground">Os quatro projetos do IDEX</h2>
           <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
               <li key={p.nome} className="border-t-2 border-brand-yellow pt-4">
@@ -149,7 +149,7 @@ function ProgramaEsportivo() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-                      Etapa {p.numero} · {p.etapa}
+                      Projeto {p.numero} · {p.etapa}
                     </p>
                     <h3 className="mt-2 text-3xl">{p.nome}</h3>
                     <p className="mt-1 font-display text-xl text-primary italic">{p.lema}</p>
