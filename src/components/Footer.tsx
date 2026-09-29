@@ -82,11 +82,11 @@ export function Footer() {
               <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
               {CONTATO.endereco}
             </p>
-            {/* telefone e e-mail só aparecem quando houver dados oficiais */}
+            {/* E-mail fica de fora por decisão do instituto (anti-spam) */}
             {CONTATO.telefone && (
               <p className="mt-3 text-ink-foreground/60">Telefone: {CONTATO.telefone}</p>
             )}
-            {CONTATO.email && <p className="text-ink-foreground/60">E-mail: {CONTATO.email}</p>}
+            {CONTATO.cnpj && <p className="text-ink-foreground/60">CNPJ: {CONTATO.cnpj}</p>}
             <p className="mt-3 text-ink-foreground/60">Instagram: {CONTATO.instagram}</p>
             <p className="text-ink-foreground/60">Facebook: {CONTATO.facebook}</p>
           </div>

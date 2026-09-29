@@ -40,15 +40,17 @@ export const PROJETOS: Projeto[] = [
 // Notícias vêm somente do banco (publicadas); não há mais notícia fixa aqui.
 
 export const CONTATO = {
-  endereco: "Rua Armando Cardoso Alves, 106 — Penha",
+  // Endereço oficial da sede (informado pelo instituto em 29/09/2026)
+  endereco: "Rua Cel. José Eusébio, 95 – casa 13 – Higienópolis – São Paulo/SP – CEP 01.239-030",
+  telefone: "(11) 2645-4565",
+  cnpj: "08.666.490/0001-71",
+  // Decisão do instituto: e-mail NÃO aparece no site (anti-spam contra robôs).
+  // Não adicionar por conta própria — o contato é pelo formulário, telefone e redes.
+  email: null as string | null,
   instagram: "@idexbrasil",
   instagramUrl: "https://instagram.com/idexbrasil",
   facebook: "/idexsocial",
   facebookUrl: "https://facebook.com/idexsocial",
-  // Telefone e e-mail oficiais ainda não foram informados: ficam fora do site
-  // até o instituto confirmar (não inventar).
-  telefone: null as string | null,
-  email: null as string | null,
 };
 
 export const NAV = [

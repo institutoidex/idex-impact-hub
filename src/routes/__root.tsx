@@ -103,6 +103,17 @@ const jsonLdOrganizacao = {
   description:
     "Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio do esporte, desde 2007.",
   sameAs: ["https://instagram.com/idexbrasil", "https://facebook.com/idexsocial"],
+  // Contato oficial (sem e-mail por decisão do instituto — anti-spam)
+  telephone: "+55-11-2645-4565",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Rua Cel. José Eusébio, 95 – casa 13",
+    addressLocality: "São Paulo",
+    addressRegion: "SP",
+    postalCode: "01239-030",
+    addressCountry: "BR",
+  },
+  identifier: { "@type": "PropertyValue", name: "CNPJ", value: "08.666.490/0001-71" },
 };
 
 const jsonLdWebSite = {
