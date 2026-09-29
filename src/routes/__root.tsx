@@ -101,7 +101,7 @@ const jsonLdOrganizacao = {
   logo: LOGO_URL,
   foundingDate: "2007",
   description:
-    "ONG brasileira que atua em educação, cultura, esportes, meio ambiente, negócios e saúde desde 2007.",
+    "Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio do esporte, desde 2007.",
   sameAs: ["https://instagram.com/idexbrasil", "https://facebook.com/idexsocial"],
 };
 
@@ -124,7 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "ONG brasileira que atua em educação, cultura, esportes, meio ambiente, negócios e saúde.",
+          "Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio do esporte, desde 2007.",
       },
       { name: "author", content: "Instituto IDEX" },
       // Verificação de propriedade do site no Google Search Console
