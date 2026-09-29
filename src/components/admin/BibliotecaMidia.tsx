@@ -367,7 +367,7 @@ export function BibliotecaMidia() {
           {pastasVisiveis.map((p) => (
             <li
               key={p.caminho}
-              className={`flex items-center gap-2 rounded-2xl border bg-card p-3 transition-colors hover:border-primary/40 ${
+              className={`relative flex items-center rounded-2xl border bg-card transition-colors hover:border-primary/60 hover:bg-primary/5 ${
                 pastaAlvo === p.caminho ? "border-primary bg-primary/10" : "border-border"
               }`}
               onDragOver={(e) => {
@@ -380,23 +380,29 @@ export function BibliotecaMidia() {
                 setPastaAlvo((atual) => (atual === p.caminho ? null : atual));
               }}
             >
+              {/* Cartão inteiro clicável: um clique em qualquer ponto abre a pasta */}
               <button
                 type="button"
-                className="flex flex-1 items-center gap-2 text-left"
+                aria-label={`Abrir pasta ${p.nome}`}
+                className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-2xl p-3 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => {
                   setCaminho(p.caminho);
                   setBusca("");
                 }}
               >
-                <Folder className="size-5 text-primary" />
+                <Folder className="size-5 shrink-0 text-primary" />
                 <span className="truncate text-sm font-medium">{p.nome}</span>
               </button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="rounded-full"
+                className="mr-2 shrink-0 rounded-full"
                 aria-label={`Apagar pasta ${p.nome}`}
-                onClick={() => setAExcluir({ tipo: "pasta", caminho: p.caminho, nome: p.nome })}
+                onClick={(e) => {
+                  // impede que o clique na lixeira abra a pasta
+                  e.stopPropagation();
+                  setAExcluir({ tipo: "pasta", caminho: p.caminho, nome: p.nome });
+                }}
               >
                 <Trash2 className="size-4" />
               </Button>
