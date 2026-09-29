@@ -124,7 +124,7 @@ function ComoAjudar() {
               <img
                 src={logoGovernoSp.url}
                 alt="Governo do Estado de São Paulo — Secretaria de Esportes"
-                className="h-32 w-auto sm:h-36"
+                className="h-28 w-auto sm:h-32"
                 loading="lazy"
                 decoding="async"
               />
