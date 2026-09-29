@@ -25,7 +25,7 @@ export const Route = createFileRoute("/programa-esportivo")({
   component: ProgramaEsportivo,
 });
 
-/** Programas na ordem da jornada do atleta (conteúdo oficial enviado pelo instituto). */
+/** Projetos na ordem da jornada do atleta (conteúdo oficial enviado pelo instituto). */
 const PROGRAMAS = [
   {
     numero: "01",
