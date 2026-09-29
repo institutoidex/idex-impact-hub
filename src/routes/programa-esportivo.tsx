@@ -124,8 +124,8 @@ function ProgramaEsportivo() {
           <h2 className="text-3xl text-ink-foreground">Os projetos do IDEX</h2>
           <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
-              <li key={p.nome} className="border-t-2 border-brand-yellow pt-4">
-                <span className="font-display text-4xl text-brand-yellow"></span>
+              <li key={p.nome} className="border-t-2 border-primary pt-4">
+                <span className="font-display text-4xl text-primary"></span>
                 <a href={`#${p.numero}`} className="mt-2 block text-lg font-semibold hover:underline">
                   {p.nome}
                 </a>
