@@ -110,7 +110,7 @@ function ComoAjudar() {
           projetos do instituto (texto neutro, sem prometer apoio atual) */}
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
         <Reveal>
-          <div className="rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
             <h2 className="text-2xl">MECANISMOS DE INCENTIVO</h2>
             {/* Layout vertical: marcas empilhadas e centralizadas */}
             <div className="mt-8 flex flex-col items-center justify-center gap-6">
