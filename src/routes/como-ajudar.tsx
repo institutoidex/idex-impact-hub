@@ -124,28 +124,28 @@ function ComoAjudar() {
               <img
                 src={logoGovernoSp.url}
                 alt="Governo do Estado de São Paulo — Secretaria de Esportes"
-                className="h-24 w-auto sm:h-28"
+                className="h-32 w-auto sm:h-36"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src={logoLeiIncentivo.url}
                 alt="Lei de Incentivo ao Esporte (governo federal)"
-                className="h-20 w-auto sm:h-24"
+                className="h-24 w-auto sm:h-28"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src={logoMinisterio.url}
                 alt="Ministério do Esporte"
-                className="h-28 w-auto sm:h-32"
+                className="h-32 w-auto sm:h-36"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src={logoSpLei.url}
                 alt="SP — Lei de Incentivo ao Esporte (Estado de São Paulo)"
-                className="h-16 w-auto sm:h-20"
+                className="h-20 w-auto sm:h-24"
                 loading="lazy"
                 decoding="async"
               />
