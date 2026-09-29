@@ -158,9 +158,10 @@ function ProgramaEsportivo() {
         <div className="space-y-16">
           {PROGRAMAS.map((p) => (
             <Reveal key={p.nome}>
-              <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
+              {/* Logo ao lado do texto em qualquer largura de tela; quadro cresce no desktop */}
+              <article id={p.numero} className="scroll-mt-28 grid grid-cols-[auto_minmax(0,1fr)] gap-4 sm:gap-6">
                 {/* Quadro branco neutro para as logos coloridas dos projetos */}
-                <div className="flex size-24 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
+                <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-20 sm:p-2 md:size-24">
                   <img
                     src={p.logo}
                     alt={`Logo do projeto ${p.nome}`}
