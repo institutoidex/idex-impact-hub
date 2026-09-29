@@ -128,11 +128,22 @@ function ProgramaEsportivo() {
       <section className="bg-ink py-16 text-ink-foreground">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="text-3xl text-ink-foreground">Os projetos do IDEX</h2>
-          <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Grade da jornada: 1 coluna no celular, 2 no tablet e 4 no desktop */}
+          <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
               <li key={p.nome} className="border-t-2 border-primary pt-4">
-                <span className="font-display text-4xl text-primary"></span>
-                <a href={`#${p.numero}`} className="mt-2 block text-lg font-semibold hover:underline">
+                {/* Logo do projeto, com quadro que acompanha a largura da tela */}
+                <a href={`#${p.numero}`} className="inline-flex" aria-label={p.nome}>
+                  <span className="flex size-14 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-16 sm:p-2">
+                    <img
+                      src={p.logo}
+                      alt=""
+                      className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  </span>
+                </a>
+                <a href={`#${p.numero}`} className="mt-3 block text-lg font-semibold hover:underline">
                   {p.nome}
                 </a>
                 <p className="mt-1 text-sm text-ink-foreground/80">{p.etapa}</p>
@@ -147,9 +158,10 @@ function ProgramaEsportivo() {
         <div className="space-y-16">
           {PROGRAMAS.map((p) => (
             <Reveal key={p.nome}>
-              <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
+              {/* Logo ao lado do texto em qualquer largura de tela; quadro cresce no desktop */}
+              <article id={p.numero} className="scroll-mt-28 grid grid-cols-[auto_minmax(0,1fr)] gap-4 sm:gap-6">
                 {/* Quadro branco neutro para as logos coloridas dos projetos */}
-                <div className="flex size-24 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
+                <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-20 sm:p-2 md:size-24">
                   <img
                     src={p.logo}
                     alt={`Logo do projeto ${p.nome}`}
