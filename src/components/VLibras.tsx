@@ -52,27 +52,52 @@ export function VLibras() {
     }
 
     // O widget monta o botão (#vlibras-access) num shadow DOM aberto, no meio da
-    // lateral — no celular isso cobria botões e rótulos. Injetamos um estilo no
-    // próprio shadow DOM para levá-lo ao canto inferior esquerdo, alinhado ao
-    // nosso botão de acessibilidade (canto inferior direito). O widget segue intacto.
+    // lateral (top: calc(50vh - 20px)). Injetamos um estilo no próprio shadow DOM
+    // para levá-lo ao canto inferior esquerdo, longe do nosso botão de
+    // acessibilidade (canto inferior direito). O widget pode reescrever o shadow
+    // DOM ao abrir/fechar o painel ou recriar o wrapper em qualquer nó, então
+    // observamos a árvore inteira (subtree) e também o shadow root, reaplicando
+    // o estilo sempre que ele sumir. O estilo inline também é reforçado.
+    const CSS_POSICAO =
+      "#vlibras-access{top:auto!important;bottom:24px!important;left:16px!important;right:auto!important;}";
+    const raizesObservadas = new WeakSet<ShadowRoot>();
+    let observadorShadow: MutationObserver | null = null;
+
     const posicionarBotao = () => {
       const raiz = document.getElementById("vlibras-access-wrapper")?.shadowRoot;
-      if (!raiz || raiz.getElementById("idex-posicao-vlibras")) return !!raiz;
-      const estilo = document.createElement("style");
-      estilo.id = "idex-posicao-vlibras";
-      estilo.textContent =
-        "#vlibras-access{top:auto!important;bottom:24px!important;left:16px!important;right:auto!important;}";
-      raiz.appendChild(estilo);
-      return true;
+      if (!raiz) return;
+      if (!raiz.getElementById("idex-posicao-vlibras")) {
+        const estilo = document.createElement("style");
+        estilo.id = "idex-posicao-vlibras";
+        estilo.textContent = CSS_POSICAO;
+        raiz.appendChild(estilo);
+      }
+      // Reforço inline: vence estilos reinjetados pelo widget
+      const botao = raiz.getElementById("vlibras-access") as HTMLElement | null;
+      if (botao && botao.style.getPropertyValue("bottom") !== "24px") {
+        botao.style.setProperty("top", "auto", "important");
+        botao.style.setProperty("bottom", "24px", "important");
+        botao.style.setProperty("left", "16px", "important");
+        botao.style.setProperty("right", "auto", "important");
+      }
+      // Observa mudanças internas do shadow root (reescritas do widget)
+      if (!raizesObservadas.has(raiz)) {
+        raizesObservadas.add(raiz);
+        observadorShadow?.disconnect();
+        observadorShadow = new MutationObserver(posicionarBotao);
+        observadorShadow.observe(raiz, { childList: true, subtree: true });
+      }
     };
-    const observador = new MutationObserver(() => {
-      if (posicionarBotao()) observador.disconnect();
-    });
-    observador.observe(document.body, { childList: true });
+
+    // subtree: true cobre o wrapper inserido em qualquer nó descendente
+    const observador = new MutationObserver(posicionarBotao);
+    observador.observe(document.body, { childList: true, subtree: true });
+    posicionarBotao();
 
     return () => {
       cancelado = true;
       observador.disconnect();
+      observadorShadow?.disconnect();
     };
   }, []);
 
