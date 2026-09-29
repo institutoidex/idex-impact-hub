@@ -109,6 +109,50 @@ function ComoAjudar() {
           </Reveal>
         </div>
       </section>
+
+      {/* Leis de incentivo: marcas dos programas de fomento ligados aos
+          projetos do instituto (texto neutro, sem prometer apoio atual) */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+        <Reveal>
+          <div className="rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
+            <h2 className="text-2xl">Leis de incentivo e fomento</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
+              Nossos programas podem ser viabilizados por leis de incentivo ao
+              esporte e por parcerias institucionais.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+              <img
+                src={logoGovernoSp.url}
+                alt="Governo do Estado de São Paulo — Secretaria de Esportes"
+                className="h-24 w-auto sm:h-28"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                src={logoLeiIncentivo.url}
+                alt="Lei de Incentivo ao Esporte (governo federal)"
+                className="h-20 w-auto sm:h-24"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                src={logoMinisterio.url}
+                alt="Ministério do Esporte"
+                className="h-28 w-auto sm:h-32"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                src={logoSpLei.url}
+                alt="SP — Lei de Incentivo ao Esporte (Estado de São Paulo)"
+                className="h-16 w-auto sm:h-20"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </Reveal>
+      </section>
     </>
   );
 }
