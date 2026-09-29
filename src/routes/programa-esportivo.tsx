@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HeartHandshake } from "lucide-react";
+import { HeartHandshake, Maximize2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
-import { FOTO_HERO, FOTO_TALENTO } from "@/data/fotos";
+import VisorFotos from "@/components/VisorFotos";
+import { FOTO_HERO, FOTO_TALENTO, type Foto } from "@/data/fotos";
 
 // Logos oficiais dos quatro projetos (substituem os ícones genéricos).
 import logoTalentoEmCampo from "@/assets/projetos/logo-talento-em-campo.png.asset.json";
@@ -83,6 +85,9 @@ const PROGRAMAS = [
 ] as const;
 
 function ProgramaEsportivo() {
+  // logo aberta no visor em tela cheia (null = visor fechado)
+  const [logoAberta, setLogoAberta] = useState<Foto | null>(null);
+
   return (
     <>
       <PageHero
@@ -132,8 +137,13 @@ function ProgramaEsportivo() {
           <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {PROGRAMAS.map((p) => (
               <li key={p.nome} className="border-t-2 border-primary pt-4">
-                {/* Logo do projeto, com quadro que acompanha a largura da tela */}
-                <a href={`#${p.numero}`} className="inline-flex" aria-label={p.nome}>
+                {/* Logo clicável: abre o visor em tela cheia (navegação fica no nome) */}
+                <button
+                  type="button"
+                  onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
+                  aria-label={`Ampliar logo do projeto ${p.nome}`}
+                  className="group relative inline-flex cursor-zoom-in rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
                   <span className="flex size-14 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-16 sm:p-2">
                     <img
                       src={p.logo}
@@ -142,7 +152,11 @@ function ProgramaEsportivo() {
                       loading="lazy"
                     />
                   </span>
-                </a>
+                  {/* dica visual de que dá para expandir */}
+                  <span className="pointer-events-none absolute -right-1.5 -top-1.5 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Maximize2 className="size-3" />
+                  </span>
+                </button>
                 <a href={`#${p.numero}`} className="mt-3 block text-lg font-semibold hover:underline">
                   {p.nome}
                 </a>
@@ -160,15 +174,24 @@ function ProgramaEsportivo() {
             <Reveal key={p.nome}>
               {/* Logo ao lado do texto em qualquer largura de tela; quadro cresce no desktop */}
               <article id={p.numero} className="scroll-mt-28 grid grid-cols-[auto_minmax(0,1fr)] gap-4 sm:gap-6">
-                {/* Quadro branco neutro para as logos coloridas dos projetos */}
-                <div className="flex size-16 shrink-0 items-center justify-center rounded-md border border-border bg-background p-1.5 sm:size-20 sm:p-2 md:size-24">
+                {/* Logo clicável: abre o visor em tela cheia */}
+                <button
+                  type="button"
+                  onClick={() => setLogoAberta({ url: p.logo, alt: `Logo do projeto ${p.nome}` })}
+                  aria-label={`Ampliar logo do projeto ${p.nome}`}
+                  className="group relative flex size-16 shrink-0 cursor-zoom-in items-center justify-center self-start rounded-md border border-border bg-background p-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:size-20 sm:p-2 md:size-24"
+                >
                   <img
                     src={p.logo}
                     alt={`Logo do projeto ${p.nome}`}
                     className="max-h-full max-w-full object-contain"
                     loading="lazy"
                   />
-                </div>
+                  {/* dica visual de que dá para expandir */}
+                  <span className="pointer-events-none absolute -right-1.5 -top-1.5 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Maximize2 className="size-3" />
+                  </span>
+                </button>
                 <div>
                   <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                     Projeto {p.numero} · {p.etapa}
@@ -201,6 +224,9 @@ function ProgramaEsportivo() {
           </Button>
         </div>
       </section>
+
+      {/* Visor em tela cheia para a logo ampliada (fecha com Esc ou no botão) */}
+      {logoAberta && <VisorFotos fotos={[logoAberta]} onFechar={() => setLogoAberta(null)} />}
     </>
   );
 }
