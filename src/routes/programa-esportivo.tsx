@@ -85,6 +85,9 @@ const PROGRAMAS = [
 ] as const;
 
 function ProgramaEsportivo() {
+  // logo aberta no visor em tela cheia (null = visor fechado)
+  const [logoAberta, setLogoAberta] = useState<Foto | null>(null);
+
   return (
     <>
       <PageHero
