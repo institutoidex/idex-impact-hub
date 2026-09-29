@@ -50,7 +50,9 @@ function Noticias() {
 
   const itens = useMemo(
     () =>
-      (data ?? []).map((n) => ({
+      // Durante carregamento ou erro não usamos resultado antigo do cache:
+      // a lista fica vazia e só a mensagem de estado aparece.
+      (isPending || isError ? [] : (data ?? [])).map((n) => ({
         slug: n.slug,
         titulo: n.titulo,
         resumo: n.resumo,
@@ -60,7 +62,7 @@ function Noticias() {
         // vínculo opcional com um projeto (null = notícia geral)
         projeto: n.projeto_slug,
       })),
-    [data],
+    [data, isPending, isError],
   );
 
   const anos = useMemo(

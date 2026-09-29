@@ -28,8 +28,8 @@ export function VLibras() {
     // Evita carregar o script duas vezes (StrictMode/remontagens)
     if (document.querySelector(`script[src="${URL_SCRIPT}"]`)) return;
 
-    // Configuração lida pelo script no carregamento: botão na lateral ESQUERDA,
-    // para não brigar com nosso botão de acessibilidade (canto inferior direito)
+    // Configuração lida pelo script no carregamento: lateral esquerda.
+    // A posição final (canto inferior) é ajustada em posicionarBotao().
     window.VLibrasWidget = { path: URL_APP, position: "l" };
 
     // Carrega só depois que a página terminou de carregar: em navegadores com
@@ -51,8 +51,28 @@ export function VLibras() {
       window.addEventListener("load", () => setTimeout(carregar, 1200), { once: true });
     }
 
+    // O widget monta o botão (#vlibras-access) num shadow DOM aberto, no meio da
+    // lateral — no celular isso cobria botões e rótulos. Injetamos um estilo no
+    // próprio shadow DOM para levá-lo ao canto inferior esquerdo, alinhado ao
+    // nosso botão de acessibilidade (canto inferior direito). O widget segue intacto.
+    const posicionarBotao = () => {
+      const raiz = document.getElementById("vlibras-access-wrapper")?.shadowRoot;
+      if (!raiz || raiz.getElementById("idex-posicao-vlibras")) return !!raiz;
+      const estilo = document.createElement("style");
+      estilo.id = "idex-posicao-vlibras";
+      estilo.textContent =
+        "#vlibras-access{top:auto!important;bottom:24px!important;left:16px!important;right:auto!important;}";
+      raiz.appendChild(estilo);
+      return true;
+    };
+    const observador = new MutationObserver(() => {
+      if (posicionarBotao()) observador.disconnect();
+    });
+    observador.observe(document.body, { childList: true });
+
     return () => {
       cancelado = true;
+      observador.disconnect();
     };
   }, []);
 
