@@ -9,10 +9,10 @@ import VisorFotos from "@/components/VisorFotos";
 import { FOTO_HERO, FOTO_TALENTO, type Foto } from "@/data/fotos";
 
 // Logos oficiais dos quatro projetos (substituem os ícones genéricos).
-import logoTalentoEmCampo from "@/assets/projetos/logo-talento-em-campo.png.asset.json";
-import logoTalentos from "@/assets/projetos/logo-talentos.png.asset.json";
-import logoDraftDay from "@/assets/projetos/logo-draft-day.png.asset.json";
-import logoTalentoBrasil from "@/assets/projetos/logo-talento-brasil.png.asset.json";
+import logoTalentoEmCampo from "@/assets/projetos/logo-talento-em-campo-v2.png.asset.json";
+import logoTalentos from "@/assets/projetos/logo-talentos-v2.png.asset.json";
+import logoDraftDay from "@/assets/projetos/logo-draft-day-v2.png.asset.json";
+import logoTalentoBrasil from "@/assets/projetos/logo-talento-brasil-v2.png.asset.json";
 
 const TITULO = "Programa Esportivo — Instituto IDEX";
 const DESCRICAO =
