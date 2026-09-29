@@ -12,7 +12,6 @@ import { AnimatedText } from "@/components/motion/AnimatedText";
 import { Counter } from "@/components/motion/Counter";
 import { TiltCard } from "@/components/motion/TiltCard";
 
-import { Placeholder } from "@/components/Placeholder";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
