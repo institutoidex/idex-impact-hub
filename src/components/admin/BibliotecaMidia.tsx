@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Copy,
   ExternalLink,
+  Download,
   Folder,
   FolderPlus,
   Home,
@@ -43,6 +44,8 @@ import {
   formatarTamanho,
   moverMidia,
   validarImagem,
+  nomeLimpo,
+  urlDownload,
 } from "@/lib/storage";
 
 /**
@@ -109,16 +112,23 @@ export function BibliotecaMidia() {
     const pasta = destino ?? caminho;
     setEnviando(true);
     try {
+      let enviadas = 0;
       for (const arquivo of arquivos) {
         const erro = validarImagem(arquivo);
         if (erro) {
           toast.error(`${arquivo.name}: ${erro}`);
           continue;
         }
-        await enviarImagem(arquivo, pasta || "site");
+        // cada arquivo é tratado à parte: um nome repetido não cancela os demais
+        try {
+          await enviarImagem(arquivo, pasta || "site");
+          enviadas++;
+        } catch (e) {
+          toast.error((e as Error).message || `Não foi possível enviar ${arquivo.name}.`);
+        }
       }
       await recarregar();
-      toast.success(`Imagens enviadas para ${pasta || "a biblioteca"}.`);
+      if (enviadas) toast.success(`${enviadas} imagem(ns) enviada(s) para ${pasta || "a biblioteca"}.`);
     } catch (e) {
       toast.error((e as Error).message || "Não foi possível enviar.");
     } finally {
@@ -542,8 +552,8 @@ export function BibliotecaMidia() {
               </span>
             </div>
             <div className="space-y-2 p-3">
-              <p className="truncate text-sm" title={a.nome}>
-                {a.nome}
+              <p className="truncate text-sm" title={nomeLimpo(a.nome)}>
+                {nomeLimpo(a.nome)}
               </p>
               <p className="text-xs text-muted-foreground">{formatarTamanho(a.tamanho)}</p>
 
@@ -578,6 +588,17 @@ export function BibliotecaMidia() {
                 <Button size="icon" variant="outline" className="rounded-full" asChild>
                   <a href={a.url} target="_blank" rel="noreferrer" aria-label={`Abrir ${a.nome}`}>
                     <ExternalLink className="size-4" />
+                  </a>
+                </Button>
+                {/* Baixa o arquivo original, sem conversão, com o nome limpo */}
+                <Button size="icon" variant="outline" className="rounded-full" asChild>
+                  <a
+                    href={urlDownload(a.url, a.nome)}
+                    download={nomeLimpo(a.nome)}
+                    aria-label={`Baixar ${nomeLimpo(a.nome)} no formato original`}
+                    title="Baixar no formato original"
+                  >
+                    <Download className="size-4" />
                   </a>
                 </Button>
                 <Button

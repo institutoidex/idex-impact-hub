@@ -13,8 +13,11 @@ const TIPOS_DOCUMENTO = [
 const TAMANHO_MAXIMO = 10 * 1024 * 1024; // 10 MB
 const TAMANHO_MAXIMO_DOC = 25 * 1024 * 1024; // 25 MB
 
-/** Gera um caminho único e seguro para o arquivo dentro do bucket. */
-function caminhoDoArquivo(pasta: string, arquivo: File) {
+/**
+ * Gera um caminho seguro para o arquivo dentro do bucket.
+ * Com `unico = false` usa apenas o nome do arquivo (sem código numérico).
+ */
+function caminhoDoArquivo(pasta: string, arquivo: File, unico = true) {
   const extensao = (arquivo.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
   const base = arquivo.name
     .replace(/\.[^.]+$/, "")
@@ -23,9 +26,22 @@ function caminhoDoArquivo(pasta: string, arquivo: File) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
-  const nome = `${Date.now()}-${base || Math.random().toString(36).slice(2, 8)}.${extensao || "jpg"}`;
+    .slice(0, 80);
+  const nomeBase = base || Math.random().toString(36).slice(2, 8);
+  const nome = unico
+    ? `${Date.now()}-${nomeBase}.${extensao || "jpg"}`
+    : `${nomeBase}.${extensao || "jpg"}`;
   return `${pasta}/${nome}`;
+}
+
+/** Remove o código numérico antigo (ex.: "1790687470165-") do início do nome. */
+export function nomeLimpo(nome: string) {
+  return nome.replace(/^\d{10,}-/, "");
+}
+
+/** URL que força o download do arquivo original com o nome limpo. */
+export function urlDownload(url: string, nome: string) {
+  return `${url}${url.includes("?") ? "&" : "?"}download=${encodeURIComponent(nomeLimpo(nome))}`;
 }
 
 /** Valida o arquivo antes do envio; devolve a mensagem de erro ou null. */
@@ -46,17 +62,27 @@ export function validarDocumento(arquivo: File): string | null {
   return null;
 }
 
-/** Envia a imagem para o bucket e devolve a URL pública. */
+/**
+ * Envia a imagem usando só o nome do arquivo e devolve a URL pública.
+ * Nomes repetidos na mesma pasta são proibidos (não sobrescreve).
+ */
 export async function enviarImagem(arquivo: File, pasta: string): Promise<string> {
-  const caminho = caminhoDoArquivo(pasta, arquivo);
+  const caminho = caminhoDoArquivo(pasta, arquivo, false);
   const { error } = await supabase.storage
     .from(BUCKET_MIDIA)
     .upload(caminho, arquivo, { cacheControl: "31536000", upsert: false });
-  if (error) throw error;
+  if (error) {
+    // o storage recusa caminhos já existentes: traduz para uma mensagem clara
+    if (/exist|duplicate/i.test(error.message)) {
+      throw new Error(`Já existe uma imagem chamada “${caminho.split("/").pop()}” nesta pasta. Renomeie o arquivo e envie de novo.`);
+    }
+    throw error;
+  }
 
   const { data } = supabase.storage.from(BUCKET_MIDIA).getPublicUrl(caminho);
   return data.publicUrl;
 }
+
 
 /** Envia qualquer arquivo (documento) e devolve caminho + URL pública. */
 export async function enviarArquivo(arquivo: File, pasta: string) {
