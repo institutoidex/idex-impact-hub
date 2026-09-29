@@ -227,7 +227,7 @@ function Contato() {
                 )}
                 {CONTATO.cnpj && (
                   <p className="flex items-center gap-3 text-ink-foreground/70">
-                    <Building2 className="size-4 text-primary" /> CNPJ {CONTATO.cnpj}
+                    <Building2 className="size-4 text-primary" /> {`CNPJ ${CONTATO.cnpj}`}
                   </p>
                 )}
               </div>
