@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
-import { Placeholder } from "@/components/Placeholder";
 import { FOTO_EQUIPE } from "@/data/fotos";
 
 export const Route = createFileRoute("/quem-somos")({
@@ -62,33 +61,8 @@ function QuemSomos() {
         </Reveal>
       </section>
 
-      {/* Missão, visão, valores */}
-      <section className="bg-sand py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <Reveal>
-            <h2 className="text-3xl">Missão, visão e valores</h2>
-            <p className="mt-3 max-w-2xl text-muted-foreground">
-              Estes textos ainda não foram formalizados pelo instituto. Os espaços abaixo estão
-              reservados para o conteúdo oficial.
-            </p>
-          </Reveal>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {["Missão", "Visão", "Valores"].map((t, i) => (
-              <Reveal key={t} delay={i * 100}>
-                <div className="h-full rounded-3xl border border-border bg-card p-7">
-                  <h3 className="text-xl">{t}</h3>
-                  <p className="mt-4">
-                    <Placeholder>[{t.toLowerCase()} a definir]</Placeholder>
-                  </p>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    Ainda não formalizado pelo instituto.
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Missão, visão e valores ficam ocultos até o instituto enviar os
+          textos oficiais (não inventar conteúdo). */}
 
 
     </>
