@@ -14,7 +14,7 @@ declare global {
   interface Window {
     VLibrasWidget?: {
       path?: string;
-      position?: string; // "l" = esquerda; qualquer outro valor = direita
+      position?: string; // "l", "r", "bl", "br" etc. (posições oficiais do widget)
       avatar?: string; // "icaro" | "hosana" | "guga"
     };
   }
@@ -28,9 +28,11 @@ export function VLibras() {
     // Evita carregar o script duas vezes (StrictMode/remontagens)
     if (document.querySelector(`script[src="${URL_SCRIPT}"]`)) return;
 
-    // Configuração lida pelo script no carregamento: botão na lateral ESQUERDA,
-    // para não brigar com nosso botão de acessibilidade (canto inferior direito)
-    window.VLibrasWidget = { path: URL_APP, position: "l" };
+    // Configuração lida pelo script no carregamento: botão no canto INFERIOR
+    // ESQUERDO ("bl", opção oficial do widget). No meio da lateral ele cobria
+    // botões e rótulos no celular; embaixo fica espelhado ao nosso botão de
+    // acessibilidade (canto inferior direito).
+    window.VLibrasWidget = { path: URL_APP, position: "bl" };
 
     // Carrega só depois que a página terminou de carregar: em navegadores com
     // bloqueador embutido (Opera GX) a requisição pode ficar pendurada e segurar
