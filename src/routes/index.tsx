@@ -140,7 +140,7 @@ function Inicio() {
           ].map((item, i) => (
             <Reveal key={item.t} delay={i * 100}>
               <div>
-                <div className="h-1 w-12 bg-brand-yellow" aria-hidden />
+                <div className="h-1 w-12 bg-brand-green" aria-hidden />
                 <p className="mt-5 font-display text-6xl text-foreground">
                   {item.sep ? <Counter valor={item.v} /> : item.v}
                 </p>
@@ -179,7 +179,7 @@ function Inicio() {
       {/* CTA final: faixa escura de largura total com o filete amarelo da marca,
           em vez de mais um card arredondado */}
       <section className="bg-ink text-ink-foreground">
-        <div className="rule-yellow" aria-hidden />
+        <div className="rule-green" aria-hidden />
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.4fr_1fr] lg:items-center">
           <Reveal>
             <h2 className="text-3xl sm:text-4xl">Vem junto com a gente</h2>
