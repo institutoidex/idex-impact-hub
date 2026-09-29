@@ -88,8 +88,8 @@ function QuemSomos() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="text-3xl text-ink-foreground">Compromisso institucional</h2>
           <div className="mt-10 grid gap-10 md:grid-cols-2">
-            <div className="border-t-2 border-brand-yellow pt-4">
-              <h3 className="text-2xl text-brand-yellow">Missão</h3>
+            <div className="border-t-2 border-primary pt-4">
+              <h3 className="text-2xl text-primary">Missão</h3>
               <p className="mt-3 text-ink-foreground/85">
                 Promover o desenvolvimento de crianças, adolescentes e jovens por meio do esporte,
                 utilizando o futebol como instrumento de formação humana, inclusão social,
@@ -97,8 +97,8 @@ function QuemSomos() {
                 Brasil e no exterior.
               </p>
             </div>
-            <div className="border-t-2 border-brand-yellow pt-4">
-              <h3 className="text-2xl text-brand-yellow">Visão</h3>
+            <div className="border-t-2 border-primary pt-4">
+              <h3 className="text-2xl text-primary">Visão</h3>
               <p className="mt-3 text-ink-foreground/85">
                 Ser referência na formação esportiva e social de jovens, reconhecido pela capacidade
                 de transformar o acesso ao esporte em trajetórias de desenvolvimento, evolução,
