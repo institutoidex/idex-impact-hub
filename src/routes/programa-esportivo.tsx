@@ -1,10 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sprout, Trophy, ClipboardCheck, TrendingUp, HeartHandshake } from "lucide-react";
+import { HeartHandshake } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { FOTO_HERO, FOTO_TALENTO } from "@/data/fotos";
+
+// Logos oficiais dos quatro projetos (substituem os ícones genéricos).
+import logoTalentoEmCampo from "@/assets/projetos/logo-talento-em-campo.png.asset.json";
+import logoTalentos from "@/assets/projetos/logo-talentos.png.asset.json";
+import logoDraftDay from "@/assets/projetos/logo-draft-day.png.asset.json";
+import logoTalentoBrasil from "@/assets/projetos/logo-talento-brasil.png.asset.json";
 
 const TITULO = "Programa Esportivo — Instituto IDEX";
 const DESCRICAO =
@@ -32,7 +38,7 @@ const PROGRAMAS = [
     nome: "Talento em Campo",
     lema: "O esporte começa aqui.",
     etapa: "Iniciação esportiva e formação de base",
-    icone: Sprout,
+    logo: logoTalentoEmCampo.url,
     textos: [
       "Programa de iniciação esportiva que leva o futebol de campo estruturado a crianças e adolescentes, especialmente em territórios de maior vulnerabilidade social.",
       "Por meio de atividades regulares e orientadas, o programa amplia o acesso à modalidade e trabalha valores que fazem parte da essência do IDEX, como disciplina, respeito, cooperação, responsabilidade e convivência.",
@@ -43,7 +49,7 @@ const PROGRAMAS = [
     nome: "Festival de Talentos",
     lema: "Onde o aprendizado entra em campo.",
     etapa: "Integração, competição e desenvolvimento",
-    icone: Trophy,
+    logo: logoTalentos.url,
     textos: [
       "Programa de integração esportiva que reúne jovens e equipes em etapas organizadas de futebol de campo, transformando o jogo em uma experiência de formação, convivência e desenvolvimento.",
       "Com orientação técnica, regras, arbitragem e estrutura adequada, os festivais proporcionam aos participantes a oportunidade de colocar em prática o que aprenderam, vivenciar o ambiente esportivo e fortalecer sua relação com a modalidade.",
@@ -54,7 +60,7 @@ const PROGRAMAS = [
     nome: "Draft Day",
     lema: "Onde o talento encontra oportunidade.",
     etapa: "Avaliação, evolução e visibilidade esportiva",
-    icone: ClipboardCheck,
+    logo: logoDraftDay.url,
     textos: [
       "O Draft Day é o programa do IDEX voltado à avaliação esportiva e à visibilidade de jovens jogadores em estágio avançado de desenvolvimento.",
       "Por meio de partidas organizadas e monitoradas por profissionais especializados, os atletas têm a oportunidade de demonstrar seu desempenho em situação real de jogo, sendo observados em aspectos técnicos, táticos, físicos, comportamentais e de inteligência de jogo.",
@@ -67,7 +73,7 @@ const PROGRAMAS = [
     nome: "Talento Brasil",
     lema: "Da formação para novas oportunidades.",
     etapa: "Qualificação e preparação para novas oportunidades",
-    icone: TrendingUp,
+    logo: logoTalentoBrasil.url,
     textos: [
       "O Talento Brasil representa o estágio mais avançado da trajetória esportiva desenvolvida pelo IDEX.",
       "Voltado à qualificação esportiva de jovens que passaram pelo processo de formação e apresentam potencial para avançar na modalidade, o programa amplia o desenvolvimento técnico e prepara esses jogadores para oportunidades reais de continuidade no futebol.",
@@ -139,30 +145,33 @@ function ProgramaEsportivo() {
       {/* Detalhe de cada programa */}
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
         <div className="space-y-16">
-          {PROGRAMAS.map((p) => {
-            const Icone = p.icone;
-            return (
-              <Reveal key={p.nome}>
-                <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
-                  <div className="flex size-14 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icone className="size-7" aria-hidden />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-                      Projeto {p.numero} · {p.etapa}
+          {PROGRAMAS.map((p) => (
+            <Reveal key={p.nome}>
+              <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
+                {/* Quadro branco neutro para as logos coloridas dos projetos */}
+                <div className="flex size-24 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
+                  <img
+                    src={p.logo}
+                    alt={`Logo do projeto ${p.nome}`}
+                    className="max-h-full max-w-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+                    Projeto {p.numero} · {p.etapa}
+                  </p>
+                  <h3 className="mt-2 text-3xl">{p.nome}</h3>
+                  <p className="mt-1 font-display text-xl text-primary italic">{p.lema}</p>
+                  {p.textos.map((t) => (
+                    <p key={t.slice(0, 24)} className="mt-4 text-muted-foreground">
+                      {t}
                     </p>
-                    <h3 className="mt-2 text-3xl">{p.nome}</h3>
-                    <p className="mt-1 font-display text-xl text-primary italic">{p.lema}</p>
-                    {p.textos.map((t) => (
-                      <p key={t.slice(0, 24)} className="mt-4 text-muted-foreground">
-                        {t}
-                      </p>
-                    ))}
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
+                  ))}
+                </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
       </section>
 
