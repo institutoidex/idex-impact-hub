@@ -255,27 +255,44 @@ export function BibliotecaMidia() {
         </p>
       )}
 
-      {/* Caminho atual (migalhas) */}
-      <nav className="flex flex-wrap items-center gap-1 text-sm" aria-label="Caminho da pasta">
+      {/* Caminho atual (migalhas): mostra onde estou e permite voltar a qualquer nível */}
+      <nav
+        className="flex flex-wrap items-center gap-1 rounded-2xl border border-border bg-muted/40 px-2 py-1.5 text-sm"
+        aria-label="Caminho da pasta"
+      >
+        {trilha.length > 0 && (
+          <button
+            type="button"
+            className="mr-1 inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 font-medium hover:border-primary/60"
+            onClick={() => setCaminho(trilha[trilha.length - 2]?.caminho ?? "")}
+          >
+            <ChevronRight className="size-4 rotate-180" /> Voltar
+          </button>
+        )}
         <button
           type="button"
-          className="inline-flex items-center gap-1 rounded-full px-2 py-1 hover:bg-muted"
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 hover:bg-muted ${trilha.length === 0 ? "font-semibold text-primary" : ""}`}
+          aria-current={trilha.length === 0 ? "page" : undefined}
           onClick={() => setCaminho("")}
         >
           <Home className="size-4" /> Biblioteca
         </button>
-        {trilha.map((p) => (
-          <span key={p.caminho} className="inline-flex items-center gap-1">
-            <ChevronRight className="size-4 text-muted-foreground" />
-            <button
-              type="button"
-              className="rounded-full px-2 py-1 hover:bg-muted"
-              onClick={() => setCaminho(p.caminho)}
-            >
-              {p.nome}
-            </button>
-          </span>
-        ))}
+        {trilha.map((p, i) => {
+          const atual = i === trilha.length - 1;
+          return (
+            <span key={p.caminho} className="inline-flex items-center gap-1">
+              <ChevronRight className="size-4 text-muted-foreground" />
+              <button
+                type="button"
+                aria-current={atual ? "page" : undefined}
+                className={`rounded-full px-2 py-1 hover:bg-muted ${atual ? "font-semibold text-primary" : ""}`}
+                onClick={() => setCaminho(p.caminho)}
+              >
+                {p.nome}
+              </button>
+            </span>
+          );
+        })}
       </nav>
 
       {/* Barra de ações */}
