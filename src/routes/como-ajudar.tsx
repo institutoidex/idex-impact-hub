@@ -113,7 +113,7 @@ function ComoAjudar() {
           <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-10">
             <h2 className="text-2xl">MECANISMOS DE INCENTIVO</h2>
             {/* Layout vertical: marcas empilhadas e centralizadas */}
-            <div className="mt-8 flex flex-col items-center justify-center gap-6">
+            <div className="mt-4 flex flex-col items-center justify-center gap-6">
               <img
                 src={logosIncentivo.url}
                 alt="Governo do Estado de São Paulo — Secretaria de Esportes, Lei de Incentivo ao Esporte, Ministério do Esporte e SP — Lei de Incentivo ao Esporte"
