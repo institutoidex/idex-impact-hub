@@ -149,7 +149,7 @@ function ProgramaEsportivo() {
             <Reveal key={p.nome}>
               <article id={p.numero} className="scroll-mt-28 grid gap-6 md:grid-cols-[auto_1fr]">
                 {/* Quadro branco neutro para as logos coloridas dos projetos */}
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
+                <div className="flex size-24 shrink-0 items-center justify-center rounded-md border border-border bg-background p-2">
                   <img
                     src={p.logo}
                     alt={`Logo do projeto ${p.nome}`}
