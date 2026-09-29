@@ -25,7 +25,8 @@ export function Footer() {
             />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">
-            ONG brasileira de desenvolvimento social, fundada em 2007.
+            Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio
+            do esporte, desde 2007.
           </p>
           <div className="mt-5 flex gap-2">
             <a
