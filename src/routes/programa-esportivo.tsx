@@ -224,6 +224,9 @@ function ProgramaEsportivo() {
           </Button>
         </div>
       </section>
+
+      {/* Visor em tela cheia para a logo ampliada (fecha com Esc ou no botão) */}
+      {logoAberta && <VisorFotos fotos={[logoAberta]} onFechar={() => setLogoAberta(null)} />}
     </>
   );
 }
