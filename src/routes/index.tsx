@@ -75,30 +75,33 @@ function Inicio() {
                 delay={150}
                 className="texto-heroi max-w-2xl text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
               />
-              <p
-                className="entrada texto-heroi w-fit max-w-md rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
-                style={{ "--d": "500ms" } as CSSProperties}
-              >
-                Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
-              </p>
-            </div>
-            <div
-              className="entrada mt-8 flex flex-wrap gap-3"
-              style={{ "--d": "650ms" } as CSSProperties}
-            >
-              <Button asChild size="lg" variant="idex">
-                <Link to="/como-ajudar">
-                  <HeartHandshake className="size-4" /> Quero ajudar
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="idexClaro"
-                className="border-ink-foreground/20 bg-ink/70 hover:bg-ink/85 hover:border-ink-foreground/30"
-              >
-                <Link to="/noticias">Ver notícias</Link>
-              </Button>
+              {/* Parágrafo e botões ficam ao lado do título em telas grandes */}
+              <div className="flex flex-col items-start gap-5">
+                <p
+                  className="entrada texto-heroi w-fit max-w-md rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
+                  style={{ "--d": "500ms" } as CSSProperties}
+                >
+                  Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
+                </p>
+                <div
+                  className="entrada flex flex-wrap gap-3"
+                  style={{ "--d": "650ms" } as CSSProperties}
+                >
+                  <Button asChild size="lg" variant="idex">
+                    <Link to="/como-ajudar">
+                      <HeartHandshake className="size-4" /> Quero ajudar
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="idexClaro"
+                    className="border-ink-foreground/20 bg-ink/70 hover:bg-ink/85 hover:border-ink-foreground/30"
+                  >
+                    <Link to="/noticias">Ver notícias</Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
