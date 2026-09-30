@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ChevronRight,
   Download,
+  Eye,
   FileText,
   Folder,
   FolderOpen,
@@ -299,13 +300,10 @@ function Transparencia() {
           <div className="mt-8 space-y-3">
             {documentosVisiveis.map((doc: DocumentoRow, i) => (
               <Reveal key={doc.id} delay={Math.min(i, 6) * 40}>
-                <a
+                <div
                   id={`doc-${doc.id}`}
-                  href={doc.arquivo_url ?? "#"}
-                  target={doc.arquivo_url ? "_blank" : undefined}
-                  rel="noreferrer"
                   className={cn(
-                    "lift group relative flex items-center gap-4 overflow-hidden rounded-2xl border bg-card p-5",
+                    "lift group relative flex flex-wrap items-center gap-4 overflow-hidden rounded-2xl border bg-card p-5",
                     docBuscado === doc.id ? "border-primary ring-2 ring-primary/30" : "border-border",
                   )}
                 >
@@ -316,19 +314,37 @@ function Transparencia() {
                   <span className="ml-1 grid size-11 shrink-0 place-items-center rounded-xl bg-muted">
                     <FileText className="size-5 text-secondary" aria-hidden />
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="font-display truncate">{doc.titulo}</p>
                     <p className="text-sm text-muted-foreground">
                       {doc.ano ? `Ano ${doc.ano}` : "Documento publicado"}
                     </p>
                   </div>
                   {doc.arquivo_url && (
-                    <Download
-                      className="ml-auto size-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
-                      aria-hidden
-                    />
+                    // Duas ações: abrir para ver na hora ou baixar o arquivo
+                    <div className="ml-auto flex shrink-0 items-center gap-2">
+                      <a
+                        href={doc.arquivo_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
+                      >
+                        <Eye className="size-3.5" aria-hidden /> Visualizar
+                      </a>
+                      <a
+                        href={
+                          doc.arquivo_url.includes("?")
+                            ? `${doc.arquivo_url}&download=`
+                            : `${doc.arquivo_url}?download=`
+                        }
+                        download
+                        className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      >
+                        <Download className="size-3.5" aria-hidden /> Baixar
+                      </a>
+                    </div>
                   )}
-                </a>
+                </div>
               </Reveal>
             ))}
 
