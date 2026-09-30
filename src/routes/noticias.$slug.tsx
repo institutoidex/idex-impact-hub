@@ -139,7 +139,10 @@ function NoticiaDetalhePagina() {
           <p className="mt-8 text-xs font-semibold tracking-widest text-primary uppercase">
             {noticia.data}
           </p>
-          <h1 className="mt-3 text-3xl text-ink-foreground sm:text-5xl">{noticia.titulo}</h1>
+          {/* Título com o mesmo fundo translúcido do resumo */}
+          <h1 className="mt-3 w-fit max-w-3xl rounded-2xl border border-ink-foreground/15 bg-ink/60 px-5 py-4 text-3xl text-ink-foreground backdrop-blur-sm sm:text-5xl sm:px-6 sm:py-5">
+            {noticia.titulo}
+          </h1>
           {/* Resumo em card, para destacar sobre a foto */}
           <p className="mt-4 max-w-2xl rounded-2xl border border-ink-foreground/15 bg-ink/60 px-5 py-4 text-ink-foreground/85 backdrop-blur-sm">
             {noticia.resumo}
