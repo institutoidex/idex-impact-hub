@@ -125,8 +125,8 @@ function Inicio() {
               </span>
               <h2 className="mt-3 text-3xl sm:text-4xl">Esporte que aproxima</h2>
               <p className="mt-4 text-muted-foreground">
-                Treinos gratuitos de futebol para 200 crianças e jovens das categorias de base, em
-                parceria com o Clube Esportivo Penha, desde 2017.
+                Futebol como caminho para formar, desenvolver talentos, ampliar horizontes e criar
+                novas oportunidades dentro e fora do esporte.
               </p>
               <Button asChild variant="idex" className="mt-7">
                 <Link to="/como-ajudar">
