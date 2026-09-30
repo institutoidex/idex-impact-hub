@@ -10,7 +10,6 @@ export const PASTAS_BASE: { nome: string; slug: string }[] = [
   { nome: "Emendas Parlamentares", slug: "emendas-parlamentares" },
   { nome: "Organograma", slug: "organograma" },
   { nome: "Perguntas Frequentes", slug: "perguntas-frequentes" },
-  { nome: "Processo de Compra", slug: "processo-de-compra" },
   { nome: "Projetos", slug: "projetos" },
   { nome: "Relatórios", slug: "relatorios" },
 ];
