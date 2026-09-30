@@ -140,17 +140,23 @@ function NoticiaDetalhePagina() {
             {noticia.data}
           </p>
           <h1 className="mt-3 text-3xl text-ink-foreground sm:text-5xl">{noticia.titulo}</h1>
-          <p className="mt-4 max-w-2xl text-ink-foreground/80">{noticia.resumo}</p>
+          {/* Resumo em card, para destacar sobre a foto */}
+          <p className="mt-4 max-w-2xl rounded-2xl border border-ink-foreground/15 bg-ink/60 px-5 py-4 text-ink-foreground/85 backdrop-blur-sm">
+            {noticia.resumo}
+          </p>
         </div>
       </section>
 
+      {/* Texto completo em card com borda */}
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <Reveal>
           {noticia.conteudo ? (
-            <div className="space-y-4 text-base leading-relaxed text-foreground/90">
-              {noticia.conteudo.split(/\n{2,}/).map((paragrafo, i) => (
-                <p key={i}>{paragrafo}</p>
-              ))}
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10">
+              <div className="space-y-4 text-base leading-relaxed text-foreground/90">
+                {noticia.conteudo.split(/\n{2,}/).map((paragrafo, i) => (
+                  <p key={i}>{paragrafo}</p>
+                ))}
+              </div>
             </div>
           ) : (
             <p className="text-muted-foreground">
