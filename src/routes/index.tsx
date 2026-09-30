@@ -56,7 +56,8 @@ function Inicio() {
         />
         {/* Contraste leve só na base — a foto segue visível, sem escurecer */}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
-        <div className="relative mx-auto flex max-w-7xl flex-col justify-end px-4 pt-16 sm:px-6">
+        {/* Conteúdo no topo (sobre as árvores), para não ficar em cima dos alunos na foto */}
+        <div className="relative mx-auto flex max-w-7xl flex-col justify-start px-4 pt-4 sm:px-6 sm:pt-8">
           {/* Entrada em CSS puro (utilitário entrada): o texto aparece no primeiro
               paint, sem esperar o JavaScript carregar — nada de hero vazio */}
           <div className="max-w-3xl">
