@@ -40,7 +40,6 @@ insert into public.pastas (nome, slug, ordem) values
   ('Emendas Parlamentares', 'emendas-parlamentares', 2),
   ('Organograma', 'organograma', 3),
   ('Perguntas Frequentes', 'perguntas-frequentes', 4),
-  ('Processo de Compra', 'processo-de-compra', 5),
   ('Projetos', 'projetos', 6),
   ('Relatórios', 'relatorios', 7)
 on conflict (slug) do nothing;
