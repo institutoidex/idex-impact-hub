@@ -42,7 +42,8 @@ export function BuscaDocumentos({ expandida = false }: { expandida?: boolean }) 
   // Atalho de teclado Ctrl/Cmd + K
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
+      // o preenchimento automático do navegador dispara keydown sem "key"
+      if (e.key?.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setAberto((v) => !v);
       }
