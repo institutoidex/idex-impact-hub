@@ -60,26 +60,28 @@ function Inicio() {
         <div className="relative mx-auto flex max-w-7xl flex-col justify-start px-4 pt-4 sm:px-6 sm:pt-8">
           {/* Entrada em CSS puro (utilitário entrada): o texto aparece no primeiro
               paint, sem esperar o JavaScript carregar — nada de hero vazio */}
-          <div className="max-w-3xl">
+          <div className="max-w-5xl">
             <span
               className="entrada texto-heroi inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
               style={{ "--d": "0ms" } as CSSProperties}
             >
               Instituto IDEX · desde 2007
             </span>
-            <AnimatedText
-              as="h1"
-              text={"A gente muda vida\nperto de casa."}
-              delay={150}
-              className="texto-heroi mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
-            />
-
-            <p
-              className="entrada texto-heroi mt-6 w-fit max-w-xl rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
-              style={{ "--d": "500ms" } as CSSProperties}
-            >
-              Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
-            </p>
+            {/* Título e descrição lado a lado em telas grandes; empilhados no celular */}
+            <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-14">
+              <AnimatedText
+                as="h1"
+                text={"A gente muda vida\nperto de casa."}
+                delay={150}
+                className="texto-heroi max-w-2xl text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
+              />
+              <p
+                className="entrada texto-heroi w-fit max-w-md rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
+                style={{ "--d": "500ms" } as CSSProperties}
+              >
+                Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
+              </p>
+            </div>
             <div
               className="entrada mt-8 flex flex-wrap gap-3"
               style={{ "--d": "650ms" } as CSSProperties}
