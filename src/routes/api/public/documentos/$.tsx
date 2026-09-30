@@ -32,7 +32,7 @@ export const Route = createFileRoute("/api/public/documentos/$")({
           return new Response("Tipo de arquivo não permitido", { status: 415 });
         }
 
-        const base = import.meta.env.VITE_SUPABASE_URL as string;
+        const base = import.meta.env['VITE_SUPABASE_URL'] as string;
         const urlOrigem = `${base}/storage/v1/object/public/midia/${caminho}`;
 
         let resposta: Response;
