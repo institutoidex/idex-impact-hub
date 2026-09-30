@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { formatarData, noticiasQuery } from "@/lib/queries";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
-import { Counter } from "@/components/motion/Counter";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 import { Button } from "@/components/ui/button";
