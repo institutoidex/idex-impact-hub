@@ -52,7 +52,7 @@ function Inicio() {
           foto={FOTO_HERO}
           prioridade
           sizes="100vw"
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full object-cover object-[50%_30%]"
         />
         {/* Contraste leve só na base — a foto segue visível, sem escurecer */}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
@@ -71,17 +71,17 @@ function Inicio() {
               as="h1"
               text={"A gente muda vida\nperto de casa."}
               delay={150}
-              className="texto-heroi mt-4 text-[clamp(2rem,8vw,4.5rem)] leading-[1.1] text-balance text-ink-foreground lg:text-7xl"
+              className="texto-heroi mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
             />
 
             <p
-              className="entrada texto-heroi mt-4 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
+              className="entrada texto-heroi mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
               style={{ "--d": "500ms" } as CSSProperties}
             >
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
             </p>
             <div
-              className="entrada mt-6 flex flex-wrap gap-3"
+              className="entrada mt-8 flex flex-wrap gap-3"
               style={{ "--d": "650ms" } as CSSProperties}
             >
               <Button asChild size="lg" variant="idex">
