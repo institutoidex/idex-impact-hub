@@ -54,15 +54,14 @@ function Inicio() {
           sizes="100vw"
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-ink/70" />
-        {/* Reforço de contraste na base do hero */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent" />
+        {/* Contraste leve só na base — a foto segue visível, sem escurecer */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
         <div className="relative mx-auto flex max-w-7xl flex-col justify-end px-4 pt-16 sm:px-6">
           {/* Entrada em CSS puro (utilitário entrada): o texto aparece no primeiro
               paint, sem esperar o JavaScript carregar — nada de hero vazio */}
           <div className="max-w-3xl">
             <span
-              className="entrada inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
+              className="entrada texto-heroi inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
               style={{ "--d": "0ms" } as CSSProperties}
             >
               Instituto IDEX · desde 2007
@@ -71,11 +70,11 @@ function Inicio() {
               as="h1"
               text={"A gente muda vida\nperto de casa."}
               delay={150}
-              className="mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
+              className="texto-heroi mt-6 text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
             />
 
             <p
-              className="entrada mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
+              className="entrada texto-heroi mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
               style={{ "--d": "500ms" } as CSSProperties}
             >
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
