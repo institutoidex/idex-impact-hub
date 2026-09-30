@@ -320,30 +320,36 @@ function Transparencia() {
                       {doc.ano ? `Ano ${doc.ano}` : "Documento publicado"}
                     </p>
                   </div>
-                  {doc.arquivo_url && (
-                    // Duas ações: abrir para ver na hora ou baixar o arquivo
-                    <div className="ml-auto flex shrink-0 items-center gap-2">
-                      <a
-                        href={doc.arquivo_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
-                      >
-                        <Eye className="size-3.5" aria-hidden /> Visualizar
-                      </a>
-                      <a
-                        href={
-                          doc.arquivo_url.includes("?")
-                            ? `${doc.arquivo_url}&download=`
-                            : `${doc.arquivo_url}?download=`
-                        }
-                        download
-                        className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                      >
-                        <Download className="size-3.5" aria-hidden /> Baixar
-                      </a>
-                    </div>
-                  )}
+                  {doc.arquivo_url &&
+                    (() => {
+                      // Monta a URL mascarada: o arquivo passa pelo próprio site,
+                      // sem expor o endereço real do armazenamento
+                      const caminho = doc.arquivo_url!.split("/midia/")[1];
+                      if (!caminho) return null;
+                      const urlVisualizar = `/api/public/documentos/${caminho}`;
+                      const nomeArquivo = caminho.split("/").pop() ?? "arquivo";
+                      const urlBaixar = `${urlVisualizar}?download=1&nome=${encodeURIComponent(nomeArquivo)}`;
+                      return (
+                        // Duas ações: abrir para ver na hora ou baixar o arquivo
+                        <div className="ml-auto flex shrink-0 items-center gap-2">
+                          <a
+                            href={urlVisualizar}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
+                          >
+                            <Eye className="size-3.5" aria-hidden /> Visualizar
+                          </a>
+                          <a
+                            href={urlBaixar}
+                            download={nomeArquivo}
+                            className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                          >
+                            <Download className="size-3.5" aria-hidden /> Baixar
+                          </a>
+                        </div>
+                      );
+                    })()}
                 </div>
               </Reveal>
             ))}
