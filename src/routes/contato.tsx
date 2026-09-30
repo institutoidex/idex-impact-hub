@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
+import { notificarContato } from "@/lib/notificar-contato.functions";
 import { MapPin, Instagram, Facebook, Phone, Building2 } from "lucide-react";
 import { CONTATO } from "@/data/idex";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
@@ -97,6 +98,8 @@ function Contato() {
       });
       return;
     }
+    // Aviso por e-mail à equipe (inativo até definir o remetente); falha não afeta o visitante
+    notificarContato({ data: parsed.data }).catch(() => {});
     toast.success("Mensagem enviada!", { description: "A equipe do IDEX vai te responder." });
     form.reset();
   }
