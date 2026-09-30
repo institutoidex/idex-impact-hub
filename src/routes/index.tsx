@@ -75,7 +75,7 @@ function Inicio() {
             />
 
             <p
-              className="entrada texto-heroi mt-6 max-w-xl text-base text-ink-foreground/90 sm:text-lg"
+              className="entrada texto-heroi mt-6 w-fit max-w-xl rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
               style={{ "--d": "500ms" } as CSSProperties}
             >
               Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
