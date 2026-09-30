@@ -88,7 +88,12 @@ function Inicio() {
                   <HeartHandshake className="size-4" /> Quero ajudar
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="idexClaro">
+              <Button
+                asChild
+                size="lg"
+                variant="idexClaro"
+                className="border-ink-foreground/20 bg-ink/70 hover:bg-ink/85 hover:border-ink-foreground/30"
+              >
                 <Link to="/noticias">Ver notícias</Link>
               </Button>
             </div>
