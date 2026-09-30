@@ -33,7 +33,29 @@ export const Route = createFileRoute("/api/public/documentos/$")({
         }
 
         const base = import.meta.env['VITE_SUPABASE_URL'] as string;
+        const chave = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string;
         const urlOrigem = `${base}/storage/v1/object/public/midia/${caminho}`;
+
+        // Validação: só libera arquivos cadastrados E publicados na Transparência.
+        // Compara a URL exata salva em documentos.arquivo_url — qualquer outro
+        // objeto do bucket (imagens de notícias, rascunhos etc.) é bloqueado.
+        try {
+          const consulta = new URL(`${base}/rest/v1/documentos`);
+          consulta.searchParams.set("select", "id");
+          consulta.searchParams.set("publicado", "eq.true");
+          consulta.searchParams.set("arquivo_url", `eq.${urlOrigem}`);
+          consulta.searchParams.set("limit", "1");
+          const r = await fetch(consulta, {
+            headers: { apikey: chave, Accept: "application/json" },
+          });
+          if (!r.ok) return new Response("Falha na validação", { status: 502 });
+          const linhas = (await r.json()) as unknown[];
+          if (!Array.isArray(linhas) || linhas.length === 0) {
+            return new Response("Arquivo não encontrado", { status: 404 });
+          }
+        } catch {
+          return new Response("Falha na validação", { status: 502 });
+        }
 
         let resposta: Response;
         try {
