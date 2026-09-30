@@ -130,7 +130,7 @@ function Inicio() {
 
 
       {/* Notícias --------------------------------------------------------- */}
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pt-16 pb-20 sm:px-6 sm:pt-20">
         <Reveal className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="text-3xl sm:text-4xl">Notícias recentes</h2>
           <Link
