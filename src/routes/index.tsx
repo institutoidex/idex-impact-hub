@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { formatarData, noticiasQuery } from "@/lib/queries";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
-import { Counter } from "@/components/motion/Counter";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 import { Button } from "@/components/ui/button";
@@ -129,27 +128,6 @@ function Inicio() {
         </div>
       </section>
 
-      {/* Números: conteúdo solto direto no fundo da página, sem caixa ao redor.
-          O filete amarelo da marca marca cada número. */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
-          {[
-            { v: 2007, sep: false, t: "ano de fundação" },
-            { v: 19, sep: true, t: "anos de atuação" },
-            { v: 200, sep: true, t: "crianças no Talento Brasil" },
-          ].map((item, i) => (
-            <Reveal key={item.t} delay={i * 100}>
-              <div>
-                <div className="h-1 w-12 bg-brand-green" aria-hidden />
-                <p className="mt-5 font-display text-6xl text-foreground">
-                  {item.sep ? <Counter valor={item.v} /> : item.v}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">{item.t}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
 
       {/* Notícias --------------------------------------------------------- */}
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
