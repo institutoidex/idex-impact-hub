@@ -262,16 +262,14 @@ export function BibliotecaMidia() {
       {/* Aviso durante o arraste */}
       {arrastando && (
         <p className="rounded-2xl border border-dashed border-primary/60 bg-primary/10 p-3 text-center text-sm text-primary">
-          {pastaAlvo
-            ? `Solte para enviar para “${pastaAlvo}”`
-            : "Solte as imagens para enviar para esta pasta"}
+          {pastaAlvo ? t.soltePastaParaEnviar(pastaAlvo) : t.solteParaEnviar}
         </p>
       )}
 
       {/* Caminho atual (migalhas): mostra onde estou e permite voltar a qualquer nível */}
       <nav
         className="flex flex-wrap items-center gap-1 rounded-2xl border border-border bg-muted/40 px-2 py-1.5 text-sm"
-        aria-label="Caminho da pasta"
+        aria-label={t.caminhoLabel}
       >
         {trilha.length > 0 && (
           <button
@@ -279,7 +277,7 @@ export function BibliotecaMidia() {
             className="mr-1 inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 font-medium hover:border-primary/60"
             onClick={() => setCaminho(trilha[trilha.length - 2]?.caminho ?? "")}
           >
-            <ChevronRight className="size-4 rotate-180" /> Voltar
+            <ChevronRight className="size-4 rotate-180" /> {t.voltar}
           </button>
         )}
         <button
@@ -288,7 +286,7 @@ export function BibliotecaMidia() {
           aria-current={trilha.length === 0 ? "page" : undefined}
           onClick={() => setCaminho("")}
         >
-          <Home className="size-4" /> Biblioteca
+          <Home className="size-4" /> {t.biblioteca}
         </button>
         {trilha.map((p, i) => {
           const atual = i === trilha.length - 1;
@@ -312,14 +310,14 @@ export function BibliotecaMidia() {
       <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4">
         <div className="min-w-40 flex-1">
           <label className="text-xs text-muted-foreground" htmlFor="m-busca">
-            Procurar nesta pasta
+            {t.procurar}
           </label>
           <div className="relative mt-1">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="m-busca"
               className="pl-9"
-              placeholder="ex.: talento-brasil"
+              placeholder={t.procurarPlaceholder}
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
@@ -327,7 +325,7 @@ export function BibliotecaMidia() {
         </div>
 
         <Button variant="outline" className="rounded-full" onClick={() => setCriandoPasta(true)}>
-          <FolderPlus className="size-4" /> Nova pasta
+          <FolderPlus className="size-4" /> {t.novaPasta}
         </Button>
 
         <input
@@ -344,12 +342,11 @@ export function BibliotecaMidia() {
           onClick={() => inputArquivo.current?.click()}
         >
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
-          {enviando ? "Enviando..." : "Enviar imagens aqui"}
+          {enviando ? t.enviando : t.enviarImagens}
         </Button>
 
         <p className="w-full text-xs text-muted-foreground">
-          Dica: arraste imagens do computador para esta área — solte sobre uma pasta para enviar
-          direto para ela.
+          {t.dica}
         </p>
       </div>
 
@@ -358,20 +355,20 @@ export function BibliotecaMidia() {
         <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-dashed border-border bg-muted/40 p-4">
           <div className="min-w-48 flex-1">
             <label className="text-xs text-muted-foreground" htmlFor="m-nova-pasta">
-              Nome da {caminho ? "subpasta" : "pasta"}
-              {caminho ? ` dentro de “${caminho}”` : ""}
+              {caminho ? t.nomeSubpasta : t.nomePasta}
+              {caminho ? t.dentroDe(caminho) : ""}
             </label>
             <Input
               id="m-nova-pasta"
               className="mt-1"
-              placeholder="ex.: talento-brasil-2026"
+              placeholder={t.novaPastaPlaceholder}
               value={nomePasta}
               onChange={(e) => setNomePasta(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void criarPasta()}
             />
           </div>
           <Button className="rounded-full" onClick={() => void criarPasta()}>
-            Criar
+            {t.criar}
           </Button>
           <Button
             variant="ghost"
@@ -381,14 +378,14 @@ export function BibliotecaMidia() {
               setNomePasta("");
             }}
           >
-            Cancelar
+            {t.cancelar}
           </Button>
         </div>
       )}
 
-      {conteudo.isLoading && <p className="text-sm text-muted-foreground">Carregando pasta...</p>}
+      {conteudo.isLoading && <p className="text-sm text-muted-foreground">{t.carregandoPasta}</p>}
       {conteudo.error && (
-        <p className="text-sm text-destructive">Não foi possível listar a biblioteca.</p>
+        <p className="text-sm text-destructive">{t.erroListar}</p>
       )}
 
       {/* Subpastas */}
@@ -413,7 +410,7 @@ export function BibliotecaMidia() {
               {/* Cartão inteiro clicável: um clique em qualquer ponto abre a pasta */}
               <button
                 type="button"
-                aria-label={`Abrir pasta ${p.nome}`}
+                aria-label={t.abrirPasta(p.nome)}
                 className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-2xl p-3 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => {
                   setCaminho(p.caminho);
@@ -427,7 +424,7 @@ export function BibliotecaMidia() {
                 size="icon"
                 variant="ghost"
                 className="mr-2 shrink-0 rounded-full"
-                aria-label={`Apagar pasta ${p.nome}`}
+                aria-label={t.apagarPasta(p.nome)}
                 onClick={(e) => {
                   // impede que o clique na lixeira abra a pasta
                   e.stopPropagation();
@@ -443,7 +440,7 @@ export function BibliotecaMidia() {
 
       {conteudo.data && pastasVisiveis.length === 0 && arquivosVisiveis.length === 0 && (
         <p className="rounded-2xl border border-dashed border-border bg-muted/50 p-6 text-sm text-muted-foreground">
-          Esta pasta está vazia. Crie uma subpasta ou envie imagens.
+          {t.pastaVazia}
         </p>
       )}
 
@@ -456,13 +453,13 @@ export function BibliotecaMidia() {
               onCheckedChange={(v) =>
                 setSelecionados(v === true ? arquivosVisiveis.map((a) => a.caminho) : [])
               }
-              aria-label="Selecionar todos os arquivos desta pasta"
+              aria-label={t.selecionarTodosAria}
             />
-            Selecionar todos
+            {t.selecionarTodos}
           </label>
 
           <span className="text-sm text-muted-foreground">
-            {selecionados.length} selecionado(s)
+            {t.selecionados(selecionados.length)}
           </span>
 
           {selecionados.length > 0 && (
@@ -475,11 +472,11 @@ export function BibliotecaMidia() {
               >
                 <SelectTrigger className="h-9 w-48 rounded-full text-xs">
                   <span className="inline-flex items-center gap-1">
-                    <MoveRight className="size-3" /> Mover selecionados...
+                    <MoveRight className="size-3" /> {t.moverSelecionados}
                   </span>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__raiz__">Biblioteca (raiz)</SelectItem>
+                  <SelectItem value="__raiz__">{t.bibliotecaRaiz}</SelectItem>
                   {(todasPastas.data ?? [])
                     .filter((p) => p !== (caminho || "__nada__"))
                     .map((p) => (
@@ -497,7 +494,7 @@ export function BibliotecaMidia() {
                 disabled={processando}
                 onClick={() => void copiarSelecionados()}
               >
-                <Copy className="size-3" /> Copiar endereços
+                <Copy className="size-3" /> {t.copiarEnderecos}
               </Button>
 
               <Button
@@ -509,11 +506,11 @@ export function BibliotecaMidia() {
                   setAExcluir({
                     tipo: "selecao",
                     caminho: "",
-                    nome: `${selecionados.length} arquivo(s)`,
+                    nome: t.arquivos(selecionados.length),
                   })
                 }
               >
-                <Trash2 className="size-3" /> Apagar
+                <Trash2 className="size-3" /> {t.apagar}
               </Button>
 
               <Button
@@ -522,7 +519,7 @@ export function BibliotecaMidia() {
                 className="rounded-full"
                 onClick={() => setSelecionados([])}
               >
-                Limpar seleção
+                {t.limparSelecao}
               </Button>
             </div>
           )}
@@ -550,7 +547,7 @@ export function BibliotecaMidia() {
                 <Checkbox
                   checked={selecionados.includes(a.caminho)}
                   onCheckedChange={() => alternarSelecao(a.caminho)}
-                  aria-label={`Selecionar ${a.nome}`}
+                  aria-label={t.selecionarArquivo(a.nome)}
                 />
               </span>
             </div>
@@ -564,11 +561,11 @@ export function BibliotecaMidia() {
               <Select value="" onValueChange={(destino) => void mover(a.caminho, destino)}>
                 <SelectTrigger className="h-8 rounded-full text-xs">
                   <span className="inline-flex items-center gap-1">
-                    <MoveRight className="size-3" /> Mover para...
+                    <MoveRight className="size-3" /> {t.moverPara}
                   </span>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__raiz__">Biblioteca (raiz)</SelectItem>
+                  <SelectItem value="__raiz__">{t.bibliotecaRaiz}</SelectItem>
                   {(todasPastas.data ?? [])
                     .filter((p) => p !== (caminho || "__nada__"))
                     .map((p) => (
@@ -586,10 +583,10 @@ export function BibliotecaMidia() {
                   className="flex-1 rounded-full text-xs"
                   onClick={() => void copiar(a.url)}
                 >
-                  <Copy className="size-3" /> Copiar
+                  <Copy className="size-3" /> {t.copiar}
                 </Button>
                 <Button size="icon" variant="outline" className="rounded-full" asChild>
-                  <a href={a.url} target="_blank" rel="noreferrer" aria-label={`Abrir ${a.nome}`}>
+                  <a href={a.url} target="_blank" rel="noreferrer" aria-label={t.abrir(a.nome)}>
                     <ExternalLink className="size-4" />
                   </a>
                 </Button>
@@ -598,8 +595,8 @@ export function BibliotecaMidia() {
                   <a
                     href={urlDownload(a.url, a.nome)}
                     download={nomeLimpo(a.nome)}
-                    aria-label={`Baixar ${nomeLimpo(a.nome)} no formato original`}
-                    title="Baixar no formato original"
+                    aria-label={t.baixar(nomeLimpo(a.nome))}
+                    title={t.baixarTitulo}
                   >
                     <Download className="size-4" />
                   </a>
@@ -608,7 +605,7 @@ export function BibliotecaMidia() {
                   size="icon"
                   variant="outline"
                   className="rounded-full"
-                  aria-label={`Apagar ${a.nome}`}
+                  aria-label={t.apagarArquivo(a.nome)}
                   onClick={() => setAExcluir({ tipo: "arquivo", caminho: a.caminho, nome: a.nome })}
                 >
                   <Trash2 className="size-4" />
@@ -622,18 +619,18 @@ export function BibliotecaMidia() {
       <AlertDialog open={Boolean(aExcluir)} onOpenChange={(v) => !v && setAExcluir(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Apagar “{aExcluir?.nome}”?</AlertDialogTitle>
+            <AlertDialogTitle>{t.confirmarApagarTitulo(aExcluir?.nome ?? "")}</AlertDialogTitle>
             <AlertDialogDescription>
               {aExcluir?.tipo === "pasta"
-                ? "Tudo que estiver dentro dela, inclusive subpastas, será apagado."
+                ? t.confirmarApagarPasta
                 : aExcluir?.tipo === "selecao"
-                  ? "Todos os arquivos selecionados serão apagados. Se algum estiver em uso em alguma página, o espaço vai ficar vazio."
-                  : "Se essa imagem estiver em uso em alguma página, o espaço vai ficar vazio."}
+                  ? t.confirmarApagarSelecao
+                  : t.confirmarApagarArquivo}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void confirmarExclusao()}>Apagar</AlertDialogAction>
+            <AlertDialogCancel>{t.cancelarDialogo}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void confirmarExclusao()}>{t.apagarDialogo}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
