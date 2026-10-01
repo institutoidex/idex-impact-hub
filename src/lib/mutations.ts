@@ -5,6 +5,7 @@ import type { NoticiaRow, ProjetoRow } from "./db-types";
 import { limparTraducoes, type Traducoes } from "@/i18n/traduzir";
 import { useLocale } from "@/i18n/mensagens";
 import type { Locale } from "@/i18n/locales";
+import { erroColunaTraducoesAusente } from "./erro-traducoes";
 import { editores } from "@/i18n/catalogos/editores";
 
 /**
@@ -24,14 +25,6 @@ export function gerarSlug(texto: string) {
 }
 
 /** O erro do Postgres/PostgREST por coluna inexistente cita o nome da coluna na mensagem. */
-export function erroColunaTraducoesAusente(erro: unknown) {
-  // Só reconhece "coluna inexistente": Postgres 42703 (undefined_column) ou
-  // PostgREST PGRST204 (coluna fora do cache de schema). Erros de constraint,
-  // permissão (RLS) etc. NÃO disparam a nova tentativa sem traduções.
-  const e = erro as { code?: string; message?: string } | null;
-  if (!e || (e.code !== "42703" && e.code !== "PGRST204")) return false;
-  return /traducoes/i.test(e.message ?? "");
-}
 
 /**
  * Monta os campos a enviar ao banco: só inclui `traducoes` quando há algo preenchido
