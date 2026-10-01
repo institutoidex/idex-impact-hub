@@ -105,3 +105,21 @@ describe("catálogos completos", async () => {
     }
   }
 });
+
+// Contagens reais da Transparência: singular/plural natural nos três idiomas
+import { transparencia as catTransp } from "./catalogos/transparencia";
+describe("contagens da Transparência", () => {
+  test("singular e plural", () => {
+    expect(catTransp["pt-BR"].arquivos(1)).toBe("1 arquivo");
+    expect(catTransp["pt-BR"].arquivos(0)).toBe("0 arquivos");
+    expect(catTransp["en-US"].documentos(1)).toBe("1 document");
+    expect(catTransp["en-US"].documentos(3)).toBe("3 documents");
+    expect(catTransp["es-ES"].arquivos(1)).toBe("1 archivo");
+    expect(catTransp["es-ES"].documentos(2)).toBe("2 documentos");
+  });
+  test("nenhum catálogo usa '(s)'", () => {
+    const { readdirSync, readFileSync } = require("node:fs");
+    const pasta = require("node:path").join(import.meta.dir, "catalogos");
+    for (const f of readdirSync(pasta)) expect(readFileSync(`${pasta}/${f}`, "utf8")).not.toMatch(/\((s|ns|es)\)/);
+  });
+});
