@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./db-types";
+import { classificarLink, type TipoLink } from "./recuperacao-senha";
 
 /**
  * Cliente do banco do Instituto IDEX (navegador/SSR público).
@@ -20,6 +21,11 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
 
 const noNavegador = typeof window !== "undefined";
 
+/** Classificação do link de chegada, lida antes de criar o cliente (que limpa o hash). */
+export const linkInicial: TipoLink = noNavegador
+  ? classificarLink(window.location.hash, window.location.search)
+  : "nenhum";
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     persistSession: noNavegador,
@@ -27,3 +33,21 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     detectSessionInUrl: noNavegador,
   },
 });
+
+/**
+ * Captura do link de recuperação de senha ANTES de o cliente limpar o hash.
+ * Guardamos só a classificação (nunca o token) e se o evento PASSWORD_RECOVERY
+ * disparou — o ouvinte é registrado aqui, junto da criação do cliente, para não
+ * perder o evento numa corrida com a montagem da tela.
+ */
+
+
+let recuperacaoVista = false;
+export function foiRecuperacaoVista() {
+  return recuperacaoVista;
+}
+if (noNavegador) {
+  supabase.auth.onAuthStateChange((evento) => {
+    if (evento === "PASSWORD_RECOVERY") recuperacaoVista = true;
+  });
+}
