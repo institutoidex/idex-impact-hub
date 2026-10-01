@@ -55,11 +55,16 @@ export function useAltFoto(foto: Foto): string {
 
 // Monta a foto já apontando para as variantes WebP responsivas quando existirem,
 // caindo para o JPEG original quando não houver variante gerada.
-const foto = (a: { url: string; original_filename: string }, alt: string): Foto => {
+// `alt` recebe a descrição nos três idiomas (pt é a referência/fallback).
+const foto = (
+  a: { url: string; original_filename: string },
+  alt: { "pt-BR": string; "en-US": string; "es-ES": string },
+): Foto => {
   const v = VARIANTES[a.original_filename];
   return {
     url: v?.padrao ?? a.url,
-    alt,
+    alt: alt["pt-BR"],
+    altPorIdioma: { "en-US": alt["en-US"], "es-ES": alt["es-ES"] },
     srcSet: v?.srcSet,
     largura: v?.largura,
     altura: v?.altura,

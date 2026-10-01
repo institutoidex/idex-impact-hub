@@ -45,7 +45,9 @@ export function plural(
   locale: Locale,
   formas: { one: string; other: string },
 ): string {
-  const regra = new Intl.PluralRules(locale).select(n);
+  // O CLDR do português trata 0 como singular ("0 foto"); no uso brasileiro
+  // corrente o zero leva plural ("0 fotos"), igual ao inglês e ao espanhol.
+  const regra = n === 0 ? "other" : new Intl.PluralRules(locale).select(n);
   const molde = regra === "one" ? formas.one : formas.other;
   return molde.replace("{n}", formatarNumero(n, locale));
 }
