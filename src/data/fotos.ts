@@ -26,15 +26,31 @@ import f21 from "@/assets/fotos/idex-21.jpg.asset.json";
 import f22 from "@/assets/fotos/idex-22.jpg.asset.json";
 
 import { VARIANTES } from "@/data/fotos-variantes";
+import { LOCALE_PADRAO, type Locale } from "@/i18n/locales";
+import { useLocale } from "@/i18n/mensagens";
 
 export interface Foto {
   /** URL padrão (WebP grande) usada como src */
   url: string;
+  /** Descrição em português (fallback e referência) */
   alt: string;
+  /** Descrição por idioma; en-US/es-ES opcionais (pt-BR usa `alt`) */
+  altPorIdioma?: Partial<Record<Locale, string>> | undefined;
   /** Conjunto responsivo 480/960/1600 em WebP */
   srcSet?: string | undefined;
   largura?: number | undefined;
   altura?: number | undefined;
+}
+
+/** Descrição (alt) da foto no idioma informado, com fallback para o português. */
+export function altDaFoto(foto: Foto, locale: Locale): string {
+  if (locale === LOCALE_PADRAO) return foto.alt;
+  return foto.altPorIdioma?.[locale] ?? foto.alt;
+}
+
+/** Hook: descrição (alt) da foto já no idioma atual da página. */
+export function useAltFoto(foto: Foto): string {
+  return altDaFoto(foto, useLocale());
 }
 
 // Monta a foto já apontando para as variantes WebP responsivas quando existirem,
