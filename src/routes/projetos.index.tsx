@@ -9,6 +9,10 @@ import { CampoBusca, normalizar } from "@/components/CampoBusca";
 import { Paginacao } from "@/components/Paginacao";
 import { FiltroBotao } from "@/components/FiltroBotao";
 import { FOTO_TALENTO } from "@/data/fotos";
+import { normalizarLocale } from "@/i18n/locales";
+import { useMensagens } from "@/i18n/mensagens";
+import { seoPagina } from "@/i18n/seo";
+import { projetos as catalogoProjetos } from "@/i18n/catalogos/projetos";
 
 const POR_PAGINA = 6;
 
@@ -22,23 +26,24 @@ export const Route = createFileRoute("/projetos/")({
     ano: typeof search['ano'] === "string" ? search['ano'] : "todos",
     pagina: Number(search['pagina']) > 0 ? Number(search['pagina']) : 1,
   }),
-  head: () => ({
-    meta: [
-      { title: "Projetos — Instituto IDEX" },
-      {
-        name: "description",
-        content:
-          "Projetos do Instituto IDEX, incluindo o Talento Brasil, futebol gratuito para 200 crianças e jovens.",
-      },
-      { property: "og:title", content: "Projetos — Instituto IDEX" },
-      { property: "og:description", content: "Conheça os projetos do instituto." },
-      { property: "og:type", content: "website" },
-    ],
-  }),
+  head: ({ match }) => {
+    const t = catalogoProjetos[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/projetos",
+      titulo: t.seo.titulo,
+      descricao: t.seo.descricao,
+    });
+    return {
+      meta: [...s.meta, { property: "og:description", content: t.seo.ogDescricao }],
+      links: s.links,
+    };
+  },
   component: ProjetosIndex,
 });
 
 function ProjetosIndex() {
+  const t = useMensagens(catalogoProjetos);
   const projetos = useProjetos();
   const { busca = "", ano = "todos", pagina = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/projetos/" });
@@ -75,11 +80,11 @@ function ProjetosIndex() {
       <PageHero
         variante="foto"
         foto={FOTO_TALENTO}
-        titulo="Projetos que acontecem no campo, não no papel"
-        descricao="Hoje temos um projeto ativo publicado. Novos projetos entram nesta lista conforme forem lançados."
+        titulo={t.hero.titulo}
+        descricao={t.hero.descricao}
       >
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-          Projetos
+          {t.etiqueta}
         </span>
       </PageHero>
 
@@ -89,13 +94,13 @@ function ProjetosIndex() {
           <CampoBusca
             valor={busca}
             aoMudar={(texto) => atualizar({ busca: texto })}
-            placeholder="Buscar por nome ou assunto"
-            rotulo="Buscar projetos"
+            placeholder={t.busca.placeholder}
+            rotulo={t.busca.rotulo}
           />
           {anos.length > 1 && (
             <div className="flex flex-wrap gap-2">
               <FiltroBotao ativo={ano === "todos"} onClick={() => atualizar({ ano: "todos" })}>
-                Todos os anos
+                {t.todosOsAnos}
               </FiltroBotao>
               {anos.map((a) => (
                 <FiltroBotao key={a} ativo={ano === a} onClick={() => atualizar({ ano: a })}>
@@ -107,9 +112,7 @@ function ProjetosIndex() {
         </Reveal>
 
         <p className="mt-6 text-sm text-muted-foreground" aria-live="polite">
-          {lista.length === 0
-            ? "Nenhum projeto encontrado."
-            : `${lista.length} ${lista.length === 1 ? "projeto" : "projetos"} · página ${paginaAtual} de ${totalPaginas}`}
+          {lista.length === 0 ? t.vazio : t.resultado(lista.length, paginaAtual, totalPaginas)}
         </p>
 
         <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -119,7 +122,7 @@ function ProjetosIndex() {
                 <Imagem
                   foto={p.imagem ? undefined : FOTO_TALENTO}
                   src={p.imagem || undefined}
-                  alt={`Imagem do projeto ${p.nome}`}
+                  alt={t.altImagem(p.nome)}
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="aspect-[4/3] w-full object-cover"
                 />
@@ -142,7 +145,7 @@ function ProjetosIndex() {
                     params={{ slug: p.slug }}
                     className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
                   >
-                    Ver o projeto
+                    {t.verProjeto}
                   </Link>
                 </div>
               </div>
@@ -152,9 +155,9 @@ function ProjetosIndex() {
           {Array.from({ length: vazios }).map((_, i) => (
             <Reveal as="article" key={`vazio-${i}`} delay={(i + 1) * 70}>
               <div className="flex h-full min-h-64 flex-col justify-center rounded-3xl border border-dashed border-border bg-muted/50 p-7">
-                <Placeholder>novo projeto em breve</Placeholder>
+                <Placeholder>{t.novoEmBreve}</Placeholder>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Espaço reservado para os próximos projetos do instituto.
+                  {t.espacoReservado}
                 </p>
               </div>
             </Reveal>
