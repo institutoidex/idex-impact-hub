@@ -68,7 +68,7 @@ function Inicio() {
               Instituto IDEX · desde 2007
             </span>
             {/* Título e descrição lado a lado em telas grandes; empilhados no celular */}
-            <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-24">
+            <div className="mt-6 flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-40">
               <AnimatedText
                 as="h1"
                 text={"Formamos pessoas.\nDesenvolvemos talentos.\nCriamos oportunidades."}
