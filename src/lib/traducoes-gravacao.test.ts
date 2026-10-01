@@ -1,3 +1,4 @@
+// @ts-nocheck — arquivo executado pelo bun test (tipos de bun:test fora do tsconfig)
 // Garante o que os editores (documento, pasta, projeto) mandam ao banco:
 // traduções vazias são limpas, o original em português não é tocado e
 // registros que já tinham traduções podem ser esvaziados.
