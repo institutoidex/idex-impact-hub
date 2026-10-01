@@ -1,0 +1,52 @@
+// Mensagens do painel flutuante de acessibilidade.
+import { definirMensagens } from "../mensagens";
+
+export const acessibilidade = definirMensagens(
+  {
+    abrirOpcoes: "Abrir opções de acessibilidade",
+    fecharOpcoes: "Fechar opções de acessibilidade",
+    titulo: "Acessibilidade",
+    tamanhoTexto: "Tamanho do texto",
+    diminuirTexto: "Diminuir tamanho do texto",
+    aumentarTexto: "Aumentar tamanho do texto",
+    altoContraste: "Alto contraste",
+    escalaDeCinza: "Escala de cinza",
+    sublinharLinks: "Sublinhar links",
+    reduzirAnimacoes: "Reduzir animações",
+    ativo: "ativo",
+    inativo: "off",
+    restaurarPadrao: "Restaurar padrão",
+  },
+  {
+    "en-US": {
+      abrirOpcoes: "Open accessibility options",
+      fecharOpcoes: "Close accessibility options",
+      titulo: "Accessibility",
+      tamanhoTexto: "Text size",
+      diminuirTexto: "Decrease text size",
+      aumentarTexto: "Increase text size",
+      altoContraste: "High contrast",
+      escalaDeCinza: "Grayscale",
+      sublinharLinks: "Underline links",
+      reduzirAnimacoes: "Reduce animations",
+      ativo: "on",
+      inativo: "off",
+      restaurarPadrao: "Reset to default",
+    },
+    "es-ES": {
+      abrirOpcoes: "Abrir opciones de accesibilidad",
+      fecharOpcoes: "Cerrar opciones de accesibilidad",
+      titulo: "Accesibilidad",
+      tamanhoTexto: "Tamaño del texto",
+      diminuirTexto: "Reducir tamaño del texto",
+      aumentarTexto: "Aumentar tamaño del texto",
+      altoContraste: "Alto contraste",
+      escalaDeCinza: "Escala de grises",
+      sublinharLinks: "Subrayar enlaces",
+      reduzirAnimacoes: "Reducir animaciones",
+      ativo: "activo",
+      inativo: "off",
+      restaurarPadrao: "Restablecer valores predeterminados",
+    },
+  },
+);
