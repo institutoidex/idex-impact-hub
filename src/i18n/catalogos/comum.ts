@@ -26,6 +26,7 @@ export const comum = definirMensagens(
       "Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio do esporte, desde 2007.",
     tituloSite: "Instituto IDEX — desenvolvimento social desde 2007",
     altLogo: "Logotipo do Instituto IDEX",
+    fechar: "Fechar",
   },
   {
     "en-US": {
@@ -48,6 +49,7 @@ export const comum = definirMensagens(
         "An institute dedicated to social development and to educating children and young people through sport, since 2007.",
       tituloSite: "Instituto IDEX — social development since 2007",
       altLogo: "Instituto IDEX logo",
+      fechar: "Close",
     },
     "es-ES": {
       idioma: { rotulo: "Idioma", escolher: "Elegir idioma", atual: "Idioma actual" },
@@ -69,6 +71,7 @@ export const comum = definirMensagens(
         "Instituto dedicado al desarrollo social y a la formación de niños y jóvenes a través del deporte, desde 2007.",
       tituloSite: "Instituto IDEX — desarrollo social desde 2007",
       altLogo: "Logotipo del Instituto IDEX",
+      fechar: "Cerrar",
     },
   },
 );

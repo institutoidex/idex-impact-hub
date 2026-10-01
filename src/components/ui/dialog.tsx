@@ -5,6 +5,15 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+// Nome acessível do botão X traduzido pelo idioma atual do site
+import { useMensagens } from "@/i18n/mensagens";
+import { comum } from "@/i18n/catalogos/comum";
+
+/** Texto do botão fechar: usa closeLabel se vier, senão o catálogo comum. */
+function RotuloFechar({ closeLabel }: { closeLabel?: string }) {
+  const t = useMensagens(comum);
+  return <span className="sr-only">{closeLabel ?? t.fechar}</span>;
+}
 
 const Dialog = DialogPrimitive.Root;
 
@@ -46,7 +55,7 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background cursor-pointer transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
         <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+        <RotuloFechar closeLabel={closeLabel} />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>
