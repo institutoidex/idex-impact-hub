@@ -1,3 +1,4 @@
+// @ts-nocheck — arquivo executado pelo bun test (tipos de bun:test fora do tsconfig)
 // Testes de datas: dia editorial determinístico e instantes com fuso explícito.
 import { describe, expect, test } from "bun:test";
 import { anoDe, formatarData, formatarDataHora } from "./formatar";
