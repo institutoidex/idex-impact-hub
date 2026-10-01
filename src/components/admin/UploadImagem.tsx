@@ -1,3 +1,4 @@
+import { useMensagemArquivo } from "@/i18n/erro-arquivo";
 import { useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ export function UploadCapa({
   rotulo?: string;
 }) {
   const t = useMensagens(midia).upload;
+  const ea = useMensagemArquivo();
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -31,7 +33,7 @@ export function UploadCapa({
     if (!arquivo) return;
     const erro = validarImagem(arquivo);
     if (erro) {
-      toast.error(erro);
+      toast.error(ea.deCodigo(erro));
       return;
     }
     setEnviando(true);
@@ -40,7 +42,7 @@ export function UploadCapa({
       aoMudar(url);
       toast.success(t.imagemEnviada);
     } catch (e) {
-      toast.error((e as Error).message || t.erroEnviar);
+      toast.error(ea.deErro(e, t.erroEnviar));
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
@@ -113,6 +115,7 @@ export function UploadCapa({
  */
 export function UploadMidia({ pasta }: { pasta: string }) {
   const m = useMensagens(midia);
+  const ea = useMensagemArquivo();
   const t = m.upload;
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
@@ -125,7 +128,7 @@ export function UploadMidia({ pasta }: { pasta: string }) {
       for (const arquivo of Array.from(arquivos)) {
         const erro = validarImagem(arquivo);
         if (erro) {
-          toast.error(`${arquivo.name}: ${erro}`);
+          toast.error(`${arquivo.name}: ${ea.deCodigo(erro)}`);
           continue;
         }
         const url = await enviarImagem(arquivo, `${pasta}/midia`);
@@ -133,7 +136,7 @@ export function UploadMidia({ pasta }: { pasta: string }) {
       }
       toast.success(t.midiaEnviada);
     } catch (e) {
-      toast.error((e as Error).message || t.erroEnviarMidia);
+      toast.error(ea.deErro(e, t.erroEnviarMidia));
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";

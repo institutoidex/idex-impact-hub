@@ -3,7 +3,7 @@ export function renderErrorPage(): string {
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <title>Esta página não carregou</title>
+    <title>Esta página não carregou · This page didn’t load · Esta página no se ha cargado</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font: 15px/1.5 system-ui, -apple-system, sans-serif; background: #fafafa; color: #111; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 1.5rem; }
@@ -20,9 +20,13 @@ export function renderErrorPage(): string {
     <div class="card">
       <h1>Esta página não carregou</h1>
       <p>Algo deu errado do nosso lado. Tente recarregar ou volte para o início.</p>
+      <h1 lang="en-US">This page didn’t load</h1>
+      <p lang="en-US">Something went wrong on our end. Try reloading or go back to the home page.</p>
+      <h1 lang="es-ES">Esta página no se ha cargado</h1>
+      <p lang="es-ES">Algo ha fallado por nuestra parte. Prueba a recargar o vuelve al inicio.</p>
       <div class="actions">
-        <button class="primary" onclick="location.reload()">Tentar de novo</button>
-        <a class="secondary" href="/">Voltar ao início</a>
+        <button class="primary" onclick="location.reload()">Tentar de novo · Try again · Reintentar</button>
+        <a class="secondary" href="/">Início · Home · Inicio</a>
       </div>
     </div>
   </body>
