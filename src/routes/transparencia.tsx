@@ -449,7 +449,7 @@ function ItemArvore({
         >
           <Icone className="size-4 shrink-0" aria-hidden />
           <span className="truncate">{no.nome}</span>
-          {(no as { emPortugues?: boolean }).emPortugues && <MarcaPortugues />}
+          {no.emPortugues && <MarcaPortugues />}
           <span className={cn("ml-auto text-xs", ativo ? "opacity-80" : "text-muted-foreground")}>
             {total}
           </span>

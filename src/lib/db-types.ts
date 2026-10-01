@@ -53,6 +53,8 @@ export type NoticiaRow = {
 
 /** Pasta (ou subpasta) que organiza os documentos da Transparência. */
 export type PastaRow = {
+  /** calculado no site (não é coluna): true quando falta tradução e o texto está em português */
+  emPortugues?: boolean;
   id: string;
   nome: string;
   slug: string;
@@ -65,6 +67,8 @@ export type PastaRow = {
 }
 
 export type DocumentoRow = {
+  /** calculado no site (não é coluna): true quando falta tradução e o texto está em português */
+  emPortugues?: boolean;
   id: string;
   titulo: string;
   categoria: string; // "estatuto" | "relatorio" | "financeiro" | "outro"
