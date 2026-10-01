@@ -31,7 +31,7 @@ export function gerarSlug(texto: string) {
  * (depois de limparTraducoes) ou quando o registro editado já tinha essa coluna —
  * evita mandar a coluna para bancos ainda sem a migração aplicada.
  */
-function camposComTraducoes<T extends Record<string, unknown>>(
+export function camposComTraducoes<T extends Record<string, unknown>>(
   resto: T,
   traducoes: Traducoes | undefined,
   colunaJaExistia: boolean | undefined,
