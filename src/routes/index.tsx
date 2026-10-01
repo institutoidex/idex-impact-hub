@@ -73,7 +73,7 @@ function Inicio() {
                 as="h1"
                 text={"Formamos pessoas.\nDesenvolvemos talentos.\nCriamos oportunidades."}
                 delay={150}
-                className="texto-heroi max-w-2xl text-[clamp(1.8rem,6vw,3.6rem)] leading-[1.12] text-balance text-ink-foreground lg:text-6xl"
+                className="texto-heroi max-w-2xl text-[clamp(1.6rem,4.5vw,2.9rem)] leading-[1.14] text-balance text-ink-foreground lg:text-5xl"
               />
               {/* Parágrafo e botões ficam ao lado do título em telas grandes */}
               <div className="flex flex-col items-start gap-5">
