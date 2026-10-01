@@ -1,3 +1,4 @@
+import { comum } from "@/i18n/catalogos/comum";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, HeartHandshake } from "lucide-react";
@@ -195,6 +196,7 @@ function Inicio() {
  */
 function NoticiasRecentes() {
   const locale = useLocale();
+  const mc = useMensagens(comum);
   const t = useMensagens(home);
   const { data, isPending, isError } = useQuery(noticiasQuery(3));
 
@@ -234,6 +236,10 @@ function NoticiasRecentes() {
                   </Link>
                 </h3>
                 <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+                {/* aviso quando falta tradução e o texto aparece em português */}
+                {n.emPortugues && (
+                  <p className="mt-2 text-xs text-muted-foreground italic">{mc.emPortugues}</p>
+                )}
               </div>
             </TiltCard>
           </Reveal>
