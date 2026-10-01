@@ -4,6 +4,7 @@ import { documentosQuery, pastasQuery, projetosQuery } from "./queries";
 import type { DocumentoRow, PastaRow } from "./db-types";
 import { useLocale } from "@/i18n/mensagens";
 import { traduzir } from "@/i18n/traduzir";
+import { anoDe } from "@/i18n/formatar";
 
 /**
  * Camada de conteúdo: lê do banco quando disponível e cai para os dados
@@ -24,9 +25,8 @@ export function useProjetos(): (Projeto & { emPortugues: boolean })[] {
       ...(base ?? ({} as Projeto)),
       slug: p.slug,
       nome: t.titulo,
-      ano: p.iniciado_em
-        ? new Date(p.iniciado_em).getFullYear()
-        : (base?.ano ?? new Date().getFullYear()),
+      // ano do dia editorial, sem depender do fuso
+      ano: anoDe(p.iniciado_em) ?? base?.ano ?? new Date().getFullYear(),
       resumo: t.resumo,
       real: true,
       // capa enviada pelo painel; quando vazia a página usa a imagem padrão
