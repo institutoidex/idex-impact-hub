@@ -88,3 +88,8 @@ export function plural(
   const molde = regra === "one" ? formas.one : formas.other;
   return molde.replace("{n}", formatarNumero(n, locale));
 }
+
+/** Atalho para catálogos: "1 documento" / "2 documentos" no idioma indicado. */
+export function contar(n: number, locale: Locale, um: string, varios: string): string {
+  return plural(n, locale, { one: `{n} ${um}`, other: `{n} ${varios}` });
+}

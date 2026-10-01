@@ -1,5 +1,6 @@
 // Mensagens da página de Transparência (pastas, busca e documentos).
 import { definirMensagens } from "../mensagens";
+import { contar } from "../formatar";
 
 export const transparencia = definirMensagens(
   {
@@ -18,7 +19,7 @@ export const transparencia = definirMensagens(
     buscarEm: (nomePasta: string) => `Buscar em ${nomePasta}`,
     buscarEmTodas: "Buscar em todos os documentos",
     buscaConsideraPasta: "A busca considera os arquivos desta pasta.",
-    buscaConsideraTodas: (n: number) => `Procure pelo nome do arquivo em ${n} documento(s) publicados.`,
+    buscaConsideraTodas: (n: number) => `Procure pelo nome do arquivo em ${contar(n, "pt-BR", "documento publicado", "documentos publicados")}.`,
     buscaPlaceholder: "Ex.: relatório de atividades, estatuto, balanço...",
     buscaRotulo: "Buscar documentos",
     todasAsPastas: "Todas as pastas",
@@ -26,8 +27,8 @@ export const transparencia = definirMensagens(
     recolherPasta: (nome: string) => `Recolher ${nome}`,
     expandirPasta: (nome: string) => `Expandir ${nome}`,
     todosOsDocumentos: "Todos os documentos",
-    documentos: (n: number) => `${n} documento(s)`,
-    arquivos: (n: number) => `${n} arquivo(s)`,
+    documentos: (n: number) => contar(n, "pt-BR", "documento", "documentos"),
+    arquivos: (n: number) => contar(n, "pt-BR", "arquivo", "arquivos"),
     ano: (ano: number) => `Ano ${ano}`,
     documentoPublicado: "Documento publicado",
     visualizar: "Visualizar",
@@ -58,7 +59,7 @@ export const transparencia = definirMensagens(
       buscarEm: (nomePasta: string) => `Search in ${nomePasta}`,
       buscarEmTodas: "Search in all documents",
       buscaConsideraPasta: "The search covers the files in this folder.",
-      buscaConsideraTodas: (n: number) => `Search by file name among ${n} published document(s).`,
+      buscaConsideraTodas: (n: number) => `Search by file name among ${contar(n, "en-US", "published document", "published documents")}.`,
       buscaPlaceholder: "E.g.: activity report, bylaws, balance sheet...",
       buscaRotulo: "Search documents",
       todasAsPastas: "All folders",
@@ -66,8 +67,8 @@ export const transparencia = definirMensagens(
       recolherPasta: (nome: string) => `Collapse ${nome}`,
       expandirPasta: (nome: string) => `Expand ${nome}`,
       todosOsDocumentos: "All documents",
-      documentos: (n: number) => `${n} document(s)`,
-      arquivos: (n: number) => `${n} file(s)`,
+      documentos: (n: number) => contar(n, "en-US", "document", "documents"),
+      arquivos: (n: number) => contar(n, "en-US", "file", "files"),
       ano: (ano: number) => `Year ${ano}`,
       documentoPublicado: "Published document",
       visualizar: "View",
@@ -97,7 +98,7 @@ export const transparencia = definirMensagens(
       buscarEm: (nomePasta: string) => `Buscar en ${nomePasta}`,
       buscarEmTodas: "Buscar en todos los documentos",
       buscaConsideraPasta: "La búsqueda considera los archivos de esta carpeta.",
-      buscaConsideraTodas: (n: number) => `Busca por el nombre del archivo entre ${n} documento(s) publicados.`,
+      buscaConsideraTodas: (n: number) => `Busca por el nombre del archivo entre ${contar(n, "es-ES", "documento publicado", "documentos publicados")}.`,
       buscaPlaceholder: "Ej.: informe de actividades, estatuto, balance...",
       buscaRotulo: "Buscar documentos",
       todasAsPastas: "Todas las carpetas",
@@ -105,8 +106,8 @@ export const transparencia = definirMensagens(
       recolherPasta: (nome: string) => `Contraer ${nome}`,
       expandirPasta: (nome: string) => `Expandir ${nome}`,
       todosOsDocumentos: "Todos los documentos",
-      documentos: (n: number) => `${n} documento(s)`,
-      arquivos: (n: number) => `${n} archivo(s)`,
+      documentos: (n: number) => contar(n, "es-ES", "documento", "documentos"),
+      arquivos: (n: number) => contar(n, "es-ES", "archivo", "archivos"),
       ano: (ano: number) => `Año ${ano}`,
       documentoPublicado: "Documento publicado",
       visualizar: "Ver",

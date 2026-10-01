@@ -35,6 +35,7 @@ import { normalizarLocale } from "@/i18n/locales";
 import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { seoPagina } from "@/i18n/seo";
 import { transparencia as catalogoTransparencia } from "@/i18n/catalogos/transparencia";
+import { AvisoPortugues, MarcaPortugues } from "@/components/AvisoPortugues";
 
 // Parâmetros da URL: pasta aberta e documento a destacar (busca do cabeçalho).
 type BuscaTransparencia = { pasta?: string; doc?: string };
@@ -245,6 +246,7 @@ function Transparencia() {
                     onClick={() => abrir(p.slug)}
                   >
                     {p.nome}
+                    {p.emPortugues && <MarcaPortugues />}
                   </button>
                 </span>
               ))}
@@ -252,6 +254,7 @@ function Transparencia() {
             <div className="mt-2 flex flex-wrap items-baseline gap-3">
               <h2 className="font-display text-3xl">
                 {pastaAtual?.nome ?? t.todosOsDocumentos}
+                {pastaAtual?.emPortugues && <MarcaPortugues />}
               </h2>
               <span className="text-sm text-muted-foreground">
                 {t.arquivos(documentosVisiveis.length)}
@@ -287,7 +290,10 @@ function Transparencia() {
                         <Icone className="size-5 text-primary" aria-hidden />
                       </span>
                       <span className="min-w-0">
-                        <span className="font-display block truncate">{sub.nome}</span>
+                        <span className="font-display block truncate">
+                          {sub.nome}
+                          {sub.emPortugues && <MarcaPortugues />}
+                        </span>
                         <span className="text-sm text-muted-foreground">
                           {t.documentos(total)}
                         </span>
@@ -322,7 +328,10 @@ function Transparencia() {
                     <FileText className="size-5 text-secondary" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display truncate">{doc.titulo}</p>
+                    <p className="font-display truncate" lang={doc.emPortugues ? "pt-BR" : undefined}>
+                      {doc.titulo}
+                    </p>
+                    {doc.emPortugues && <AvisoPortugues />}
                     <p className="text-sm text-muted-foreground">
                       {doc.ano ? t.ano(doc.ano) : t.documentoPublicado}
                     </p>
@@ -440,6 +449,7 @@ function ItemArvore({
         >
           <Icone className="size-4 shrink-0" aria-hidden />
           <span className="truncate">{no.nome}</span>
+          {no.emPortugues && <MarcaPortugues />}
           <span className={cn("ml-auto text-xs", ativo ? "opacity-80" : "text-muted-foreground")}>
             {total}
           </span>
