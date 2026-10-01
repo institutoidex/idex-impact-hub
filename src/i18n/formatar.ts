@@ -3,35 +3,72 @@ import type { Locale } from "./locales";
 
 const TRACO = "—";
 
-/** Converte texto/Date em Date válido, ou null se inválido. */
-function paraData(valor: string | number | Date | null | undefined): Date | null {
+/** Fuso oficial do instituto, usado para exibir instantes reais (data + hora). */
+export const FUSO_PADRAO = "America/Sao_Paulo";
+
+/**
+ * Extrai o dia editorial (data de calendário) de um valor.
+ * - Texto "AAAA-MM-DD..." (com ou sem hora/fuso): usa só os 10 primeiros caracteres,
+ *   pois `publicado_em` é salvo como dia editorial (EditorNoticia faz .slice(0, 10))
+ *   e o banco devolve meia-noite UTC — converter para o fuso local "voltaria um dia".
+ * - Date/número: usa os componentes em UTC, para ser igual no SSR e no navegador.
+ * Retorna uma Date em meio-dia UTC daquele dia (formatada sempre com timeZone UTC).
+ */
+function diaEditorial(valor: string | number | Date | null | undefined): Date | null {
   if (valor === null || valor === undefined || valor === "") return null;
-  // datas "AAAA-MM-DD" sem hora: fixa meio-dia para não "voltar um dia" pelo fuso
-  const d =
-    typeof valor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(valor)
-      ? new Date(`${valor}T12:00:00`)
-      : new Date(valor);
+  if (typeof valor === "string") {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor.trim());
+    if (m) {
+      const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12));
+      // rejeita datas impossíveis (ex.: 2026-02-31)
+      return d.getUTCDate() === Number(m[3]) ? d : null;
+    }
+  }
+  const bruto = new Date(valor);
+  if (Number.isNaN(bruto.getTime())) return null;
+  return new Date(
+    Date.UTC(bruto.getUTCFullYear(), bruto.getUTCMonth(), bruto.getUTCDate(), 12),
+  );
+}
+
+/** Converte em instante real (Date) ou null se inválido. */
+function instante(valor: string | number | Date | null | undefined): Date | null {
+  if (valor === null || valor === undefined || valor === "") return null;
+  const d = new Date(valor);
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-/** Data por extenso (ex.: 13 de abril de 2026 / April 13, 2026). Inválida → "—". */
+/**
+ * Data de calendário por extenso (ex.: 13 de abril de 2026 / April 13, 2026).
+ * Determinística: não depende do fuso do servidor nem do visitante. Inválida → "—".
+ */
 export function formatarData(
   valor: string | number | Date | null | undefined,
   locale: Locale,
   opcoes: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" },
 ): string {
-  const d = paraData(valor);
-  return d ? new Intl.DateTimeFormat(locale, opcoes).format(d) : TRACO;
+  const d = diaEditorial(valor);
+  return d ? new Intl.DateTimeFormat(locale, { ...opcoes, timeZone: "UTC" }).format(d) : TRACO;
 }
 
-/** Data e hora curtas (painel/auditoria). */
-export function formatarDataHora(valor: string | null | undefined, locale: Locale): string {
-  return formatarData(valor, locale, { dateStyle: "short", timeStyle: "short" });
+/**
+ * Data e hora de um instante real (painel/auditoria/mensagens), sempre no fuso
+ * explícito (padrão America/Sao_Paulo) para SSR e cliente concordarem.
+ */
+export function formatarDataHora(
+  valor: string | number | Date | null | undefined,
+  locale: Locale,
+  fuso: string = FUSO_PADRAO,
+): string {
+  const d = instante(valor);
+  return d
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short", timeZone: fuso }).format(d)
+    : TRACO;
 }
 
-/** Ano numérico de uma data, ou null. */
-export function anoDe(valor: string | null | undefined): number | null {
-  return paraData(valor)?.getFullYear() ?? null;
+/** Ano do dia editorial (mesma regra de formatarData), ou null. */
+export function anoDe(valor: string | number | Date | null | undefined): number | null {
+  return diaEditorial(valor)?.getUTCFullYear() ?? null;
 }
 
 /** Número com separadores do idioma. */

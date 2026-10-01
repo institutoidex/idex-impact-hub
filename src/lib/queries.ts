@@ -1,3 +1,4 @@
+import { formatarData as formatarDataI18n } from "@/i18n/formatar";
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 import { listarConteudoPasta, listarMidia, listarTodasPastas } from "./storage";
@@ -98,14 +99,10 @@ export const noticiasAdminQuery = queryOptions({
   },
 });
 
-/** Formata datas ISO para o padrão brasileiro. */
+/** Formata o dia editorial (AAAA-MM-DD) em pt-BR, sem depender do fuso. */
 export function formatarData(iso: string | null | undefined) {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  return formatarDataI18n(iso, "pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
 /** Painel: todos os projetos, inclusive rascunhos (exige login). */

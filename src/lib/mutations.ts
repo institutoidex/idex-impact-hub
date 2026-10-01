@@ -24,9 +24,13 @@ export function gerarSlug(texto: string) {
 }
 
 /** O erro do Postgres/PostgREST por coluna inexistente cita o nome da coluna na mensagem. */
-function erroColunaTraducoesAusente(erro: unknown) {
-  const msg = (erro as { message?: string })?.message ?? "";
-  return msg.toLowerCase().includes("traducoes");
+export function erroColunaTraducoesAusente(erro: unknown) {
+  // Só reconhece "coluna inexistente": Postgres 42703 (undefined_column) ou
+  // PostgREST PGRST204 (coluna fora do cache de schema). Erros de constraint,
+  // permissão (RLS) etc. NÃO disparam a nova tentativa sem traduções.
+  const e = erro as { code?: string; message?: string } | null;
+  if (!e || (e.code !== "42703" && e.code !== "PGRST204")) return false;
+  return /traducoes/i.test(e.message ?? "");
 }
 
 /**
