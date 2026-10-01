@@ -64,6 +64,8 @@ export const editores = definirMensagens(
       erroEnviarArquivo: "Não foi possível enviar o arquivo.",
       salvo: "Documento atualizado.",
       criado: "Documento adicionado.",
+      arialabelPasta: "Pasta mãe do documento",
+      arialabelCategoria: "Categoria do documento",
     },
     pasta: {
       tituloEditar: "Editar pasta",
@@ -79,6 +81,7 @@ export const editores = definirMensagens(
       salvo: "Pasta atualizada.",
       criado: "Pasta criada.",
       criarPasta: "Criar pasta",
+      arialabelPastaMae: "Pasta mãe da subpasta",
     },
     acoes: {
       cancelar: "Cancelar",
@@ -162,6 +165,8 @@ export const editores = definirMensagens(
         erroEnviarArquivo: "Couldn't upload the file.",
         salvo: "Document updated.",
         criado: "Document added.",
+        arialabelPasta: "Parent folder of the document",
+        arialabelCategoria: "Document category",
       },
       pasta: {
         tituloEditar: "Edit folder",
@@ -177,6 +182,7 @@ export const editores = definirMensagens(
         salvo: "Folder updated.",
         criado: "Folder created.",
         criarPasta: "Create folder",
+        arialabelPastaMae: "Parent folder of the subfolder",
       },
       acoes: {
         cancelar: "Cancel",
@@ -260,6 +266,8 @@ export const editores = definirMensagens(
         erroEnviarArquivo: "No se pudo subir el archivo.",
         salvo: "Documento actualizado.",
         criado: "Documento añadido.",
+        arialabelPasta: "Carpeta superior del documento",
+        arialabelCategoria: "Categoría del documento",
       },
       pasta: {
         tituloEditar: "Editar carpeta",
@@ -275,6 +283,7 @@ export const editores = definirMensagens(
         salvo: "Carpeta actualizada.",
         criado: "Carpeta creada.",
         criarPasta: "Crear carpeta",
+        arialabelPastaMae: "Carpeta superior de la subcarpeta",
       },
       acoes: {
         cancelar: "Cancelar",

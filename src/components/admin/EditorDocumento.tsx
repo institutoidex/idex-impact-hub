@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,9 @@ import { pastasQuery } from "@/lib/queries";
 import { achatar, montarArvore } from "@/lib/pastas";
 import { enviarArquivo, validarDocumento } from "@/lib/storage";
 import type { DocumentoRow } from "@/lib/db-types";
+import { useMensagens } from "@/i18n/mensagens";
+import { editores } from "@/i18n/catalogos/editores";
+import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
 
 /** Formulário de documento da página de Transparência (PDF, planilhas). */
 export function EditorDocumento({
@@ -40,12 +44,14 @@ export function EditorDocumento({
   /** pasta pré-selecionada ao criar (vem do botão da árvore de pastas) */
   pastaInicial?: string | null;
 }) {
+  const t = useMensagens(editores);
   const salvar = useSalvarDocumento();
   const pastas = useQuery(pastasQuery);
   const opcoesPasta = achatar(montarArvore(pastas.data ?? []));
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
   const [form, setForm] = useState<DocumentoForm>(() => vazio());
+  const [trad, setTrad] = useState<Traducoes>({});
 
   useEffect(() => {
     if (!aberto) return;
@@ -62,7 +68,16 @@ export function EditorDocumento({
           }
         : vazio(pastaInicial),
     );
+    setTrad(lerTraducoes(documento?.traducoes));
   }, [aberto, documento, pastaInicial]);
+
+  function campoTrad(locale: "en-US" | "es-ES") {
+    return trad[locale]?.titulo ?? "";
+  }
+
+  function mudarTrad(locale: "en-US" | "es-ES", valor: string) {
+    setTrad((v) => ({ ...v, [locale]: { ...v[locale], titulo: valor } }));
+  }
 
   async function anexar(arquivo?: File | null) {
     if (!arquivo) return;
@@ -75,9 +90,9 @@ export function EditorDocumento({
     try {
       const { url } = await enviarArquivo(arquivo, "documentos");
       setForm((f) => ({ ...f, arquivo_url: url }));
-      toast.success("Arquivo enviado.");
+      toast.success(t.documento.arquivoEnviado);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível enviar o arquivo.");
+      toast.error((e as Error).message || t.documento.erroEnviarArquivo);
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
@@ -86,7 +101,11 @@ export function EditorDocumento({
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    await salvar.mutateAsync(form);
+    await salvar.mutateAsync({
+      ...form,
+      traducoes: limparTraducoes(trad),
+      traducoesColunaExistente: Boolean(documento && "traducoes" in documento),
+    });
     aoFechar();
   }
 
@@ -94,36 +113,68 @@ export function EditorDocumento({
     <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>{documento ? "Editar documento" : "Novo documento"}</DialogTitle>
-          <DialogDescription>
-            Documentos publicados aparecem na página de Transparência e na busca do topo.
-          </DialogDescription>
+          <DialogTitle>{documento ? t.documento.tituloEditar : t.documento.tituloNovo}</DialogTitle>
+          <DialogDescription>{t.documento.descricao}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={enviar} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="d-titulo">Título</Label>
-            <Input
-              id="d-titulo"
-              required
-              value={form.titulo}
-              onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
-            />
-          </div>
+          <Tabs defaultValue="pt" className="w-full">
+            <TabsList>
+              <TabsTrigger value="pt">{t.traducao.portugues}</TabsTrigger>
+              <TabsTrigger value="en">{t.traducao.ingles}</TabsTrigger>
+              <TabsTrigger value="es">{t.traducao.espanhol}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="pt" className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label htmlFor="d-titulo">{t.documento.campoTitulo}</Label>
+                <Input
+                  id="d-titulo"
+                  required
+                  value={form.titulo}
+                  onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="en" className="space-y-4 pt-2">
+              <p className="text-xs text-muted-foreground">{t.traducao.aviso}</p>
+              <div className="space-y-2">
+                <Label htmlFor="d-en-titulo">{t.documento.campoTitulo}</Label>
+                <Input
+                  id="d-en-titulo"
+                  value={campoTrad("en-US")}
+                  onChange={(e) => mudarTrad("en-US", e.target.value)}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="es" className="space-y-4 pt-2">
+              <p className="text-xs text-muted-foreground">{t.traducao.aviso}</p>
+              <div className="space-y-2">
+                <Label htmlFor="d-es-titulo">{t.documento.campoTitulo}</Label>
+                <Input
+                  id="d-es-titulo"
+                  value={campoTrad("es-ES")}
+                  onChange={(e) => mudarTrad("es-ES", e.target.value)}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div className="space-y-2">
-            <Label>Pasta</Label>
+            <Label>{t.documento.campoPasta}</Label>
             <Select
               value={form.pasta_id ?? "__raiz__"}
               onValueChange={(v) =>
                 setForm((f) => ({ ...f, pasta_id: v === "__raiz__" ? null : v }))
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label={t.documento.arialabelPasta}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__raiz__">Sem pasta (raiz)</SelectItem>
+                <SelectItem value="__raiz__">{t.documento.semPasta}</SelectItem>
                 {opcoesPasta.map((pasta) => (
                   <SelectItem key={pasta.id} value={pasta.id}>
                     {"— ".repeat(pasta.nivel)}
@@ -136,24 +187,24 @@ export function EditorDocumento({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Categoria</Label>
+              <Label>{t.documento.campoCategoria}</Label>
               <Select
                 value={form.categoria}
                 onValueChange={(v) => setForm((f) => ({ ...f, categoria: v }))}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label={t.documento.arialabelCategoria}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="estatuto">Estatuto e atas</SelectItem>
-                  <SelectItem value="relatorio">Relatórios de atividades</SelectItem>
-                  <SelectItem value="financeiro">Prestação de contas</SelectItem>
-                  <SelectItem value="outro">Outros</SelectItem>
+                  <SelectItem value="estatuto">{t.documento.categoriaEstatuto}</SelectItem>
+                  <SelectItem value="relatorio">{t.documento.categoriaRelatorio}</SelectItem>
+                  <SelectItem value="financeiro">{t.documento.categoriaFinanceiro}</SelectItem>
+                  <SelectItem value="outro">{t.documento.categoriaOutro}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="d-ano">Ano</Label>
+              <Label htmlFor="d-ano">{t.documento.campoAno}</Label>
               <Input
                 id="d-ano"
                 type="number"
@@ -171,7 +222,7 @@ export function EditorDocumento({
           </div>
 
           <div className="space-y-2">
-            <Label>Arquivo</Label>
+            <Label>{t.documento.campoArquivo}</Label>
             <input
               ref={inputArquivo}
               type="file"
@@ -192,18 +243,22 @@ export function EditorDocumento({
                 ) : (
                   <FileUp className="size-4" />
                 )}
-                {enviando ? "Enviando..." : form.arquivo_url ? "Trocar arquivo" : "Enviar arquivo"}
+                {enviando
+                  ? t.documento.enviando
+                  : form.arquivo_url
+                    ? t.documento.trocarArquivo
+                    : t.documento.enviarArquivo}
               </Button>
               {form.arquivo_url && (
                 <Button type="button" variant="ghost" className="rounded-full" asChild>
                   <a href={form.arquivo_url} target="_blank" rel="noreferrer">
-                    Ver arquivo atual
+                    {t.documento.verArquivoAtual}
                   </a>
                 </Button>
               )}
             </div>
             <Input
-              placeholder="ou cole uma URL: https://..."
+              placeholder={t.documento.placeholderUrl}
               value={form.arquivo_url ?? ""}
               onChange={(e) => setForm((f) => ({ ...f, arquivo_url: e.target.value || null }))}
             />
@@ -216,16 +271,16 @@ export function EditorDocumento({
               onCheckedChange={(v) => setForm((f) => ({ ...f, publicado: v }))}
             />
             <Label htmlFor="d-publicado" className="cursor-pointer">
-              Mostrar no site
+              {t.documento.mostrarNoSite}
             </Label>
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
-              Cancelar
+              {t.acoes.cancelar}
             </Button>
             <Button type="submit" className="rounded-full" disabled={salvar.isPending}>
-              {salvar.isPending ? "Salvando..." : "Salvar"}
+              {salvar.isPending ? t.acoes.salvando : t.acoes.salvar}
             </Button>
           </DialogFooter>
         </form>
