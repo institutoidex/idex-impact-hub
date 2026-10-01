@@ -1,3 +1,4 @@
+import { useMensagemArquivo } from "@/i18n/erro-arquivo";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -57,6 +58,7 @@ import { midia } from "@/i18n/catalogos/midia";
  */
 export function BibliotecaMidia() {
   const t = useMensagens(midia).biblioteca;
+  const ea = useMensagemArquivo();
   const queryClient = useQueryClient();
   const inputArquivo = useRef<HTMLInputElement>(null);
 
@@ -119,7 +121,7 @@ export function BibliotecaMidia() {
       for (const arquivo of arquivos) {
         const erro = validarImagem(arquivo);
         if (erro) {
-          toast.error(`${arquivo.name}: ${erro}`);
+          toast.error(`${arquivo.name}: ${ea.deCodigo(erro)}`);
           continue;
         }
         // cada arquivo é tratado à parte: um nome repetido não cancela os demais
@@ -127,7 +129,7 @@ export function BibliotecaMidia() {
           await enviarImagem(arquivo, pasta || "site");
           enviadas++;
         } catch (e) {
-          toast.error((e as Error).message || t.erroEnviarArquivo(arquivo.name));
+          toast.error(ea.deErro(e, t.erroEnviarArquivo(arquivo.name)));
         }
       }
       await recarregar();
@@ -148,7 +150,7 @@ export function BibliotecaMidia() {
       setCriandoPasta(false);
       toast.success(t.pastaCriada);
     } catch (e) {
-      toast.error((e as Error).message || t.erroCriarPasta);
+      toast.error(ea.deErro(e, t.erroCriarPasta));
     }
   }
 

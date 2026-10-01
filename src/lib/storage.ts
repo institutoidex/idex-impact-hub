@@ -44,21 +44,40 @@ export function urlDownload(url: string, nome: string) {
   return `${url}${url.includes("?") ? "&" : "?"}download=${encodeURIComponent(nomeLimpo(nome))}`;
 }
 
-/** Valida o arquivo antes do envio; devolve a mensagem de erro ou null. */
-export function validarImagem(arquivo: File): string | null {
-  if (!TIPOS_ACEITOS.includes(arquivo.type)) {
-    return "Formato não aceito. Use JPG, PNG, WEBP, GIF ou AVIF.";
+/** Códigos de erro de arquivo; o texto visível vem do catálogo "arquivos" (traduzido). */
+export type CodigoErroArquivo =
+  | "formatoImagem"
+  | "imagemGrande"
+  | "formatoDocumento"
+  | "documentoGrande"
+  | "duplicada"
+  | "nomePastaInvalido";
+
+/** Erro com código traduzível (nome = nome do arquivo, mantido original). */
+export class ErroArquivo extends Error {
+  constructor(
+    public codigo: CodigoErroArquivo,
+    public nome = "",
+  ) {
+    super(codigo);
   }
-  if (arquivo.size > TAMANHO_MAXIMO) return "Arquivo muito grande. O limite é 10 MB.";
+}
+
+/** Valida o arquivo antes do envio; devolve o código do erro ou null. */
+export function validarImagem(arquivo: File): CodigoErroArquivo | null {
+  if (!TIPOS_ACEITOS.includes(arquivo.type)) {
+    return "formatoImagem";
+  }
+  if (arquivo.size > TAMANHO_MAXIMO) return "imagemGrande";
   return null;
 }
 
 /** Valida documentos (PDF, planilhas) antes do envio. */
-export function validarDocumento(arquivo: File): string | null {
+export function validarDocumento(arquivo: File): CodigoErroArquivo | null {
   if (!TIPOS_DOCUMENTO.includes(arquivo.type)) {
-    return "Formato não aceito. Use PDF, XLSX ou CSV.";
+    return "formatoDocumento";
   }
-  if (arquivo.size > TAMANHO_MAXIMO_DOC) return "Arquivo muito grande. O limite é 25 MB.";
+  if (arquivo.size > TAMANHO_MAXIMO_DOC) return "documentoGrande";
   return null;
 }
 
@@ -78,7 +97,7 @@ export async function enviarImagem(arquivo: File, pasta: string): Promise<string
     .list(pasta, { search: nomeArquivo, limit: 1000 });
   if (erroLista) throw erroLista;
   if ((existentes ?? []).some((obj) => obj.id && nomeLimpo(obj.name) === nomeArquivo)) {
-    throw new Error(`Já existe uma imagem chamada “${nomeArquivo}” nesta pasta. Renomeie o arquivo e envie de novo.`);
+    throw new ErroArquivo("duplicada", nomeArquivo);
   }
 
   const { error } = await supabase.storage
@@ -87,7 +106,7 @@ export async function enviarImagem(arquivo: File, pasta: string): Promise<string
   if (error) {
     // o storage recusa caminhos já existentes: traduz para uma mensagem clara
     if (/exist|duplicate/i.test(error.message)) {
-      throw new Error(`Já existe uma imagem chamada “${caminho.split("/").pop()}” nesta pasta. Renomeie o arquivo e envie de novo.`);
+      throw new ErroArquivo("duplicada", caminho.split("/").pop() ?? "");
     }
     throw error;
   }
@@ -238,7 +257,7 @@ export async function listarTodasPastas(prefixo = "", profundidade = 0): Promise
 /** Cria uma pasta (ou subpasta) gravando um marcador vazio dentro dela. */
 export async function criarPastaMidia(caminhoPai: string, nome: string) {
   const seguro = normalizarNomePasta(nome);
-  if (!seguro) throw new Error("Informe um nome válido para a pasta.");
+  if (!seguro) throw new ErroArquivo("nomePastaInvalido");
   const caminho = caminhoPai ? `${caminhoPai}/${seguro}` : seguro;
   const { error } = await supabase.storage
     .from(BUCKET_MIDIA)

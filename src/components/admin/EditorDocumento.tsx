@@ -1,3 +1,4 @@
+import { useMensagemArquivo } from "@/i18n/erro-arquivo";
 import { useEffect, useRef, useState } from "react";
 import { FileUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -45,6 +46,7 @@ export function EditorDocumento({
   pastaInicial?: string | null;
 }) {
   const t = useMensagens(editores);
+  const ea = useMensagemArquivo();
   const salvar = useSalvarDocumento();
   const pastas = useQuery(pastasQuery);
   const opcoesPasta = achatar(montarArvore(pastas.data ?? []));
@@ -83,7 +85,7 @@ export function EditorDocumento({
     if (!arquivo) return;
     const erro = validarDocumento(arquivo);
     if (erro) {
-      toast.error(erro);
+      toast.error(ea.deCodigo(erro));
       return;
     }
     setEnviando(true);
@@ -92,7 +94,7 @@ export function EditorDocumento({
       setForm((f) => ({ ...f, arquivo_url: url }));
       toast.success(t.documento.arquivoEnviado);
     } catch (e) {
-      toast.error((e as Error).message || t.documento.erroEnviarArquivo);
+      toast.error(ea.deErro(e, t.documento.erroEnviarArquivo));
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
