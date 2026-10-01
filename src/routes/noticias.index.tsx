@@ -154,12 +154,15 @@ function Noticias() {
           {visiveis.map((n, i) => (
             <Reveal as="article" key={n.slug} delay={i * 80}>
               <div className="lift h-full overflow-hidden rounded-3xl border border-border bg-card">
-                <Imagem
-                  src={n.imagem}
-                  alt={n.titulo}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="aspect-[4/3] w-full object-cover"
-                />
+                {/* Clique na imagem também abre a notícia */}
+                <Link to="/noticias/$slug" params={{ slug: n.slug }} aria-label={n.titulo}>
+                  <Imagem
+                    src={n.imagem}
+                    alt={n.titulo}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="aspect-[4/3] w-full bg-muted object-contain"
+                  />
+                </Link>
                 <div className="p-7">
                   <p className="text-xs font-semibold tracking-widest text-primary uppercase">
                     {n.data}
