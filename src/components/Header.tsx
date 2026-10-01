@@ -17,6 +17,7 @@ import { useSessao } from "@/hooks/useSessao";
 import { SeletorIdioma, SeletorIdiomaLista } from "@/components/SeletorIdioma";
 import { useMensagens } from "@/i18n/mensagens";
 import { layout } from "@/i18n/catalogos/layout";
+import { comum } from "@/i18n/catalogos/comum";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
@@ -26,6 +27,7 @@ export function Header() {
   // Sessão do visitante: decide se mostra "Entrar" ou atalho para o painel
   const { sessao, carregando } = useSessao();
   const t = useMensagens(layout);
+  const c = useMensagens(comum);
 
   useEffect(() => {
     const onScroll = () => setRolou(window.scrollY > 12);
@@ -64,7 +66,7 @@ export function Header() {
           {/* Logo oficial do Instituto IDEX */}
           <img
             src={logoAsset.url}
-            alt="Instituto IDEX"
+            alt={c.altLogo}
             width={1626}
             height={905}
             decoding="async"
@@ -200,6 +202,7 @@ export function Header() {
  */
 function MenuTransparencia({ rotulo }: { rotulo: string }) {
   const t = useMensagens(layout);
+  const c = useMensagens(comum);
   const pastas = usePastas();
   const raizes = montarArvore(pastas);
   const itens = raizes.length
