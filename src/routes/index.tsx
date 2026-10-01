@@ -71,7 +71,7 @@ function Inicio() {
             <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-14">
               <AnimatedText
                 as="h1"
-                text={"A gente muda vida\nperto de casa."}
+                text={"Formamos pessoas.\nDesenvolvemos talentos.\nCriamos oportunidades."}
                 delay={150}
                 className="texto-heroi max-w-2xl text-[clamp(2rem,8vw,4.5rem)] leading-[1.12] text-balance text-ink-foreground lg:text-7xl"
               />
@@ -81,7 +81,8 @@ function Inicio() {
                   className="entrada texto-heroi w-fit max-w-md rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
                   style={{ "--d": "500ms" } as CSSProperties}
                 >
-                  Esporte, cultura e educação como caminho real para crianças e jovens da comunidade.
+                  O esporte conecta formação, desenvolvimento e novas oportunidades para crianças e
+                  jovens, dentro e fora de campo.
                 </p>
                 <div
                   className="entrada flex flex-wrap gap-3"
