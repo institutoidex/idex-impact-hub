@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
 import { useSessao } from "@/hooks/useSessao";
+import { SeletorIdioma, SeletorIdiomaLista } from "@/components/SeletorIdioma";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
@@ -93,6 +94,8 @@ export function Header() {
           <div className="hidden sm:block">
             <BuscaDocumentos />
           </div>
+          {/* Seletor de idioma (PT · EN · ES) */}
+          <SeletorIdioma />
           <Button asChild variant="idex" className="hidden lg:inline-flex">
             <Link to="/como-ajudar">
               <HeartHandshake className="size-4" />
@@ -141,6 +144,10 @@ export function Header() {
           <nav className="mx-auto flex max-w-[90rem] flex-col px-4 py-4 sm:px-6" aria-label="Navegação móvel">
             <div className="mb-2 sm:hidden">
               <BuscaDocumentos expandida />
+            </div>
+            {/* Idiomas com nomes nativos, sempre visíveis no menu do celular */}
+            <div className="mb-3">
+              <SeletorIdiomaLista />
             </div>
             {NAV.map((item) => (
               <Link

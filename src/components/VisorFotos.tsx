@@ -76,7 +76,11 @@ export default function VisorFotos({
       aria-modal="true"
       aria-label="Visualizador de fotos"
       className="fixed inset-0 z-[100] flex flex-col bg-black/92 backdrop-blur-sm"
-      onClick={onFechar}
+      onClick={(e) => {
+        // fecha só com clique direto no fundo: cliques nos botões (próxima,
+        // anterior, zoom) não podem "borbulhar" até aqui e fechar o visor
+        if (e.target === e.currentTarget) onFechar();
+      }}
     >
       {/* barra superior */}
       <div
