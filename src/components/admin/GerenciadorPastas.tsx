@@ -148,6 +148,7 @@ function ItemPasta({
   aoEditar,
   aoExcluir,
   aoAbrirDocumento,
+  t,
 }: {
   no: NoPasta;
   documentos: DocumentoRow[];
@@ -155,6 +156,7 @@ function ItemPasta({
   aoEditar: (pasta: PastaRow) => void;
   aoExcluir: (pasta: PastaRow) => void;
   aoAbrirDocumento: (pastaId: string) => void;
+  t: (typeof admin)["pt-BR"]["pastas"];
 }) {
   const [aberta, setAberta] = useState(true);
   const arquivos = documentos.filter((d) => d.pasta_id === no.id);
