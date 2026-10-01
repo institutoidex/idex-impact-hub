@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { noticiasQuery } from "@/lib/queries";
-import { formatarData } from "@/i18n/formatar";
+import { anoDe, formatarData } from "@/i18n/formatar";
+import { traduzir } from "@/i18n/traduzir";
 import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { normalizarLocale } from "@/i18n/locales";
 import { seoPagina } from "@/i18n/seo";
@@ -55,16 +56,25 @@ function Noticias() {
     () =>
       // Durante carregamento ou erro não usamos resultado antigo do cache:
       // a lista fica vazia e só a mensagem de estado aparece.
-      (isPending || isError ? [] : (data ?? [])).map((n) => ({
+      // As traduções editoriais (jsonb) são aplicadas AQUI, antes da busca/filtro,
+      // para que a busca encontre termos no idioma exibido.
+      (isPending || isError ? [] : (data ?? [])).map((n0) => {
+        const n = traduzir(n0, locale, ["titulo", "resumo"]);
+        return {
         slug: n.slug,
         titulo: n.titulo,
         resumo: n.resumo,
+        // texto original em português: a busca também o aceita
+        original: `${n0.titulo} ${n0.resumo ?? ""}`,
+        emPortugues: n.emPortugues,
         data: formatarData(n.publicado_em, locale),
-        ano: String(new Date(n.publicado_em).getFullYear()),
+        // ano pelo dia editorial (mesma regra das datas, sem depender do fuso)
+        ano: String(anoDe(n.publicado_em)),
         imagem: n.imagem_url ?? FOTO_TALENTO.url,
         // vínculo opcional com um projeto (null = notícia geral)
         projeto: n.projeto_slug,
-      })),
+        };
+      }),
     [data, isPending, isError, locale],
   );
 
@@ -79,7 +89,7 @@ function Noticias() {
     return itens.filter((n) => {
       const combinaAno = ano === "todos" || n.ano === ano;
       const combinaTexto =
-        !termo || normalizar(`${n.titulo} ${n.resumo}`).includes(termo);
+        !termo || normalizar(`${n.titulo} ${n.resumo} ${n.original}`).includes(termo);
       return combinaAno && combinaTexto;
     });
   }, [itens, busca, ano]);
@@ -176,6 +186,10 @@ function Noticias() {
                     </Link>
                   </h2>
                   <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+                  {/* aviso explícito quando falta tradução e o texto aparece em português */}
+                  {n.emPortugues && (
+                    <p className="mt-2 text-xs text-muted-foreground italic">{mc.emPortugues}</p>
+                  )}
                   <div className="mt-4 flex flex-wrap items-center gap-4">
                     <Link
                       to="/noticias/$slug"
