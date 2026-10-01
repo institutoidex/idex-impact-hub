@@ -1,5 +1,6 @@
 // Mensagens do painel administrativo (notícias, documentos, pastas, mensagens, histórico).
 import { definirMensagens } from "../mensagens";
+import { contar } from "../formatar";
 
 export const admin = definirMensagens(
   {
@@ -104,7 +105,7 @@ export const admin = definirMensagens(
       nao: "não",
       por: (email: string) => `por ${email}`,
       autorDesconhecido: "autor não identificado",
-      camposAlterados: (n: number) => ` — ${n} campo(s) alterado(s)`,
+      camposAlterados: (n: number) => ` — ${contar(n, "pt-BR", "campo alterado", "campos alterados")}`,
       ocultarDetalhes: "Ocultar detalhes",
       verMudanca: "Ver o que mudou",
     },
@@ -243,7 +244,7 @@ export const admin = definirMensagens(
         nao: "no",
         por: (email: string) => `by ${email}`,
         autorDesconhecido: "author not identified",
-        camposAlterados: (n: number) => ` — ${n} field(s) changed`,
+        camposAlterados: (n: number) => ` — ${contar(n, "en-US", "field changed", "fields changed")}`,
         ocultarDetalhes: "Hide details",
         verMudanca: "See what changed",
       },
@@ -381,7 +382,7 @@ export const admin = definirMensagens(
         nao: "no",
         por: (email: string) => `por ${email}`,
         autorDesconhecido: "autor no identificado",
-        camposAlterados: (n: number) => ` — ${n} campo(s) modificado(s)`,
+        camposAlterados: (n: number) => ` — ${contar(n, "es-ES", "campo modificado", "campos modificados")}`,
         ocultarDetalhes: "Ocultar detalles",
         verMudanca: "Ver qué cambió",
       },

@@ -223,7 +223,6 @@ function Transparencia() {
                         className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground"
                       >
                         <Folder className="size-4" aria-hidden /> {p.nome}
-                        {locale !== "pt-BR" && !p.traduzida && <MarcaPortugues />}
                       </span>
                     ))}
               </nav>

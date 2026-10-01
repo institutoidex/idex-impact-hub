@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { Menu, X, HeartHandshake, LogIn, LayoutDashboard, ChevronDown } from "lucide-react";
 import { NAV } from "@/data/idex";
 import { usePastas } from "@/lib/conteudo";
-import { montarArvore, PASTAS_BASE } from "@/lib/pastas";
+import { montarArvore, pastasBasePorLocale } from "@/lib/pastas";
+import { MarcaPortugues } from "@/components/AvisoPortugues";
+import { useLocale } from "@/i18n/mensagens";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -203,11 +205,13 @@ export function Header() {
 function MenuTransparencia({ rotulo }: { rotulo: string }) {
   const t = useMensagens(layout);
   const c = useMensagens(comum);
+  const locale = useLocale();
   const pastas = usePastas();
   const raizes = montarArvore(pastas);
   const itens = raizes.length
-    ? raizes.map((p) => ({ nome: p.nome, slug: p.slug }))
-    : PASTAS_BASE;
+    ? raizes.map((p) => ({ nome: p.nome, slug: p.slug, emPortugues: Boolean((p as { emPortugues?: boolean }).emPortugues) }))
+    : // estrutura base já traduzida nos três idiomas
+      pastasBasePorLocale(locale).map((p) => ({ ...p, emPortugues: false }));
 
   return (
     <span className="flex items-center">
@@ -235,6 +239,7 @@ function MenuTransparencia({ rotulo }: { rotulo: string }) {
             <DropdownMenuItem key={item.slug} asChild>
               <Link to="/transparencia" search={{ pasta: item.slug, doc: "" }}>
                 {item.nome}
+                {item.emPortugues && <MarcaPortugues />}
               </Link>
             </DropdownMenuItem>
           ))}
