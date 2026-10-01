@@ -170,7 +170,7 @@ export function UploadMidia({ pasta }: { pasta: string }) {
                 className="w-full rounded-full text-xs"
                 onClick={() => void copiar(url)}
               >
-                <Copy className="size-3" /> Copiar
+                <Copy className="size-3" /> {m.biblioteca.copiar}
               </Button>
             </li>
           ))}
