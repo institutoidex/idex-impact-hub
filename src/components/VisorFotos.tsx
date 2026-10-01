@@ -4,6 +4,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import type { Foto } from "@/data/fotos";
+import { altDaFoto } from "@/data/fotos";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { galeria } from "@/i18n/catalogos/galeria";
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
@@ -17,6 +20,8 @@ export default function VisorFotos({
   inicial?: number;
   onFechar: () => void;
 }) {
+  const locale = useLocale();
+  const t = useMensagens(galeria);
   const [indice, setIndice] = useState(inicial);
   const [zoom, setZoom] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -74,7 +79,7 @@ export default function VisorFotos({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Visualizador de fotos"
+      aria-label={t.visualizador}
       className="fixed inset-0 z-[100] flex flex-col bg-black/92 backdrop-blur-sm"
       onClick={(e) => {
         // fecha só com clique direto no fundo: cliques nos botões (próxima,
@@ -88,13 +93,13 @@ export default function VisorFotos({
         onClick={(e) => e.stopPropagation()}
       >
         <span className="text-sm text-white/70">
-          {varias ? `${indice + 1} / ${fotos.length}` : ""}
+          {varias ? t.contador(indice + 1, fotos.length) : ""}
         </span>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => ajustarZoom(-0.5)}
-            aria-label="Diminuir zoom"
+            aria-label={t.diminuirZoom}
             className="rounded-full p-2 hover:bg-white/15"
           >
             <ZoomOut className="size-5" />
@@ -105,7 +110,7 @@ export default function VisorFotos({
           <button
             type="button"
             onClick={() => ajustarZoom(0.5)}
-            aria-label="Aumentar zoom"
+            aria-label={t.aumentarZoom}
             className="rounded-full p-2 hover:bg-white/15"
           >
             <ZoomIn className="size-5" />
@@ -114,7 +119,7 @@ export default function VisorFotos({
             ref={fechaRef}
             type="button"
             onClick={onFechar}
-            aria-label="Fechar (Esc)"
+            aria-label={t.fecharEsc}
             className="ml-2 rounded-full p-2 hover:bg-white/15"
           >
             <X className="size-5" />
@@ -135,7 +140,7 @@ export default function VisorFotos({
           <button
             type="button"
             onClick={() => navegar(-1)}
-            aria-label="Foto anterior"
+            aria-label={t.fotoAnterior}
             className="absolute left-2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/25"
           >
             <ChevronLeft className="size-6" />
@@ -146,7 +151,7 @@ export default function VisorFotos({
           src={foto.url}
           srcSet={foto.srcSet}
           sizes="100vw"
-          alt={foto.alt}
+          alt={altDaFoto(foto, locale)}
           decoding="async"
           draggable={false}
           onDoubleClick={() => (zoom > 1 ? reset() : setZoom(2))}
@@ -170,7 +175,7 @@ export default function VisorFotos({
           <button
             type="button"
             onClick={() => navegar(1)}
-            aria-label="Próxima foto"
+            aria-label={t.proximaFoto}
             className="absolute right-2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/25"
           >
             <ChevronRight className="size-6" />
@@ -181,7 +186,7 @@ export default function VisorFotos({
       {/* dica de atalhos (sem legenda da foto) */}
       <div className="px-6 pb-6 text-center text-sm text-white/80" onClick={(e) => e.stopPropagation()}>
         <p className="text-xs text-white/50">
-          {varias ? "Setas para navegar · " : ""}+ / − para zoom · 0 para redefinir · Esc para fechar
+          {varias ? t.dicaComSetas : t.dicaSemSetas}
         </p>
       </div>
     </div>

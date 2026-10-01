@@ -1,8 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { formatarData, noticiasQuery } from "@/lib/queries";
-import { SITE_URL } from "@/lib/site";
+import { noticiasQuery } from "@/lib/queries";
+import { formatarData } from "@/i18n/formatar";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { normalizarLocale } from "@/i18n/locales";
+import { seoPagina } from "@/i18n/seo";
+import { noticias as catalogoNoticias } from "@/i18n/catalogos/noticias";
+import { comum } from "@/i18n/catalogos/comum";
 import { PageHero } from "@/components/PageHero";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
@@ -23,27 +28,25 @@ export const Route = createFileRoute("/noticias/")({
     ano: typeof search['ano'] === "string" ? search['ano'] : "todos",
     pagina: Number(search['pagina']) > 0 ? Number(search['pagina']) : 1,
   }),
-  head: () => ({
-    meta: [
-      { title: "Notícias — Instituto IDEX" },
-      {
-        name: "description",
-        content:
-          "Notícias e novidades publicadas pelo Instituto IDEX.",
-      },
-      { property: "og:title", content: "Notícias — Instituto IDEX" },
-      { property: "og:description", content: "Acompanhe as novidades do instituto." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: `${SITE_URL}/noticias` },
-    ],
-    links: [{ rel: "canonical", href: `${SITE_URL}/noticias` }],
-  }),
+  head: ({ match }) => {
+    const m = catalogoNoticias[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/noticias",
+      titulo: m.seo.titulo,
+      descricao: m.seo.descricao,
+    });
+    return { meta: s.meta, links: s.links };
+  },
   component: Noticias,
 });
 
 function Noticias() {
   const { busca = "", ano = "todos", pagina = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/noticias/" });
+  const locale = useLocale();
+  const m = useMensagens(catalogoNoticias);
+  const mc = useMensagens(comum);
 
   // Somente notícias publicadas no banco — sem conteúdo fixo de reserva.
   const { data, isPending, isError, refetch } = useQuery(noticiasQuery());
@@ -56,13 +59,13 @@ function Noticias() {
         slug: n.slug,
         titulo: n.titulo,
         resumo: n.resumo,
-        data: formatarData(n.publicado_em),
+        data: formatarData(n.publicado_em, locale),
         ano: String(new Date(n.publicado_em).getFullYear()),
         imagem: n.imagem_url ?? FOTO_TALENTO.url,
         // vínculo opcional com um projeto (null = notícia geral)
         projeto: n.projeto_slug,
       })),
-    [data, isPending, isError],
+    [data, isPending, isError, locale],
   );
 
   const anos = useMemo(
@@ -93,13 +96,9 @@ function Noticias() {
   return (
     <>
       {/* Variante invertida: texto à direita para quebrar a cadência */}
-      <PageHero
-        variante="invertida"
-        titulo="O que anda acontecendo"
-        descricao="Registros das ações e anúncios do instituto."
-      >
+      <PageHero variante="invertida" titulo={m.hero.titulo} descricao={m.hero.descricao}>
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-          Notícias
+          {m.etiqueta}
         </span>
       </PageHero>
 
@@ -109,13 +108,13 @@ function Noticias() {
           <CampoBusca
             valor={busca}
             aoMudar={(texto) => atualizar({ busca: texto })}
-            placeholder="Buscar por título ou assunto"
-            rotulo="Buscar notícias"
+            placeholder={m.busca.placeholder}
+            rotulo={m.busca.rotulo}
           />
           {anos.length > 1 && (
             <div className="flex flex-wrap gap-2">
               <FiltroBotao ativo={ano === "todos"} onClick={() => atualizar({ ano: "todos" })}>
-                Todos os anos
+                {m.todosOsAnos}
               </FiltroBotao>
               {anos.map((a) => (
                 <FiltroBotao key={a} ativo={ano === a} onClick={() => atualizar({ ano: a })}>
@@ -129,24 +128,24 @@ function Noticias() {
         {/* Estados separados: carregando, erro de conexão, nenhuma publicada */}
         <div className="mt-6 text-sm text-muted-foreground" aria-live="polite">
           {isPending ? (
-            <p>Carregando notícias...</p>
+            <p>{m.carregando}</p>
           ) : isError ? (
             <p>
-              Não foi possível carregar as notícias agora.{" "}
+              {m.erro.texto}{" "}
               <button
                 type="button"
                 onClick={() => void refetch()}
                 className="font-semibold text-primary hover:underline"
               >
-                Tentar de novo
+                {m.erro.tentarNovo}
               </button>
             </p>
           ) : itens.length === 0 ? (
-            <p>Ainda não há notícias publicadas. Volte em breve.</p>
+            <p>{m.vazioInicial}</p>
           ) : filtradas.length === 0 ? (
-            <p>Nenhuma notícia encontrada para essa busca.</p>
+            <p>{m.vazioBusca}</p>
           ) : (
-            <p>{`${filtradas.length} ${filtradas.length === 1 ? "notícia" : "notícias"} · página ${paginaAtual} de ${totalPaginas}`}</p>
+            <p>{m.resultado(filtradas.length, paginaAtual, totalPaginas)}</p>
           )}
         </div>
 
@@ -183,7 +182,7 @@ function Noticias() {
                       params={{ slug: n.slug }}
                       className="text-sm font-semibold text-primary hover:underline"
                     >
-                      Ler a notícia
+                      {m.lerNoticia}
                     </Link>
                   </div>
                 </div>
