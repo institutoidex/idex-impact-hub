@@ -25,7 +25,7 @@ const ROTAS_FIXAS: EntradaSitemap[] = [
 ];
 
 /** Escapa caracteres especiais de XML (&, <, >, aspas). */
-export function escaparXml(texto: string): string {
+function escaparXml(texto: string): string {
   return texto
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -35,7 +35,7 @@ export function escaparXml(texto: string): string {
 }
 
 /** Gera o XML completo: uma <url> por idioma, cada uma com os alternates de todos os idiomas. */
-export function montarSitemap(entradas: EntradaSitemap[]): string {
+function montarSitemap(entradas: EntradaSitemap[]): string {
   const blocos: string[] = [];
   for (const e of entradas) {
     // Links alternativos iguais para as 3 variantes da mesma página
