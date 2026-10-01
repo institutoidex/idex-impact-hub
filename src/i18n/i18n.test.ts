@@ -1,3 +1,4 @@
+// @ts-nocheck — arquivo executado pelo bun test (tipos de bun:test fora do tsconfig)
 // Testes da camada de idiomas. Rodar com: bun test src/i18n
 import { describe, expect, test } from "bun:test";
 import { readdirSync } from "node:fs";

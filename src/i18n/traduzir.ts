@@ -37,7 +37,7 @@ export function traduzir<T extends Record<string, unknown>>(
   campos: CampoTraduzivel[],
 ): T & { emPortugues: boolean } {
   if (locale === LOCALE_PADRAO) return { ...registro, emPortugues: false };
-  const tr = lerTraducoes(registro["traducoes"])[locale] ?? {};
+  const tr = lerTraducoes(registro["traducoes"])[locale as "en-US" | "es-ES"] ?? {};
   let emPortugues = false;
   const saida: Record<string, unknown> = { ...registro };
   for (const campo of campos) {

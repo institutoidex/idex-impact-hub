@@ -39,7 +39,7 @@ export function useTrocarIdioma() {
         ...prev,
         lang: langParaUrl(locale),
       })) as never,
-      hash: hash || undefined,
+      ...(hash ? { hash } : {}),
       replace: true,
       resetScroll: false,
     });
