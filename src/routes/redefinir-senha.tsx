@@ -8,36 +8,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
+import { normalizarLocale } from "@/i18n/locales";
+import { seoPagina } from "@/i18n/seo";
+import { useMensagens } from "@/i18n/mensagens";
+import { auth } from "@/i18n/catalogos/auth";
 
 export const Route = createFileRoute("/redefinir-senha")({
   ssr: false,
-  head: () => ({
-    meta: [
-      { title: "Redefinir senha — Instituto IDEX" },
-      { name: "description", content: "Defina uma nova senha para a área da equipe do Instituto IDEX." },
-      { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Redefinir senha — Instituto IDEX" },
-      { property: "og:description", content: "Defina uma nova senha de acesso." },
-    ],
-  }),
+  head: ({ match }) => {
+    const m = auth[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/redefinir-senha",
+      titulo: m.seo.redefinir.titulo,
+      descricao: m.seo.redefinir.descricao,
+      noindex: true,
+    });
+    return { meta: s.meta, links: s.links };
+  },
   component: RedefinirSenha,
 });
 
-// Validação da nova senha (mínimo 6 caracteres, confirmação igual)
-const esquema = z
-  .object({
-    senha: z.string().min(6, "A senha precisa de ao menos 6 caracteres").max(128),
-    confirmar: z.string(),
-  })
-  .refine((d) => d.senha === d.confirmar, {
-    message: "As senhas não conferem",
-    path: ["confirmar"],
-  });
-
 function RedefinirSenha() {
   const navigate = useNavigate();
+  const m = useMensagens(auth);
   const [pronto, setPronto] = useState(false);
   const [enviando, setEnviando] = useState(false);
+
+  // Validação da nova senha (mínimo 6 caracteres, confirmação igual)
+  const esquema = z
+    .object({
+      senha: z.string().min(6, m.redefinir.senhaMinima).max(128),
+      confirmar: z.string(),
+    })
+    .refine((d) => d.senha === d.confirmar, {
+      message: m.redefinir.senhasNaoConferem,
+      path: ["confirmar"],
+    });
 
   // O link do e-mail chega com type=recovery no hash; o cliente Supabase
   // processa o token e dispara o evento PASSWORD_RECOVERY.
@@ -60,7 +67,7 @@ function RedefinirSenha() {
       confirmar: form.get("confirmar"),
     });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      toast.error(parsed.error.issues[0]?.message ?? m.redefinir.dadosInvalidos);
       return;
     }
 
@@ -69,10 +76,10 @@ function RedefinirSenha() {
     setEnviando(false);
 
     if (error) {
-      toast.error("Não foi possível trocar a senha", { description: error.message });
+      toast.error(m.redefinir.erroTrocarTitulo, { description: error.message });
       return;
     }
-    toast.success("Senha atualizada!", { description: "Use a nova senha no próximo login." });
+    toast.success(m.redefinir.sucessoTitulo, { description: m.redefinir.sucessoDescricao });
     navigate({ to: "/admin", replace: true });
   }
 
@@ -89,18 +96,18 @@ function RedefinirSenha() {
           className="mb-7 h-auto w-36 object-contain"
         />
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-          Área da equipe
+          {m.areaEquipe}
         </span>
-        <h1 className="mt-2 text-3xl">Definir nova senha</h1>
+        <h1 className="mt-2 text-3xl">{m.redefinir.titulo}</h1>
 
         {pronto ? (
           <form onSubmit={aoEnviar} className="mt-7 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="senha">Nova senha</Label>
+              <Label htmlFor="senha">{m.redefinir.novaSenha}</Label>
               <Input id="senha" name="senha" type="password" required autoComplete="new-password" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmar">Confirmar nova senha</Label>
+              <Label htmlFor="confirmar">{m.redefinir.confirmarSenha}</Label>
               <Input
                 id="confirmar"
                 name="confirmar"
@@ -111,17 +118,14 @@ function RedefinirSenha() {
             </div>
             <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               <KeyRound className="size-4" />
-              {enviando ? "Salvando..." : "Salvar nova senha"}
+              {enviando ? m.redefinir.salvando : m.redefinir.salvar}
             </Button>
           </form>
         ) : (
           <div className="mt-7 space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Validando seu link de redefinição… Se a página não avançar, o link pode ter
-              expirado — peça um novo na tela de login.
-            </p>
+            <p className="text-sm text-muted-foreground">{m.redefinir.validando}</p>
             <Button asChild variant="idexContorno" className="w-full">
-              <Link to="/auth">Voltar ao login</Link>
+              <Link to="/auth">{m.redefinir.voltarLogin}</Link>
             </Button>
           </div>
         )}

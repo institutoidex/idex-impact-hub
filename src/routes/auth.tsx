@@ -9,57 +9,64 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
+import { normalizarLocale } from "@/i18n/locales";
+import { seoPagina } from "@/i18n/seo";
+import { useMensagens } from "@/i18n/mensagens";
+import { auth } from "@/i18n/catalogos/auth";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
   // Motivo (opcional) da chegada ao login: ex. redirecionado do painel sem sessão
   validateSearch: (search: Record<string, unknown>): { motivo?: "restrito" } =>
     search["motivo"] === "restrito" ? { motivo: "restrito" } : {},
-  head: () => ({
-    meta: [
-      { title: "Acesso restrito — Instituto IDEX" },
-      { name: "description", content: "Área de login da equipe do Instituto IDEX." },
-      { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Acesso restrito — Instituto IDEX" },
-      { property: "og:description", content: "Login da equipe do instituto." },
-    ],
-  }),
+  head: ({ match }) => {
+    const m = auth[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/auth",
+      titulo: m.seo.login.titulo,
+      descricao: m.seo.login.descricao,
+      noindex: true,
+    });
+    return { meta: s.meta, links: s.links };
+  },
   component: Login,
-});
-
-// Validação simples do formulário de acesso
-const esquema = z.object({
-  email: z.string().trim().email("E-mail inválido").max(255),
-  senha: z.string().min(6, "A senha precisa de ao menos 6 caracteres").max(128),
 });
 
 function Login() {
   const navigate = useNavigate();
   const { motivo } = Route.useSearch();
   const { sessao, carregando } = useSessao();
+  const m = useMensagens(auth);
   const [enviando, setEnviando] = useState(false);
   // Alterna entre login e pedido de redefinição de senha (não há cadastro)
   const [modo, setModo] = useState<"login" | "recuperar">("login");
   const avisou = useRef(false); // dispara o aviso de acesso restrito só uma vez
 
+  // Validação simples do formulário de acesso
+  const esquema = z.object({
+    email: z.string().trim().email(m.login.emailInvalido).max(255),
+    senha: z.string().min(6, m.login.senhaMinima).max(128),
+  });
+
   // Chegou redirecionado do painel sem sessão? mostra o aviso discreto
   useEffect(() => {
     if (motivo === "restrito" && !avisou.current) {
       avisou.current = true;
-      toast("Acesso restrito", {
+      toast(m.login.avisoRestritoTitulo, {
         id: "acesso-restrito",
-        description: "Entre com sua conta para abrir o painel.",
+        description: m.login.avisoRestritoDescricao,
       });
     }
-  }, [motivo]);
+  }, [motivo, m]);
 
   // Envia e-mail com link de troca de senha (aponta para /redefinir-senha)
   async function recuperarSenha(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const email = z.string().trim().email("E-mail inválido").max(255).safeParse(form.get("email"));
+    const email = z.string().trim().email(m.login.emailInvalido).max(255).safeParse(form.get("email"));
     if (!email.success) {
-      toast.error(email.error.issues[0]?.message ?? "E-mail inválido");
+      toast.error(email.error.issues[0]?.message ?? m.login.emailInvalido);
       return;
     }
     setEnviando(true);
@@ -68,11 +75,11 @@ function Login() {
     });
     setEnviando(false);
     if (error) {
-      toast.error("Não foi possível enviar o e-mail", { description: error.message });
+      toast.error(m.recuperar.erroEnviarTitulo, { description: error.message });
       return;
     }
-    toast.success("E-mail enviado!", {
-      description: "Abra o link recebido para definir a nova senha.",
+    toast.success(m.recuperar.sucessoTitulo, {
+      description: m.recuperar.sucessoDescricao,
     });
     setModo("login");
   }
@@ -90,7 +97,7 @@ function Login() {
       senha: form.get("senha"),
     });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      toast.error(parsed.error.issues[0]?.message ?? m.login.dadosInvalidos);
       return;
     }
 
@@ -102,7 +109,7 @@ function Login() {
     setEnviando(false);
 
     if (error) {
-      toast.error("Não foi possível entrar", { description: "Confira e-mail e senha." });
+      toast.error(m.login.erroEntrarTitulo, { description: m.login.erroEntrarDescricao });
       return;
     }
     navigate({ to: "/admin", replace: true });
@@ -121,28 +128,26 @@ function Login() {
           className="mb-7 h-auto w-36 object-contain"
         />
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-          Área da equipe
+          {m.areaEquipe}
         </span>
-        <h1 className="mt-2 text-3xl">Entrar no painel</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Acesso apenas para a equipe do instituto. Contas são criadas manualmente.
-        </p>
+        <h1 className="mt-2 text-3xl">{m.login.titulo}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{m.login.subtitulo}</p>
 
         {modo === "login" ? (
           <form onSubmit={aoEnviar} className="mt-7 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email">{m.login.email}</Label>
               <Input id="email" name="email" type="email" required autoComplete="email" />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="senha">Senha</Label>
+                <Label htmlFor="senha">{m.login.senha}</Label>
                 <button
                   type="button"
                   onClick={() => setModo("recuperar")}
                   className="text-xs font-medium text-primary hover:underline"
                 >
-                  Esqueci minha senha
+                  {m.login.esqueciSenha}
                 </button>
               </div>
               <Input
@@ -155,14 +160,14 @@ function Login() {
             </div>
             <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               <LogIn className="size-4" />
-              {enviando ? "Entrando..." : "Entrar"}
+              {enviando ? m.login.entrando : m.login.entrar}
             </Button>
           </form>
         ) : (
           /* Sem cadastro: troca de senha apenas via e-mail */
           <form onSubmit={recuperarSenha} className="mt-7 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email-recuperar">E-mail</Label>
+              <Label htmlFor="email-recuperar">{m.recuperar.email}</Label>
               <Input
                 id="email-recuperar"
                 name="email"
@@ -170,19 +175,17 @@ function Login() {
                 required
                 autoComplete="email"
               />
-              <p className="text-xs text-muted-foreground">
-                Você receberá um link para definir uma nova senha.
-              </p>
+              <p className="text-xs text-muted-foreground">{m.recuperar.aviso}</p>
             </div>
             <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
-              {enviando ? "Enviando..." : "Enviar link de redefinição"}
+              {enviando ? m.recuperar.enviando : m.recuperar.enviar}
             </Button>
             <button
               type="button"
               onClick={() => setModo("login")}
               className="w-full text-center text-sm font-medium text-primary hover:underline"
             >
-              Voltar ao login
+              {m.recuperar.voltarLogin}
             </button>
           </form>
         )}

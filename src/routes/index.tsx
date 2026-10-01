@@ -6,44 +6,49 @@ import { Imagem } from "@/components/Imagem";
 import GaleriaLightbox from "@/components/GaleriaLightbox";
 import { FOTO_HERO, FOTO_TALENTO, GALERIA } from "@/data/fotos";
 import { useQuery } from "@tanstack/react-query";
-import { formatarData, noticiasQuery } from "@/lib/queries";
+import { noticiasQuery } from "@/lib/queries";
 import { Reveal } from "@/components/Reveal";
 import { AnimatedText } from "@/components/motion/AnimatedText";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 import { Button } from "@/components/ui/button";
+import { normalizarLocale } from "@/i18n/locales";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { seoPagina } from "@/i18n/seo";
+import { home } from "@/i18n/catalogos/home";
+import { traduzir } from "@/i18n/traduzir";
+import { formatarData } from "@/i18n/formatar";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Instituto IDEX — esporte, cultura e comunidade desde 2007" },
-      {
-        name: "description",
-        content:
-          "O Instituto IDEX atua desde 2007 em seis frentes sociais: educação, cultura, esportes, meio ambiente, negócios e saúde.",
-      },
-      { property: "og:title", content: "Instituto IDEX — desenvolvimento social desde 2007" },
-      {
-        property: "og:description",
-        content: "Seis frentes de atuação e o projeto Talento Brasil, para 200 crianças e jovens.",
-      },
-    ],
-    // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
-    links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: FOTO_HERO.url,
-        imageSrcSet: FOTO_HERO.srcSet,
-        imageSizes: "100vw",
-        fetchPriority: "high",
-      },
-    ],
-  }),
+  head: ({ match }) => {
+    const t = home[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/",
+      titulo: t.seo.titulo,
+      descricao: t.seo.descricao,
+    });
+    return {
+      meta: s.meta,
+      // Pré-carrega a imagem do hero (maior elemento da página) para acelerar o LCP
+      links: [
+        ...s.links,
+        {
+          rel: "preload",
+          as: "image",
+          href: FOTO_HERO.url,
+          imageSrcSet: FOTO_HERO.srcSet,
+          imageSizes: "100vw",
+          fetchPriority: "high",
+        },
+      ],
+    };
+  },
   component: Inicio,
 });
 
 function Inicio() {
+  const t = useMensagens(home);
   return (
     <>
       {/* Hero ------------------------------------------------------------ */}
@@ -65,13 +70,13 @@ function Inicio() {
               className="entrada texto-heroi inline-flex items-center gap-2 rounded-full bg-ink-card/80 px-4 py-1.5 text-xs font-semibold tracking-widest text-ink-foreground uppercase"
               style={{ "--d": "0ms" } as CSSProperties}
             >
-              Instituto IDEX · desde 2007
+              {t.hero.selo}
             </span>
             {/* Título e descrição lado a lado em telas grandes; empilhados no celular */}
             <div className="mt-6 flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-40">
               <AnimatedText
                 as="h1"
-                text={"Formamos pessoas.\nDesenvolvemos talentos.\nCriamos oportunidades."}
+                text={t.hero.titulo}
                 delay={150}
                 className="texto-heroi w-fit max-w-2xl shrink-0 rounded-2xl bg-ink/70 px-5 py-4 text-[clamp(1.4rem,3.6vw,2.3rem)] leading-[1.3] text-balance text-ink-foreground backdrop-blur-sm sm:px-6 sm:py-5 lg:text-4xl"
               />
@@ -81,8 +86,7 @@ function Inicio() {
                   className="entrada texto-heroi w-fit max-w-md rounded-2xl bg-ink/70 px-4 py-2.5 text-base text-ink-foreground/95 backdrop-blur-sm sm:text-lg"
                   style={{ "--d": "500ms" } as CSSProperties}
                 >
-                  O esporte conecta formação, desenvolvimento e novas oportunidades para crianças e
-                  jovens, dentro e fora de campo.
+                  {t.hero.texto}
                 </p>
                 <div
                   className="entrada flex flex-wrap gap-3"
@@ -90,7 +94,7 @@ function Inicio() {
                 >
                   <Button asChild size="lg" variant="idex">
                     <Link to="/como-ajudar">
-                      <HeartHandshake className="size-4" /> Quero ajudar
+                      <HeartHandshake className="size-4" /> {t.hero.quero}
                     </Link>
                   </Button>
                   <Button
@@ -99,7 +103,7 @@ function Inicio() {
                     variant="idexClaro"
                     className="border-ink-foreground/20 bg-ink/70 hover:bg-ink/85 hover:border-ink-foreground/30"
                   >
-                    <Link to="/noticias">Ver notícias</Link>
+                    <Link to="/noticias">{t.hero.verNoticias}</Link>
                   </Button>
                 </div>
               </div>
@@ -122,16 +126,13 @@ function Inicio() {
           <div className="flex items-center px-4 py-14 sm:px-10 lg:py-24 lg:pl-16 lg:pr-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
             <Reveal delay={120}>
               <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-                No dia a dia
+                {t.destaque.selo}
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl">Esporte que aproxima</h2>
-              <p className="mt-4 text-muted-foreground">
-                Futebol como caminho para formar, desenvolver talentos, ampliar horizontes e criar
-                novas oportunidades dentro e fora do esporte.
-              </p>
+              <h2 className="mt-3 text-3xl sm:text-4xl">{t.destaque.titulo}</h2>
+              <p className="mt-4 text-muted-foreground">{t.destaque.texto}</p>
               <Button asChild variant="idex" className="mt-7">
                 <Link to="/como-ajudar">
-                  Quero apoiar <ArrowRight className="size-4" />
+                  {t.destaque.cta} <ArrowRight className="size-4" />
                 </Link>
               </Button>
             </Reveal>
@@ -143,12 +144,12 @@ function Inicio() {
       {/* Notícias --------------------------------------------------------- */}
       <section className="mx-auto max-w-7xl px-4 pt-16 pb-20 sm:px-6 sm:pt-20">
         <Reveal className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="text-3xl sm:text-4xl">Notícias recentes</h2>
+          <h2 className="text-3xl sm:text-4xl">{t.noticias.titulo}</h2>
           <Link
             to="/noticias"
             className="text-sm font-semibold text-primary hover:underline"
           >
-            Ver todas
+            {t.noticias.verTodas}
           </Link>
         </Reveal>
         <NoticiasRecentes />
@@ -157,10 +158,8 @@ function Inicio() {
       {/* Galeria de fotos --------------------------------------------- */}
       <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6">
         <Reveal>
-          <h2 className="text-3xl sm:text-4xl">Nosso dia a dia em fotos</h2>
-          <p className="mt-3 max-w-xl text-muted-foreground">
-            Registros dos treinos, jogos e celebrações do Talento Brasil.
-          </p>
+          <h2 className="text-3xl sm:text-4xl">{t.galeria.titulo}</h2>
+          <p className="mt-3 max-w-xl text-muted-foreground">{t.galeria.texto}</p>
         </Reveal>
         <GaleriaLightbox fotos={GALERIA.slice(0, 8)} className="mt-8" />
       </section>
@@ -171,19 +170,17 @@ function Inicio() {
         <div className="rule-green" aria-hidden />
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.4fr_1fr] lg:items-center">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl">Vem junto com a gente</h2>
-            <p className="mt-3 max-w-xl text-ink-foreground/75">
-              Doe ou seja voluntário e ajude a transformar vidas na comunidade.
-            </p>
+            <h2 className="text-3xl sm:text-4xl">{t.cta.titulo}</h2>
+            <p className="mt-3 max-w-xl text-ink-foreground/75">{t.cta.texto}</p>
           </Reveal>
           <Reveal delay={120} className="flex flex-wrap gap-3 lg:justify-end">
             <Button asChild size="lg" variant="idex">
               <Link to="/como-ajudar">
-                <HeartHandshake className="size-4" /> Doar
+                <HeartHandshake className="size-4" /> {t.cta.doar}
               </Link>
             </Button>
             <Button asChild size="lg" variant="idexClaro">
-              <Link to="/contato">Falar com o instituto</Link>
+              <Link to="/contato">{t.cta.falar}</Link>
             </Button>
           </Reveal>
         </div>
@@ -197,46 +194,51 @@ function Inicio() {
  * Carregando, erro de conexão e lista vazia têm mensagens próprias.
  */
 function NoticiasRecentes() {
+  const locale = useLocale();
+  const t = useMensagens(home);
   const { data, isPending, isError } = useQuery(noticiasQuery(3));
 
   if (isPending) {
-    return <p className="mt-10 text-sm text-muted-foreground" aria-live="polite">Carregando notícias...</p>;
+    return <p className="mt-10 text-sm text-muted-foreground" aria-live="polite">{t.noticias.carregando}</p>;
   }
   if (isError) {
     return (
       <p className="mt-10 text-sm text-muted-foreground" aria-live="polite">
-        Não foi possível carregar as notícias agora.
+        {t.noticias.erro}
       </p>
     );
   }
   if (data.length === 0) {
     return (
       <p className="mt-10 text-sm text-muted-foreground">
-        Ainda não há notícias publicadas. Volte em breve.
+        {t.noticias.vazio}
       </p>
     );
   }
 
   return (
     <div className="mt-10 grid gap-6 md:grid-cols-3">
-      {data.map((n, i) => (
-        <Reveal as="article" key={n.slug} delay={i * 90}>
-          <TiltCard>
-            <div className="lift h-full rounded-3xl border border-border bg-card p-7">
-              <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-                {formatarData(n.publicado_em)}
-              </p>
-              <h3 className="mt-3 text-xl">
-                {/* cada notícia tem endereço próprio em /noticias/slug */}
-                <Link to="/noticias/$slug" params={{ slug: n.slug }} className="hover:text-primary">
-                  {n.titulo}
-                </Link>
-              </h3>
-              <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
-            </div>
-          </TiltCard>
-        </Reveal>
-      ))}
+      {data.map((n0, i) => {
+        const n = traduzir(n0, locale, ["titulo", "resumo"]);
+        return (
+          <Reveal as="article" key={n.slug} delay={i * 90}>
+            <TiltCard>
+              <div className="lift h-full rounded-3xl border border-border bg-card p-7">
+                <p className="text-xs font-semibold tracking-widest text-primary uppercase">
+                  {formatarData(n.publicado_em, locale)}
+                </p>
+                <h3 className="mt-3 text-xl">
+                  {/* cada notícia tem endereço próprio em /noticias/slug */}
+                  <Link to="/noticias/$slug" params={{ slug: n.slug }} className="hover:text-primary">
+                    {n.titulo}
+                  </Link>
+                </h3>
+                <p className="mt-3 text-sm text-muted-foreground">{n.resumo}</p>
+              </div>
+            </TiltCard>
+          </Reveal>
+        );
+      })}
     </div>
   );
 }

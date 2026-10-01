@@ -7,7 +7,12 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  retainSearchParams,
 } from "@tanstack/react-router";
+import { comum } from "@/i18n/catalogos/comum";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { ehLocale, normalizarLocale, OG_LOCALE } from "@/i18n/locales";
+import { SincronizarIdioma } from "@/components/SeletorIdioma";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -25,20 +30,21 @@ import compartilhamentoAsset from "@/assets/compartilhamento-idex-v2.jpg.asset.j
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
+  const m = useMensagens(comum).naoEncontrada;
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{m.titulo}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          A página que você procura não existe ou mudou de endereço.
+          {m.texto}
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Voltar ao início
+            {m.voltar}
           </Link>
         </div>
       </div>
@@ -49,6 +55,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
+  const m = useMensagens(comum).erro;
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
@@ -57,10 +64,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Esta página não carregou
+          {m.titulo}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Algo deu errado do nosso lado. Tente recarregar ou volte para o início.
+          {m.texto}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -70,13 +77,13 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Tentar de novo
+            {m.tentar}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Voltar ao início
+            {m.voltar}
           </a>
         </div>
       </div>
@@ -123,21 +130,26 @@ const jsonLdWebSite = {
   "@id": `${SITE_URL}/#website`,
   name: "Instituto IDEX",
   url: SITE_URL,
-  inLanguage: "pt-BR",
+  inLanguage: ["pt-BR", "en-US", "es-ES"],
   publisher: { "@id": `${SITE_URL}/#organizacao` },
 };
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  // ?lang=en-US | es-ES (pt-BR é o padrão e não aparece). Valor inválido é descartado.
+  validateSearch: (search: Record<string, unknown>): { lang?: "en-US" | "es-ES" } => {
+    const lang = search["lang"];
+    return ehLocale(lang) && lang !== "pt-BR" ? { lang } : {};
+  },
+  // Todos os links internos mantêm o idioma atual automaticamente.
+  search: { middlewares: [retainSearchParams(["lang"])] },
+  head: ({ match }) => {
+    const m = comum[normalizarLocale(match.search.lang)];
+    return {
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Instituto IDEX — desenvolvimento social desde 2007" },
-      {
-        name: "description",
-        content:
-          "Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio do esporte, desde 2007.",
-      },
+      { title: m.tituloSite },
+      { name: "description", content: m.descricaoSite },
       { name: "author", content: "Instituto IDEX" },
       // Verificação de propriedade do site no Google Search Console
       {
@@ -146,13 +158,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Instituto IDEX" },
+      { property: "og:locale", content: OG_LOCALE[normalizarLocale(match.search.lang)] },
       { property: "og:image", content: IMAGEM_COMPARTILHAMENTO_URL },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Logotipo do Instituto IDEX" },
+      { property: "og:image:alt", content: m.altLogo },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: IMAGEM_COMPARTILHAMENTO_URL },
-      { name: "twitter:image:alt", content: "Logotipo do Instituto IDEX" },
+      { name: "twitter:image:alt", content: m.altLogo },
       { name: "theme-color", content: "#00A859" },
     ],
     links: [
@@ -175,7 +188,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { type: "application/ld+json", children: JSON.stringify(jsonLdOrganizacao) },
       { type: "application/ld+json", children: JSON.stringify(jsonLdWebSite) },
     ],
-  }),
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -183,8 +197,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // <html lang> acompanha o idioma da URL (também no SSR)
+  const locale = useLocale();
   return (
-    <html lang="pt-BR">
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>
@@ -203,6 +219,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Escuta o banco e atualiza as páginas em tempo real */}
       <AssinaturaRealtime />
+      {/* Aplica o idioma salvo quando a URL não traz ?lang */}
+      <SincronizarIdioma />
       {/* Barra de progresso de leitura */}
       <ScrollProgress />
       <Header />

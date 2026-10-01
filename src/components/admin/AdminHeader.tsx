@@ -5,6 +5,8 @@ import { useSessao } from "@/hooks/useSessao";
 import { supabase } from "@/lib/supabase";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMensagens } from "@/i18n/mensagens";
+import { admin } from "@/i18n/catalogos/admin";
 
 /**
  * Cabeçalho fixo do painel administrativo.
@@ -15,6 +17,7 @@ export function AdminHeader() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { usuario } = useSessao();
+  const m = useMensagens(admin);
 
   async function sair() {
     // Cancela consultas ativas e limpa o cache antes de encerrar a sessão
@@ -42,7 +45,7 @@ export function AdminHeader() {
           </Link>
           <div className="hidden sm:block">
             <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-              Painel
+              {m.header.painel}
             </p>
             {usuario?.email && (
               <p className="max-w-[16rem] truncate text-xs text-muted-foreground">
@@ -57,7 +60,7 @@ export function AdminHeader() {
           <Button variant="outline" size="sm" className="rounded-full" asChild>
             <Link to="/">
               <ExternalLink className="size-4" />
-              <span className="hidden sm:inline">Ver o site</span>
+              <span className="hidden sm:inline">{m.header.verSite}</span>
             </Link>
           </Button>
           <Button
@@ -67,7 +70,7 @@ export function AdminHeader() {
             onClick={sair}
           >
             <LogOut className="size-4" />
-            <span className="hidden sm:inline">Sair</span>
+            <span className="hidden sm:inline">{m.header.sair}</span>
           </Button>
         </div>
       </div>

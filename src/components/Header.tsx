@@ -14,6 +14,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BuscaDocumentos } from "@/components/BuscaDocumentos";
 import { useSessao } from "@/hooks/useSessao";
+import { SeletorIdioma, SeletorIdiomaLista } from "@/components/SeletorIdioma";
+import { useMensagens } from "@/i18n/mensagens";
+import { layout } from "@/i18n/catalogos/layout";
+import { comum } from "@/i18n/catalogos/comum";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
 
 /** Cabeçalho fixo com navegação completa e CTA "Como Ajudar" destacado. */
@@ -22,6 +26,8 @@ export function Header() {
   const [rolou, setRolou] = useState(false);
   // Sessão do visitante: decide se mostra "Entrar" ou atalho para o painel
   const { sessao, carregando } = useSessao();
+  const t = useMensagens(layout);
+  const c = useMensagens(comum);
 
   useEffect(() => {
     const onScroll = () => setRolou(window.scrollY > 12);
@@ -60,7 +66,7 @@ export function Header() {
           {/* Logo oficial do Instituto IDEX */}
           <img
             src={logoAsset.url}
-            alt="Instituto IDEX"
+            alt={c.altLogo}
             width={1626}
             height={905}
             decoding="async"
@@ -69,10 +75,10 @@ export function Header() {
         </Link>
 
         {/* Navegação desktop centralizada */}
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 xl:flex" aria-label="Navegação principal">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 xl:flex" aria-label={t.navegacaoPrincipal}>
           {NAV.map((item) =>
             item.to === "/transparencia" ? (
-              <MenuTransparencia key={item.to} rotulo={item.label} />
+              <MenuTransparencia key={item.to} rotulo={t.nav[item.chave]} />
             ) : (
               <Link
                 key={item.to}
@@ -81,7 +87,7 @@ export function Header() {
                 activeProps={{ className: "nav-link-ativo" }}
                 className="nav-link"
               >
-                {item.label}
+                {t.nav[item.chave]}
               </Link>
             ),
           )}
@@ -93,10 +99,12 @@ export function Header() {
           <div className="hidden sm:block">
             <BuscaDocumentos />
           </div>
+          {/* Seletor de idioma (PT · EN · ES) */}
+          <SeletorIdioma />
           <Button asChild variant="idex" className="hidden lg:inline-flex">
             <Link to="/como-ajudar">
               <HeartHandshake className="size-4" />
-              Como Ajudar
+              {t.comoAjudar}
             </Link>
           </Button>
           {/* Botão de acesso: vira "Painel" quando já está logado */}
@@ -105,11 +113,11 @@ export function Header() {
               asChild
               variant="idexContorno"
               className="hidden sm:inline-flex"
-              aria-label={sessao ? "Ir para o painel administrativo" : "Entrar na área da equipe"}
+              aria-label={sessao ? t.irParaPainel : t.entrarAreaEquipe}
             >
               <Link to={sessao ? "/admin" : "/auth"}>
                 {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
-                {sessao ? "Painel" : "Entrar"}
+                {sessao ? t.painel : t.entrar}
               </Link>
             </Button>
           )}
@@ -117,7 +125,7 @@ export function Header() {
             type="button"
             variant="outline"
             size="icon"
-            aria-label={aberto ? "Fechar menu" : "Abrir menu"}
+            aria-label={aberto ? t.fecharMenu : t.abrirMenu}
             aria-expanded={aberto}
             aria-controls="menu-principal-mobile"
             onClick={() => setAberto((v) => !v)}
@@ -138,9 +146,13 @@ export function Header() {
       >
         <div className="min-h-0 overflow-hidden">
           {/* Menu mobile com busca, links e ações em áreas de toque confortáveis. */}
-          <nav className="mx-auto flex max-w-[90rem] flex-col px-4 py-4 sm:px-6" aria-label="Navegação móvel">
+          <nav className="mx-auto flex max-w-[90rem] flex-col px-4 py-4 sm:px-6" aria-label={t.navegacaoMovel}>
             <div className="mb-2 sm:hidden">
               <BuscaDocumentos expandida />
+            </div>
+            {/* Idiomas com nomes nativos, sempre visíveis no menu do celular */}
+            <div className="mb-3">
+              <SeletorIdiomaLista />
             </div>
             {NAV.map((item) => (
               <Link
@@ -151,20 +163,20 @@ export function Header() {
                 activeProps={{ className: "text-primary font-semibold bg-accent" }}
                 className="rounded-md border-b border-border/60 px-3 py-3 text-sm font-medium text-foreground transition-colors last:border-0 hover:bg-muted hover:text-primary"
               >
-                {item.label}
+                {t.nav[item.chave]}
               </Link>
             ))}
             <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:hidden">
               <Button asChild variant="idex" className="h-11">
                 <Link to="/como-ajudar" onClick={() => setAberto(false)}>
                   <HeartHandshake className="size-4" />
-                  Como Ajudar
+                  {t.comoAjudar}
                 </Link>
               </Button>
               <Button asChild variant="idexContorno" className="h-11">
                 <Link to={sessao ? "/admin" : "/auth"} onClick={() => setAberto(false)}>
                   {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
-                  {sessao ? "Painel" : "Área da equipe"}
+                  {sessao ? t.painel : t.areaDaEquipe}
                 </Link>
               </Button>
             </div>
@@ -172,7 +184,7 @@ export function Header() {
               <Button asChild variant="idexContorno" className="h-11 w-full">
                 <Link to={sessao ? "/admin" : "/auth"} onClick={() => setAberto(false)}>
                   {sessao ? <LayoutDashboard className="size-4" /> : <LogIn className="size-4" />}
-                  {sessao ? "Painel" : "Área da equipe"}
+                  {sessao ? t.painel : t.areaDaEquipe}
                 </Link>
               </Button>
             </div>
@@ -189,6 +201,8 @@ export function Header() {
  * separado (Radix não intercepta mais o clique do link).
  */
 function MenuTransparencia({ rotulo }: { rotulo: string }) {
+  const t = useMensagens(layout);
+  const c = useMensagens(comum);
   const pastas = usePastas();
   const raizes = montarArvore(pastas);
   const itens = raizes.length
@@ -210,7 +224,7 @@ function MenuTransparencia({ rotulo }: { rotulo: string }) {
             type="button"
             variant="ghost"
             size="icon"
-            aria-label="Abrir atalhos das pastas de Transparência"
+            aria-label={t.abrirAtalhosTransparencia}
             className="size-7 text-muted-foreground hover:bg-muted hover:text-primary"
           >
             <ChevronDown className="size-4" aria-hidden />

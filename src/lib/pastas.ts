@@ -74,3 +74,33 @@ export function idsDescendentes(pastas: PastaRow[], id: string): string[] {
 export function documentosDaPasta(documentos: DocumentoRow[], pastaId: string | null) {
   return documentos.filter((d) => (d.pasta_id ?? null) === pastaId);
 }
+
+// Nomes das pastas base traduzidos por idioma (usado só como espelho visual
+// enquanto o banco não tem pastas cadastradas). PASTAS_BASE acima continua
+// em português para os consumidores que ainda não são localizados.
+import type { Locale } from "@/i18n/locales";
+
+const PASTAS_BASE_EN: { nome: string; slug: string }[] = [
+  { nome: "Documents", slug: "documentos" },
+  { nome: "Congressional Earmarks", slug: "emendas-parlamentares" },
+  { nome: "Organizational Chart", slug: "organograma" },
+  { nome: "Frequently Asked Questions", slug: "perguntas-frequentes" },
+  { nome: "Projects", slug: "projetos" },
+  { nome: "Reports", slug: "relatorios" },
+];
+
+const PASTAS_BASE_ES: { nome: string; slug: string }[] = [
+  { nome: "Documentos", slug: "documentos" },
+  { nome: "Enmiendas Parlamentarias", slug: "emendas-parlamentares" },
+  { nome: "Organigrama", slug: "organograma" },
+  { nome: "Preguntas Frecuentes", slug: "perguntas-frequentes" },
+  { nome: "Proyectos", slug: "projetos" },
+  { nome: "Informes", slug: "relatorios" },
+];
+
+/** Devolve PASTAS_BASE no idioma pedido (fallback visual sem banco). */
+export function pastasBasePorLocale(locale: Locale): { nome: string; slug: string }[] {
+  if (locale === "en-US") return PASTAS_BASE_EN;
+  if (locale === "es-ES") return PASTAS_BASE_ES;
+  return PASTAS_BASE;
+}

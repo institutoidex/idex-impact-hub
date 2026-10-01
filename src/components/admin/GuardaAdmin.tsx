@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 
 import { useSessao } from "@/hooks/useSessao";
 import { usePapelAdmin } from "@/hooks/usePapelAdmin";
+import { useMensagens } from "@/i18n/mensagens";
+import { admin } from "@/i18n/catalogos/admin";
 
 /**
  * Proteção de rota do painel.
@@ -16,6 +18,7 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { sessao, carregando, usuario } = useSessao();
   const papel = usePapelAdmin(usuario?.id);
+  const m = useMensagens(admin);
   const avisou = useRef(false); // evita repetir o toast em re-renderizações
 
   const semSessao = !carregando && !sessao;
@@ -24,34 +27,34 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (semSessao && !avisou.current) {
       avisou.current = true;
-      toast("Acesso restrito", { description: "Entre com sua conta para abrir o painel." });
+      toast(m.guarda.acessoRestritoTitulo, { description: m.guarda.acessoRestritoDescricao });
       navigate({ to: "/auth", replace: true });
     }
-  }, [semSessao, navigate]);
+  }, [semSessao, navigate, m]);
 
   useEffect(() => {
     if (semPermissao && !avisou.current) {
       avisou.current = true;
-      toast("Sem permissão", { description: "Sua conta não tem acesso ao painel." });
+      toast(m.guarda.semPermissaoTitulo, { description: m.guarda.semPermissaoDescricao });
       navigate({ to: "/", replace: true });
     }
-  }, [semPermissao, navigate]);
+  }, [semPermissao, navigate, m]);
 
   // Falha ao consultar o papel: por segurança, não libera o painel
   useEffect(() => {
     if (papel.isError && !avisou.current) {
       avisou.current = true;
-      toast("Não foi possível confirmar seu acesso", { description: "Tente entrar novamente." });
+      toast(m.guarda.erroConfirmarTitulo, { description: m.guarda.erroConfirmarDescricao });
       navigate({ to: "/auth", replace: true });
     }
-  }, [papel.isError, navigate]);
+  }, [papel.isError, navigate, m]);
 
   const liberado = Boolean(sessao) && papel.data === true;
 
   if (!liberado) {
     return (
       <div className="px-4 py-32 text-center text-muted-foreground">
-        Verificando seu acesso...
+        {m.guarda.verificando}
       </div>
     );
   }

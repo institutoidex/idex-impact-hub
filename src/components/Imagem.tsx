@@ -7,6 +7,9 @@ import { useState, type ImgHTMLAttributes } from "react";
 import { Maximize2 } from "lucide-react";
 import type { Foto } from "@/data/fotos";
 import VisorFotos from "@/components/VisorFotos";
+import { altDaFoto } from "@/data/fotos";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { galeria } from "@/i18n/catalogos/galeria";
 
 type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet"> & {
   /** Foto do acervo (traz srcset responsivo) ou URL simples vinda do banco */
@@ -34,15 +37,18 @@ export function Imagem({
   ...resto
 }: Props) {
   const [aberta, setAberta] = useState(false);
+  const locale = useLocale();
+  const t = useMensagens(galeria);
   const url = foto?.url ?? src;
   if (!url) return null;
+  const altFoto = foto ? altDaFoto(foto, locale) : undefined;
 
   const img = (
     <img
       src={url}
       srcSet={foto?.srcSet}
       sizes={foto?.srcSet ? sizes : undefined}
-      alt={alt ?? foto?.alt ?? ""}
+      alt={alt ?? altFoto ?? ""}
       width={width ?? foto?.largura ?? 1400}
       height={height ?? foto?.altura ?? 900}
       loading={prioridade ? "eager" : "lazy"}
@@ -56,13 +62,14 @@ export function Imagem({
   if (!ampliavel) return img;
 
   const fotoVisor: Foto = foto ?? { url, alt: alt ?? "" };
+  const altVisor = alt ?? altFoto ?? "";
 
   return (
     <>
       <button
         type="button"
         onClick={() => setAberta(true)}
-        aria-label={`Ampliar imagem: ${fotoVisor.alt}`}
+        aria-label={t.ampliarImagem(altVisor)}
         className="group relative block w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         {img}

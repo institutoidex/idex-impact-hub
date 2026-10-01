@@ -2,10 +2,15 @@ import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, MapPin } from "lucide-react";
 import { NAV, CONTATO } from "@/data/idex";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
+import { useMensagens } from "@/i18n/mensagens";
+import { layout } from "@/i18n/catalogos/layout";
+import { comum } from "@/i18n/catalogos/comum";
 
 /** Rodapé escuro com filete amarelo no topo (elemento da identidade atual). */
 export function Footer() {
   const ano = new Date().getFullYear();
+  const t = useMensagens(layout);
+  const c = useMensagens(comum);
 
   return (
     <footer className="mt-24 bg-ink text-ink-foreground">
@@ -16,7 +21,7 @@ export function Footer() {
             {/* Logo oficial no rodapé */}
             <img
               src={logoAsset.url}
-              alt="Instituto IDEX"
+              alt={c.altLogo}
               width={1626}
               height={905}
               loading="lazy"
@@ -25,15 +30,14 @@ export function Footer() {
             />
           </div>
           <p className="mt-4 text-sm text-ink-foreground/70">
-            Instituto dedicado ao desenvolvimento social e à formação de crianças e jovens por meio
-            do esporte, desde 2007.
+            {t.rodape.descricao}
           </p>
           <div className="mt-5 flex gap-2">
             <a
               href={CONTATO.instagramUrl}
               target="_blank"
               rel="noreferrer"
-              aria-label="Instagram do Instituto IDEX"
+              aria-label={t.rodape.instagramDoInstituto}
               className="grid size-10 place-items-center rounded-full bg-ink-card transition-colors hover:bg-primary"
             >
               <Instagram className="size-4" />
@@ -42,7 +46,7 @@ export function Footer() {
               href={CONTATO.facebookUrl}
               target="_blank"
               rel="noreferrer"
-              aria-label="Facebook do Instituto IDEX"
+              aria-label={t.rodape.facebookDoInstituto}
               className="grid size-10 place-items-center rounded-full bg-ink-card transition-colors hover:bg-primary"
             >
               <Facebook className="size-4" />
@@ -51,7 +55,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="font-display text-base">Navegação</h3>
+          <h3 className="font-display text-base">{t.rodape.navegacao}</h3>
           <ul className="mt-4 space-y-2 text-sm">
             {NAV.map((item) => (
               <li key={item.to}>
@@ -59,7 +63,7 @@ export function Footer() {
                   to={item.to}
                   className="text-ink-foreground/70 transition-colors hover:text-primary"
                 >
-                  {item.label}
+                  {t.nav[item.chave]}
                 </Link>
               </li>
             ))}
@@ -68,7 +72,7 @@ export function Footer() {
                 to="/como-ajudar"
                 className="text-ink-foreground/70 transition-colors hover:text-primary"
               >
-                Como Ajudar
+                {t.comoAjudar}
               </Link>
             </li>
           </ul>
@@ -76,7 +80,7 @@ export function Footer() {
 
 
         <div>
-          <h3 className="font-display text-base">Contato</h3>
+          <h3 className="font-display text-base">{t.rodape.contato}</h3>
           <div className="mt-4 rounded-2xl bg-ink-card p-5 text-sm">
             <p className="flex gap-2 text-ink-foreground/80">
               <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -84,7 +88,7 @@ export function Footer() {
             </p>
             {/* E-mail fica de fora por decisão do instituto (anti-spam) */}
             {CONTATO.telefone && (
-              <p className="mt-3 text-ink-foreground/60">Telefone: {CONTATO.telefone}</p>
+              <p className="mt-3 text-ink-foreground/60">{t.rodape.telefone}: {CONTATO.telefone}</p>
             )}
             {CONTATO.cnpj && <p className="text-ink-foreground/60">CNPJ: {CONTATO.cnpj}</p>}
             <p className="mt-3 text-ink-foreground/60">Instagram: {CONTATO.instagram}</p>
@@ -96,12 +100,12 @@ export function Footer() {
       <div className="border-t border-ink-foreground/10">
         {/* Rodapé final: direitos + acesso discreto à área da equipe */}
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-xs text-ink-foreground/50 sm:px-6">
-          <p>© {ano} Instituto IDEX. Todos os direitos reservados.</p>
+          <p>{t.rodape.direitos(ano)}</p>
           <Link
             to="/auth"
             className="rounded-full px-3 py-1 text-ink-foreground/50 transition hover:bg-ink-foreground/10 hover:text-ink-foreground"
           >
-            Área da equipe
+            {t.areaDaEquipe}
           </Link>
         </div>
       </div>

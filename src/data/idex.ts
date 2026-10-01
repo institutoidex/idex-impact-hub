@@ -53,12 +53,15 @@ export const CONTATO = {
   facebookUrl: "https://facebook.com/idexsocial",
 };
 
+// `chave` identifica o item de forma estável para buscar o rótulo traduzido
+// no catálogo `layout.nav` (Header/Footer). `label` é mantido em português
+// como referência/fallback.
 export const NAV = [
-  { to: "/", label: "Início" },
-  { to: "/quem-somos", label: "Quem Somos" },
-  { to: "/programa-esportivo", label: "Programa Esportivo" },
+  { to: "/", label: "Início", chave: "inicio" },
+  { to: "/quem-somos", label: "Quem Somos", chave: "quemSomos" },
+  { to: "/programa-esportivo", label: "Programa Esportivo", chave: "programaEsportivo" },
   // Projetos está oculto no site por enquanto (a pedido da diretoria)
-  { to: "/transparencia", label: "Transparência" },
-  { to: "/noticias", label: "Notícias" },
-  { to: "/contato", label: "Contato" },
+  { to: "/transparencia", label: "Transparência", chave: "transparencia" },
+  { to: "/noticias", label: "Notícias", chave: "noticias" },
+  { to: "/contato", label: "Contato", chave: "contato" },
 ] as const;

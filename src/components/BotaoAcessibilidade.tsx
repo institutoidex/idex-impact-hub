@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useMensagens } from "@/i18n/mensagens";
+import { acessibilidade } from "@/i18n/catalogos/acessibilidade";
 
 /** Preferências de acessibilidade guardadas no navegador do visitante. */
 type Preferencias = {
@@ -45,6 +47,7 @@ function aplicar(p: Preferencias) {
 export function BotaoAcessibilidade() {
   const [aberto, setAberto] = useState(false);
   const [prefs, setPrefs] = useState<Preferencias>(PADRAO);
+  const t = useMensagens(acessibilidade);
 
   // Carrega o que já estava salvo (só no cliente, evita mismatch de hidratação)
   useEffect(() => {
@@ -83,10 +86,10 @@ export function BotaoAcessibilidade() {
   }, [aberto]);
 
   const opcoes = [
-    { chave: "contraste" as const, rotulo: "Alto contraste", Icone: Contrast },
-    { chave: "cinza" as const, rotulo: "Escala de cinza", Icone: Droplet },
-    { chave: "links" as const, rotulo: "Sublinhar links", Icone: Link2 },
-    { chave: "semAnimacao" as const, rotulo: "Reduzir animações", Icone: Zap },
+    { chave: "contraste" as const, rotulo: t.altoContraste, Icone: Contrast },
+    { chave: "cinza" as const, rotulo: t.escalaDeCinza, Icone: Droplet },
+    { chave: "links" as const, rotulo: t.sublinharLinks, Icone: Link2 },
+    { chave: "semAnimacao" as const, rotulo: t.reduzirAnimacoes, Icone: Zap },
   ];
 
   return (
@@ -94,15 +97,15 @@ export function BotaoAcessibilidade() {
       {aberto && (
         <div
           role="dialog"
-          aria-label="Opções de acessibilidade"
+          aria-label={t.titulo}
           className="mb-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-4 shadow-2xl"
         >
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-            <h2 className="truncate text-base font-semibold text-foreground">Acessibilidade</h2>
+            <h2 className="truncate text-base font-semibold text-foreground">{t.titulo}</h2>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Fechar opções de acessibilidade"
+              aria-label={t.fecharOpcoes}
               className="min-h-11 min-w-11 shrink-0"
               onClick={() => setAberto(false)}
             >
@@ -112,12 +115,12 @@ export function BotaoAcessibilidade() {
 
           {/* Tamanho do texto */}
           <div className="mt-3">
-            <p className="text-sm font-medium text-foreground">Tamanho do texto</p>
+            <p className="text-sm font-medium text-foreground">{t.tamanhoTexto}</p>
             <div className="mt-2 flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
-                aria-label="Diminuir tamanho do texto"
+                aria-label={t.diminuirTexto}
                 className="min-h-11 min-w-11"
                 onClick={() => atualizar({ escala: Math.max(0.9, +(prefs.escala - 0.1).toFixed(2)) })}
               >
@@ -132,7 +135,7 @@ export function BotaoAcessibilidade() {
               <Button
                 variant="outline"
                 size="icon"
-                aria-label="Aumentar tamanho do texto"
+                aria-label={t.aumentarTexto}
                 className="min-h-11 min-w-11"
                 onClick={() => atualizar({ escala: Math.min(1.4, +(prefs.escala + 0.1).toFixed(2)) })}
               >
@@ -159,7 +162,7 @@ export function BotaoAcessibilidade() {
                   <Icone className="size-4 shrink-0" />
                   <span className="min-w-0 flex-1 truncate">{rotulo}</span>
                   <span className="shrink-0 text-xs font-semibold opacity-80">
-                    {prefs[chave] ? "ativo" : "off"}
+                    {prefs[chave] ? t.ativo : t.inativo}
                   </span>
                 </button>
               </li>
@@ -179,14 +182,14 @@ export function BotaoAcessibilidade() {
               }
             }}
           >
-            <RotateCcw className="size-4" /> Restaurar padrão
+            <RotateCcw className="size-4" /> {t.restaurarPadrao}
           </Button>
         </div>
       )}
 
       <Button
         size="icon"
-        aria-label="Abrir opções de acessibilidade"
+        aria-label={t.abrirOpcoes}
         aria-expanded={aberto}
         className="ml-auto flex size-14 rounded-full shadow-xl"
         onClick={() => setAberto((v) => !v)}
