@@ -68,12 +68,12 @@ function Inicio() {
               Instituto IDEX · desde 2007
             </span>
             {/* Título e descrição lado a lado em telas grandes; empilhados no celular */}
-            <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-14">
+            <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-24">
               <AnimatedText
                 as="h1"
                 text={"Formamos pessoas.\nDesenvolvemos talentos.\nCriamos oportunidades."}
                 delay={150}
-                className="texto-heroi w-fit max-w-2xl rounded-2xl bg-ink/70 px-5 py-4 text-[clamp(1.4rem,3.6vw,2.3rem)] leading-[1.16] text-balance text-ink-foreground backdrop-blur-sm sm:px-6 sm:py-5 lg:text-4xl"
+                className="texto-heroi w-fit max-w-2xl rounded-2xl bg-ink/70 px-5 py-4 text-[clamp(1.4rem,3.6vw,2.3rem)] leading-[1.3] text-balance text-ink-foreground backdrop-blur-sm sm:px-6 sm:py-5 lg:text-4xl"
               />
               {/* Parágrafo e botões ficam ao lado do título em telas grandes */}
               <div className="flex flex-col items-start gap-5">
