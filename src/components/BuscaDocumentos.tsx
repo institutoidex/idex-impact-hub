@@ -16,6 +16,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { MarcaPortugues } from "@/components/AvisoPortugues";
 
 // Rótulos das categorias agora vêm do catálogo `busca.categorias` (ver uso abaixo).
 
@@ -112,7 +113,10 @@ export function BuscaDocumentos({ expandida = false }: { expandida?: boolean }) 
                 >
                   <FileText className="size-4 text-secondary" aria-hidden />
                   <span className="flex-1">
-                    <span className="block">{docTraduzido.titulo}</span>
+                    <span className="block">
+                      {docTraduzido.titulo}
+                      {docTraduzido.emPortugues && <MarcaPortugues />}
+                    </span>
                     <span className="block text-xs text-muted-foreground">
                       {categorias[doc.categoria] ?? doc.categoria}
                       {doc.ano ? ` · ${doc.ano}` : ""}

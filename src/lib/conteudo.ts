@@ -5,6 +5,7 @@ import type { DocumentoRow, PastaRow } from "./db-types";
 import { useLocale } from "@/i18n/mensagens";
 import { traduzir } from "@/i18n/traduzir";
 import { anoDe } from "@/i18n/formatar";
+import { LOCALE_PADRAO } from "@/i18n/locales";
 
 /**
  * Camada de conteúdo: lê do banco quando disponível e cai para os dados
@@ -17,7 +18,9 @@ import { anoDe } from "@/i18n/formatar";
 export function useProjetos(): (Projeto & { emPortugues: boolean })[] {
   const locale = useLocale();
   const { data } = useQuery(projetosQuery);
-  if (!data?.length) return PROJETOS_ESTATICOS.map((p) => ({ ...p, emPortugues: false }));
+  // dados estáticos só existem em português: em en/es o aviso precisa aparecer
+  if (!data?.length)
+    return PROJETOS_ESTATICOS.map((p) => ({ ...p, emPortugues: locale !== LOCALE_PADRAO }));
   return data.map((p) => {
     const t = traduzir(p, locale, ["titulo", "resumo", "descricao"]);
     const base = PROJETOS_ESTATICOS.find((e) => e.slug === p.slug);

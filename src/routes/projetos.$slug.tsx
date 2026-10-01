@@ -13,6 +13,7 @@ import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { seoPagina } from "@/i18n/seo";
 import { traduzir } from "@/i18n/traduzir";
 import { projetos as catalogoProjetos } from "@/i18n/catalogos/projetos";
+import { AvisoPortugues, MarcaPortugues } from "@/components/AvisoPortugues";
 
 /** Projeto carregado, com as traduções editoriais (jsonb) usadas por traduzir(). */
 type ProjetoDados = Projeto & { traducoes?: unknown };
@@ -123,6 +124,7 @@ function ProjetoDetalhe() {
 
       {/* Texto do projeto — mesma leitura simples das notícias */}
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+        {traduzido.emPortugues && <AvisoPortugues className="mb-4" />}
         <Reveal>
           {traduzido.descricao ? (
             <div className="space-y-4 text-lg leading-relaxed text-muted-foreground">

@@ -13,6 +13,7 @@ import { normalizarLocale } from "@/i18n/locales";
 import { useMensagens } from "@/i18n/mensagens";
 import { seoPagina } from "@/i18n/seo";
 import { projetos as catalogoProjetos } from "@/i18n/catalogos/projetos";
+import { AvisoPortugues, MarcaPortugues } from "@/components/AvisoPortugues";
 
 const POR_PAGINA = 6;
 
@@ -140,6 +141,7 @@ function ProjetosIndex() {
                     </Link>
                   </h2>
                   <p className="mt-3 text-sm text-muted-foreground">{p.resumo}</p>
+                  {p.emPortugues && <AvisoPortugues className="mt-2" />}
                   <Link
                     to="/projetos/$slug"
                     params={{ slug: p.slug }}
