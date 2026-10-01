@@ -47,6 +47,8 @@ import {
   nomeLimpo,
   urlDownload,
 } from "@/lib/storage";
+import { useMensagens } from "@/i18n/mensagens";
+import { midia } from "@/i18n/catalogos/midia";
 
 /**
  * Biblioteca de imagens do site organizada em pastas e subpastas.
@@ -54,6 +56,7 @@ import {
  * mover arquivos entre pastas, copiar o endereço e apagar.
  */
 export function BibliotecaMidia() {
+  const t = useMensagens(midia).biblioteca;
   const queryClient = useQueryClient();
   const inputArquivo = useRef<HTMLInputElement>(null);
 
@@ -124,13 +127,13 @@ export function BibliotecaMidia() {
           await enviarImagem(arquivo, pasta || "site");
           enviadas++;
         } catch (e) {
-          toast.error((e as Error).message || `Não foi possível enviar ${arquivo.name}.`);
+          toast.error((e as Error).message || t.erroEnviarArquivo(arquivo.name));
         }
       }
       await recarregar();
-      if (enviadas) toast.success(`${enviadas} imagem(ns) enviada(s) para ${pasta || "a biblioteca"}.`);
+      if (enviadas) toast.success(t.enviadasParaPasta(enviadas, pasta || t.bibliotecaRaiz));
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível enviar.");
+      toast.error((e as Error).message || t.erroEnviar);
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
@@ -143,9 +146,9 @@ export function BibliotecaMidia() {
       await recarregar();
       setNomePasta("");
       setCriandoPasta(false);
-      toast.success("Pasta criada.");
+      toast.success(t.pastaCriada);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível criar a pasta.");
+      toast.error((e as Error).message || t.erroCriarPasta);
     }
   }
 
@@ -153,9 +156,9 @@ export function BibliotecaMidia() {
     try {
       await moverMidia(caminhoArquivo, destino === "__raiz__" ? "" : destino);
       await recarregar();
-      toast.success("Arquivo movido.");
+      toast.success(t.arquivoMovido);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível mover.");
+      toast.error((e as Error).message || t.erroMover);
     }
   }
 
@@ -167,19 +170,19 @@ export function BibliotecaMidia() {
         for (const c of selecionados) await apagarMidia(c);
         setSelecionados([]);
         await recarregar();
-        toast.success("Arquivos apagados.");
+        toast.success(t.arquivosApagados);
       } else if (aExcluir.tipo === "pasta") {
         await apagarPastaMidia(aExcluir.caminho);
         await recarregar();
-        toast.success("Pasta apagada.");
+        toast.success(t.pastaApagada);
       } else {
         await apagarMidia(aExcluir.caminho);
         setSelecionados((s) => s.filter((c) => c !== aExcluir.caminho));
         await recarregar();
-        toast.success("Arquivo apagado.");
+        toast.success(t.arquivoApagado);
       }
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível apagar.");
+      toast.error((e as Error).message || t.erroApagar);
     } finally {
       setProcessando(false);
       setAExcluir(null);
@@ -188,7 +191,7 @@ export function BibliotecaMidia() {
 
   async function copiar(url: string) {
     await navigator.clipboard.writeText(url);
-    toast.success("Endereço copiado.");
+    toast.success(t.enderecoCopiado);
   }
 
   /** Marca ou desmarca um arquivo da seleção. */
@@ -205,9 +208,9 @@ export function BibliotecaMidia() {
       for (const c of selecionados) await moverMidia(c, destino === "__raiz__" ? "" : destino);
       setSelecionados([]);
       await recarregar();
-      toast.success("Arquivos movidos.");
+      toast.success(t.arquivosMovidos);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível mover.");
+      toast.error((e as Error).message || t.erroMover);
     } finally {
       setProcessando(false);
     }
@@ -219,7 +222,7 @@ export function BibliotecaMidia() {
       .filter((a) => selecionados.includes(a.caminho))
       .map((a) => a.url);
     await navigator.clipboard.writeText(urls.join("\n"));
-    toast.success(`${urls.length} endereço(s) copiado(s).`);
+    toast.success(t.enderecosCopiados(urls.length));
   }
 
   /** Extrai só as imagens de um evento de arraste. */

@@ -167,7 +167,7 @@ function ItemPasta({
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3">
         <button
           type="button"
-          aria-label={aberta ? "Recolher" : "Expandir"}
+          aria-label={aberta ? t.recolher : t.expandir}
           className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-muted"
           onClick={() => setAberta((v) => !v)}
         >
@@ -184,14 +184,14 @@ function ItemPasta({
         <Folder className="size-4 text-secondary" aria-hidden />
         <span className="font-display">{no.nome}</span>
         <span className="text-xs text-muted-foreground">
-          /{no.slug} · {arquivos.length} {arquivos.length === 1 ? "arquivo" : "arquivos"}
+          /{no.slug} · {arquivos.length} {arquivos.length === 1 ? t.arquivo : t.arquivos}
         </span>
 
         <div className="ml-auto flex items-center gap-1">
           <Button
             size="icon"
             variant="ghost"
-            title="Novo documento nesta pasta"
+            title={t.novoDocumento}
             onClick={() => aoAbrirDocumento(no.id)}
           >
             <FilePlus2 className="size-4" />
@@ -199,15 +199,15 @@ function ItemPasta({
           <Button
             size="icon"
             variant="ghost"
-            title="Nova subpasta"
+            title={t.novaSubpasta}
             onClick={() => aoCriarSub(no.id)}
           >
             <FolderPlus className="size-4" />
           </Button>
-          <Button size="icon" variant="ghost" title="Editar" onClick={() => aoEditar(no)}>
+          <Button size="icon" variant="ghost" title={t.editar} onClick={() => aoEditar(no)}>
             <Pencil className="size-4" />
           </Button>
-          <Button size="icon" variant="ghost" title="Apagar" onClick={() => aoExcluir(no)}>
+          <Button size="icon" variant="ghost" title={t.apagar} onClick={() => aoExcluir(no)}>
             <Trash2 className="size-4" />
           </Button>
         </div>
@@ -218,7 +218,7 @@ function ItemPasta({
           {arquivos.map((d) => (
             <p key={d.id} className="text-sm text-muted-foreground">
               {d.titulo}
-              {!d.publicado && " · rascunho"}
+              {!d.publicado && ` · ${t.rascunho}`}
             </p>
           ))}
           <ul className="space-y-2">
@@ -231,6 +231,7 @@ function ItemPasta({
                 aoEditar={aoEditar}
                 aoExcluir={aoExcluir}
                 aoAbrirDocumento={aoAbrirDocumento}
+                t={t}
               />
             ))}
           </ul>

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { enviarImagem, validarImagem } from "@/lib/storage";
+import { useMensagens } from "@/i18n/mensagens";
+import { midia } from "@/i18n/catalogos/midia";
 
 /**
  * Campo de capa: envia a imagem para o armazenamento, mostra a pré-visualização
@@ -14,13 +16,14 @@ export function UploadCapa({
   valor,
   aoMudar,
   pasta,
-  rotulo = "Imagem de capa",
+  rotulo,
 }: {
   valor: string | null;
   aoMudar: (url: string | null) => void;
   pasta: string;
   rotulo?: string;
 }) {
+  const t = useMensagens(midia).upload;
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -35,9 +38,9 @@ export function UploadCapa({
     try {
       const url = await enviarImagem(arquivo, pasta);
       aoMudar(url);
-      toast.success("Imagem enviada.");
+      toast.success(t.imagemEnviada);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível enviar a imagem.");
+      toast.error((e as Error).message || t.erroEnviar);
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
@@ -46,7 +49,7 @@ export function UploadCapa({
 
   return (
     <div className="space-y-3">
-      <Label>{rotulo}</Label>
+      <Label>{rotulo ?? t.imagemCapa}</Label>
 
       {/* Pré-visualização de como a capa vai aparecer no site */}
       <div className="overflow-hidden rounded-2xl border border-dashed border-border bg-muted/50">
@@ -55,12 +58,12 @@ export function UploadCapa({
                   loading="lazy"
                   decoding="async"
             src={valor}
-            alt="Pré-visualização da capa"
+            alt={t.previa}
             className="aspect-[16/9] w-full object-cover"
           />
         ) : (
           <div className="flex aspect-[16/9] w-full items-center justify-center text-sm text-muted-foreground">
-            Nenhuma imagem escolhida
+            {t.nenhumaImagem}
           </div>
         )}
       </div>
@@ -81,7 +84,7 @@ export function UploadCapa({
           onClick={() => inputArquivo.current?.click()}
         >
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
-          {enviando ? "Enviando..." : valor ? "Trocar imagem" : "Enviar imagem"}
+          {enviando ? t.enviando : valor ? t.trocarImagem : t.enviarImagem}
         </Button>
         {valor && (
           <Button
@@ -90,13 +93,13 @@ export function UploadCapa({
             className="rounded-full"
             onClick={() => aoMudar(null)}
           >
-            <Trash2 className="size-4" /> Remover
+            <Trash2 className="size-4" /> {t.remover}
           </Button>
         )}
       </div>
 
       <Input
-        placeholder="ou cole uma URL: https://..."
+        placeholder={t.colarUrl}
         value={valor ?? ""}
         onChange={(e) => aoMudar(e.target.value || null)}
       />
@@ -109,6 +112,8 @@ export function UploadCapa({
  * enviadas e permite copiar a URL para usar dentro do texto.
  */
 export function UploadMidia({ pasta }: { pasta: string }) {
+  const m = useMensagens(midia);
+  const t = m.upload;
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
@@ -126,9 +131,9 @@ export function UploadMidia({ pasta }: { pasta: string }) {
         const url = await enviarImagem(arquivo, `${pasta}/midia`);
         setUrls((atuais) => [...atuais, url]);
       }
-      toast.success("Mídia enviada.");
+      toast.success(t.midiaEnviada);
     } catch (e) {
-      toast.error((e as Error).message || "Não foi possível enviar a mídia.");
+      toast.error((e as Error).message || t.erroEnviarMidia);
     } finally {
       setEnviando(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
@@ -137,14 +142,14 @@ export function UploadMidia({ pasta }: { pasta: string }) {
 
   async function copiar(url: string) {
     await navigator.clipboard.writeText(url);
-    toast.success("Endereço copiado.");
+    toast.success(m.biblioteca.enderecoCopiado);
   }
 
   return (
     <div className="space-y-3">
-      <Label>Mídia adicional</Label>
+      <Label>{t.midiaAdicional}</Label>
       <p className="text-xs text-muted-foreground">
-        Fotos extras para usar no texto. Depois de enviar, copie o endereço da imagem.
+        {t.midiaDica}
       </p>
 
       {urls.length > 0 && (
@@ -155,7 +160,7 @@ export function UploadMidia({ pasta }: { pasta: string }) {
                   loading="lazy"
                   decoding="async"
                 src={url}
-                alt="Mídia enviada"
+                alt={t.midiaAlt}
                 className="aspect-square w-full rounded-xl object-cover"
               />
               <Button
@@ -188,7 +193,7 @@ export function UploadMidia({ pasta }: { pasta: string }) {
         onClick={() => inputArquivo.current?.click()}
       >
         {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
-        {enviando ? "Enviando..." : "Enviar fotos"}
+        {enviando ? t.enviando : t.enviarFotos}
       </Button>
     </div>
   );
