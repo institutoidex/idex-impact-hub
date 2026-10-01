@@ -46,7 +46,7 @@ export const home = definirMensagens(
   {
     "en-US": {
       seo: {
-        titulo: "Instituto IDEX — sport, culture and community since 2007",
+        titulo: "Instituto IDEX — sports, culture and community since 2007",
         descricao:
           "Instituto IDEX has worked since 2007 across six social fronts: education, culture, sports, environment, business and health.",
         ogTitulo: "Instituto IDEX — social development since 2007",
@@ -54,17 +54,17 @@ export const home = definirMensagens(
       },
       hero: {
         selo: "Instituto IDEX · since 2007",
-        titulo: "We form people.\nWe develop talent.\nWe create opportunities.",
+        titulo: "We help people grow.\nWe develop talent.\nWe create opportunities.",
         texto:
-          "Sport connects formation, development and new opportunities for children and young people, on and off the field.",
+          "Through sports, children and young people learn, grow, and discover new opportunities on and off the field.",
         quero: "I want to help",
         verNoticias: "See news",
       },
       destaque: {
         selo: "Day to day",
-        titulo: "Sport that brings us together",
+        titulo: "Sports that bring us together",
         texto:
-          "Football as a path to form, develop talent, broaden horizons and create new opportunities on and off the field.",
+          "Soccer as a path to help kids grow, develop talent, broaden horizons and create new opportunities both on and off the field.",
         cta: "I want to support",
       },
       noticias: {
@@ -76,7 +76,7 @@ export const home = definirMensagens(
       },
       galeria: {
         titulo: "Our everyday life in photos",
-        texto: "Records of Talento Brasil's trainings, games and celebrations.",
+        texto: "Photos from Talento Brasil's training sessions, games, and celebrations.",
       },
       cta: {
         titulo: "Come join us",
@@ -97,7 +97,7 @@ export const home = definirMensagens(
         selo: "Instituto IDEX · desde 2007",
         titulo: "Formamos personas.\nDesarrollamos talentos.\nCreamos oportunidades.",
         texto:
-          "El deporte conecta formación, desarrollo y nuevas oportunidades para niños y jóvenes, dentro y fuera de la cancha.",
+          "El deporte conecta formación, desarrollo y nuevas oportunidades para niños y jóvenes, dentro y fuera del campo.",
         quero: "Quiero ayudar",
         verNoticias: "Ver noticias",
       },

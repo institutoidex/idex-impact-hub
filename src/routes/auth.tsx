@@ -38,6 +38,7 @@ function Login() {
   const { motivo } = Route.useSearch();
   const { sessao, carregando } = useSessao();
   const m = useMensagens(auth);
+  const locale = useLocale();
   const [enviando, setEnviando] = useState(false);
   // Alterna entre login e pedido de redefinição de senha (não há cadastro)
   const [modo, setModo] = useState<"login" | "recuperar">("login");

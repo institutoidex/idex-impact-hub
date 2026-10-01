@@ -172,7 +172,7 @@ export const quemSomos = definirMensagens(
         paragrafos: [
           "A lo largo de los años, el Instituto desarrolló y perfeccionó una metodología propia de formación deportiva, aplicada en diferentes ciudades y realidades sociales. Son miles los niños y jóvenes atendidos por programas que utilizan el fútbol como herramienta de desarrollo humano, inclusión, disciplina, convivencia y evolución deportiva.",
           "Esa experiencia acumulada transformó al IDEX en una institución con sólido know-how en la formación de jugadores. Muchos de los jóvenes que pasaron por sus programas siguieron avanzando en el fútbol, participando en competiciones, procesos de evaluación, intercambios deportivos y oportunidades en otros estados y países.",
-          "La actuación del Instituto acompaña diferentes etapas de la trayectoria del atleta, desde la iniciación deportiva hasta la cualificación, evaluación y ampliación de oportunidades. Cada programa está pensado para contribuir con la evolución del participante dentro y fuera de la cancha.",
+          "La actuación del Instituto acompaña diferentes etapas de la trayectoria del atleta, desde la iniciación deportiva hasta la cualificación, evaluación y ampliación de oportunidades. Cada programa está pensado para contribuir con la evolución del participante dentro y fuera del campo.",
           "Hoy, el IDEX conecta formación, competición, evaluación, intercambio y oportunidad, creando caminos para que niños y jóvenes puedan desarrollar su potencial y construir nuevas perspectivas a través del deporte.",
         ],
       },
