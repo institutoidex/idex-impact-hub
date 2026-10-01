@@ -18,7 +18,7 @@ const CLASSES_ACAO: Record<string, string> = {
 };
 
 /** Mostra um valor do banco de forma legível e curta. */
-function valorLegivel(v: unknown, m: ReturnType<typeof useMensagens<typeof admin>>) {
+function valorLegivel(v: unknown, m: (typeof admin)["pt-BR"]) {
   if (v === null || v === undefined || v === "") return m.historico.vazioValor;
   if (typeof v === "boolean") return v ? m.historico.sim : m.historico.nao;
   const texto = typeof v === "string" ? v : JSON.stringify(v);
