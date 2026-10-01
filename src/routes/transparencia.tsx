@@ -28,10 +28,13 @@ import {
   documentosDaPasta,
   idsDescendentes,
   montarArvore,
-  PASTAS_BASE,
+  pastasBasePorLocale,
   type NoPasta,
 } from "@/lib/pastas";
-import type { DocumentoRow } from "@/lib/db-types";
+import { normalizarLocale } from "@/i18n/locales";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { seoPagina } from "@/i18n/seo";
+import { transparencia as catalogoTransparencia } from "@/i18n/catalogos/transparencia";
 
 // Parâmetros da URL: pasta aberta e documento a destacar (busca do cabeçalho).
 type BuscaTransparencia = { pasta?: string; doc?: string };
@@ -41,18 +44,19 @@ export const Route = createFileRoute("/transparencia")({
     pasta: typeof search['pasta'] === "string" ? search['pasta'] : "",
     doc: typeof search['doc'] === "string" ? search['doc'] : "",
   }),
-  head: () => ({
-    meta: [
-      { title: "Transparência — Instituto IDEX" },
-      {
-        name: "description",
-        content:
-          "Documentos, relatórios, projetos e prestação de contas do Instituto IDEX, organizados por pastas.",
-      },
-      { property: "og:title", content: "Transparência — Instituto IDEX" },
-      { property: "og:description", content: "Documentos e prestação de contas do instituto." },
-    ],
-  }),
+  head: ({ match }) => {
+    const t = catalogoTransparencia[normalizarLocale(match.search.lang)];
+    const s = seoPagina({
+      lang: match.search.lang,
+      caminho: "/transparencia",
+      titulo: t.seo.titulo,
+      descricao: t.seo.descricao,
+    });
+    return {
+      meta: [...s.meta, { property: "og:description", content: t.seo.ogDescricao }],
+      links: s.links,
+    };
+  },
   component: Transparencia,
 });
 
@@ -69,6 +73,8 @@ function iconeDaPasta(nome: string): LucideIcon {
 }
 
 function Transparencia() {
+  const t = useMensagens(catalogoTransparencia);
+  const locale = useLocale();
   const pastas = usePastas();
   const documentos = useListaDocumentos();
   const { pasta: slugPasta, doc: docBuscado } = Route.useSearch();
@@ -84,6 +90,7 @@ function Transparencia() {
     ? (arvore.length ? (acharNo(arvore, pastaAtual.id)?.filhas ?? []) : [])
     : arvore;
   const arquivos = documentosDaPasta(documentos, pastaAtual?.id ?? null);
+  const pastasBase = pastasBasePorLocale(locale);
 
   /** Contagem de documentos por pasta, já somando as subpastas. */
   const contagem = useMemo(() => {
@@ -121,13 +128,9 @@ function Transparencia() {
   return (
     <>
       {/* Variante editorial: sóbria, combinando com a página de documentos */}
-      <PageHero
-        variante="editorial"
-        titulo="Conta aberta com quem apoia"
-        descricao="Os documentos do instituto ficam organizados em pastas. Busque pelo nome ou navegue pelas pastas para baixar os arquivos."
-      >
+      <PageHero variante="editorial" titulo={t.hero.titulo} descricao={t.hero.descricao}>
         <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-          Transparência
+          {t.etiqueta}
         </span>
       </PageHero>
 
@@ -138,19 +141,17 @@ function Transparencia() {
             <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 sm:p-8">
               <span className="absolute inset-x-0 top-0 h-1 bg-brand-green" aria-hidden />
               <h2 className="font-display text-2xl sm:text-3xl">
-                {pastaAtual ? `Buscar em ${pastaAtual.nome}` : "Buscar em todos os documentos"}
+                {pastaAtual ? t.buscarEm(pastaAtual.nome) : t.buscarEmTodas}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {pastaAtual
-                  ? "A busca considera os arquivos desta pasta."
-                  : `Procure pelo nome do arquivo em ${documentos.length} documento(s) publicados.`}
+                {pastaAtual ? t.buscaConsideraPasta : t.buscaConsideraTodas(documentos.length)}
               </p>
               <div className="mt-5 [&>div]:max-w-none">
                 <CampoBusca
                   valor={termoBusca}
                   aoMudar={setTermoBusca}
-                  placeholder="Ex.: relatório de atividades, estatuto, balanço..."
-                  rotulo="Buscar documentos"
+                  placeholder={t.buscaPlaceholder}
+                  rotulo={t.buscaRotulo}
                 />
               </div>
             </div>
@@ -168,7 +169,7 @@ function Transparencia() {
             className="flex w-full items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold lg:hidden"
           >
             <SlidersHorizontal className="size-4 text-primary" aria-hidden />
-            {pastaAtual ? pastaAtual.nome : "Todas as pastas"}
+            {pastaAtual ? pastaAtual.nome : t.todasAsPastas}
             <ChevronDown
               className={cn("ml-auto size-4 transition-transform", menuAberto && "rotate-180")}
               aria-hidden
@@ -183,7 +184,7 @@ function Transparencia() {
           >
             <div className="mt-3 lg:mt-0 lg:sticky lg:top-24">
               <p className="mb-3 hidden text-xs font-semibold tracking-widest text-muted-foreground uppercase lg:block">
-                Pastas
+                {t.pastasRotulo}
               </p>
               <nav className="space-y-1 rounded-2xl border border-border bg-card p-2 lg:border-0 lg:bg-transparent lg:p-0">
                 <button
@@ -196,7 +197,7 @@ function Transparencia() {
                       : "hover:bg-muted",
                   )}
                 >
-                  <FolderOpen className="size-4" aria-hidden /> Todas as pastas
+                  <FolderOpen className="size-4" aria-hidden /> {t.todasAsPastas}
                   <span className="ml-auto text-xs opacity-80">{documentos.length}</span>
                 </button>
 
@@ -209,9 +210,10 @@ function Transparencia() {
                         caminhoIds={caminho.map((c) => c.id)}
                         contagem={contagem}
                         aoAbrir={abrir}
+                        t={t}
                       />
                     ))
-                  : PASTAS_BASE.map((p) => (
+                  : pastasBase.map((p) => (
                       <span
                         key={p.slug}
                         className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground"
@@ -229,7 +231,7 @@ function Transparencia() {
           <Reveal>
             <nav className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
               <button type="button" className="hover:text-primary" onClick={() => abrir(null)}>
-                Transparência
+                {t.etiqueta}
               </button>
               {caminho.map((p) => (
                 <span key={p.id} className="flex items-center gap-1">
@@ -245,9 +247,11 @@ function Transparencia() {
               ))}
             </nav>
             <div className="mt-2 flex flex-wrap items-baseline gap-3">
-              <h2 className="font-display text-3xl">{pastaAtual?.nome ?? "Todos os documentos"}</h2>
+              <h2 className="font-display text-3xl">
+                {pastaAtual?.nome ?? t.todosOsDocumentos}
+              </h2>
               <span className="text-sm text-muted-foreground">
-                {documentosVisiveis.length} arquivo(s)
+                {t.arquivos(documentosVisiveis.length)}
               </span>
             </div>
             <div className="mt-3 h-1 w-16 bg-brand-green" aria-hidden />
@@ -282,7 +286,7 @@ function Transparencia() {
                       <span className="min-w-0">
                         <span className="font-display block truncate">{sub.nome}</span>
                         <span className="text-sm text-muted-foreground">
-                          {total} documento(s)
+                          {t.documentos(total)}
                         </span>
                       </span>
                       <ChevronRight
@@ -298,7 +302,7 @@ function Transparencia() {
 
           {/* Arquivos da pasta */}
           <div className="mt-8 space-y-3">
-            {documentosVisiveis.map((doc: DocumentoRow, i) => (
+            {documentosVisiveis.map((doc, i) => (
               <Reveal key={doc.id} delay={Math.min(i, 6) * 40}>
                 <div
                   id={`doc-${doc.id}`}
@@ -317,7 +321,7 @@ function Transparencia() {
                   <div className="min-w-0 flex-1">
                     <p className="font-display truncate">{doc.titulo}</p>
                     <p className="text-sm text-muted-foreground">
-                      {doc.ano ? `Ano ${doc.ano}` : "Documento publicado"}
+                      {doc.ano ? t.ano(doc.ano) : t.documentoPublicado}
                     </p>
                   </div>
                   {doc.arquivo_url &&
@@ -338,14 +342,14 @@ function Transparencia() {
                             rel="noreferrer"
                             className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
                           >
-                            <Eye className="size-3.5" aria-hidden /> Visualizar
+                            <Eye className="size-3.5" aria-hidden /> {t.visualizar}
                           </a>
                           <a
                             href={urlBaixar}
                             download={nomeArquivo}
                             className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                           >
-                            <Download className="size-3.5" aria-hidden /> Baixar
+                            <Download className="size-3.5" aria-hidden /> {t.baixar}
                           </a>
                         </div>
                       );
@@ -356,14 +360,8 @@ function Transparencia() {
 
             {documentosVisiveis.length === 0 && (
               <PlaceholderBox
-                titulo={
-                  termoNormalizado ? "Nenhum documento encontrado" : "Pasta ainda sem arquivos"
-                }
-                nota={
-                  termoNormalizado
-                    ? "Tente outro termo ou mude de pasta."
-                    : "Os PDFs oficiais entram aqui quando enviados pelo painel."
-                }
+                titulo={termoNormalizado ? t.vazioComBusca.titulo : t.vazioSemArquivos.titulo}
+                nota={termoNormalizado ? t.vazioComBusca.nota : t.vazioSemArquivos.nota}
               />
             )}
           </div>
@@ -380,12 +378,14 @@ function ItemArvore({
   caminhoIds,
   contagem,
   aoAbrir,
+  t,
 }: {
   no: NoPasta;
   atual: string | null;
   caminhoIds: string[];
   contagem: Map<string, number>;
   aoAbrir: (slug: string) => void;
+  t: ReturnType<typeof useMensagens<typeof catalogoTransparencia["pt-BR"]>>;
 }) {
   const ativo = atual === no.id;
   const noCaminho = caminhoIds.includes(no.id);
@@ -414,7 +414,7 @@ function ItemArvore({
         {no.filhas.length > 0 ? (
           <button
             type="button"
-            aria-label={aberto ? `Recolher ${no.nome}` : `Expandir ${no.nome}`}
+            aria-label={aberto ? t.recolherPasta(no.nome) : t.expandirPasta(no.nome)}
             aria-expanded={aberto}
             onClick={() => setAberto((v) => !v)}
             className="grid size-7 shrink-0 place-items-center rounded-md"
@@ -450,6 +450,7 @@ function ItemArvore({
           caminhoIds={caminhoIds}
           contagem={contagem}
           aoAbrir={aoAbrir}
+          t={t}
         />
       ))}
     </div>

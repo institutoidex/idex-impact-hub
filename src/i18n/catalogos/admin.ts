@@ -76,6 +76,7 @@ export const admin = definirMensagens(
       marcarLida: "Marcar como lida",
       responder: "Responder",
       apagar: "Apagar",
+      mensagemDe: (nome: string) => `Mensagem de ${nome}`,
     },
     historico: {
       descricaoAba:
@@ -214,6 +215,7 @@ export const admin = definirMensagens(
         marcarLida: "Mark as read",
         responder: "Reply",
         apagar: "Delete",
+        mensagemDe: (nome: string) => `Message from ${nome}`,
       },
       historico: {
         descricaoAba:
@@ -351,6 +353,7 @@ export const admin = definirMensagens(
         marcarLida: "Marcar como leído",
         responder: "Responder",
         apagar: "Eliminar",
+        mensagemDe: (nome: string) => `Mensaje de ${nome}`,
       },
       historico: {
         descricaoAba:
