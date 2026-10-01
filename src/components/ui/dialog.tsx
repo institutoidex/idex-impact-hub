@@ -10,7 +10,7 @@ import { useMensagens } from "@/i18n/mensagens";
 import { comum } from "@/i18n/catalogos/comum";
 
 /** Texto do botão fechar: usa closeLabel se vier, senão o catálogo comum. */
-function RotuloFechar({ closeLabel }: { closeLabel?: string }) {
+function RotuloFechar({ closeLabel }: { closeLabel?: string | undefined }) {
   const t = useMensagens(comum);
   return <span className="sr-only">{closeLabel ?? t.fechar}</span>;
 }
