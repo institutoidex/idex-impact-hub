@@ -43,7 +43,7 @@ function ProgramaEsportivo() {
 
   const programas = t.programas.map((p, i) => ({
     ...p,
-    numero: NUMEROS[i],
+    numero: NUMEROS[i] ?? "",
     logo: LOGOS[i] ?? "",
   }));
 
