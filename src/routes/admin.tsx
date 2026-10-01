@@ -16,12 +16,11 @@ import {
   MailOpen,
 } from "lucide-react";
 
-import { formatarDataHora } from "@/i18n/formatar";
+import { formatarData, formatarDataHora } from "@/i18n/formatar";
 import { useSessao } from "@/hooks/useSessao";
 import { supabase } from "@/lib/supabase";
 import {
   documentosAdminQuery,
-  formatarData,
   mensagensQuery,
   midiaQuery,
   noticiasAdminQuery,
@@ -53,6 +52,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { DocumentoRow, NoticiaRow } from "@/lib/db-types";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
+import { admin } from "@/i18n/catalogos/admin";
+import { normalizarLocale } from "@/i18n/locales";
 
 export const Route = createFileRoute("/admin")({
   ssr: false, // a sessão fica no navegador; nada a renderizar no servidor
@@ -71,15 +73,18 @@ export const Route = createFileRoute("/admin")({
       throw redirect({ to: "/auth", search: { motivo: "restrito" }, replace: true });
     }
   },
-  head: () => ({
-    meta: [
-      { title: "Painel — Instituto IDEX" },
-      { name: "description", content: "Painel interno do Instituto IDEX." },
-      { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Painel — Instituto IDEX" },
-      { property: "og:description", content: "Painel interno do instituto." },
-    ],
-  }),
+  head: ({ match }) => {
+    const m = admin[normalizarLocale((match.search as Record<string, unknown>)["lang"])];
+    return {
+      meta: [
+        { title: m.seo.titulo },
+        { name: "description", content: m.seo.descricao },
+        { name: "robots", content: "noindex" },
+        { property: "og:title", content: m.seo.titulo },
+        { property: "og:description", content: m.seo.descricao },
+      ],
+    };
+  },
   component: PainelProtegido,
 });
 
@@ -99,6 +104,8 @@ type Exclusao = {
 };
 
 function Painel() {
+  const t = useMensagens(admin);
+  const locale = useLocale();
   const { sessao } = useSessao();
   const logado = Boolean(sessao);
   const mensagens = useQuery({ ...mensagensQuery, enabled: logado });
@@ -140,30 +147,30 @@ function Painel() {
       <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
         <div>
           <span className="text-xs font-semibold tracking-widest text-primary uppercase">
-            Painel interno
+            {t.pagina.rotulo}
           </span>
-          <h1 className="mt-2 text-4xl">Gerenciar o site</h1>
+          <h1 className="mt-2 text-4xl">{t.pagina.titulo}</h1>
         </div>
 
         <Tabs defaultValue="visao" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1">
           <TabsTrigger value="visao">
-            <Gauge className="size-4" /> Visão geral
+            <Gauge className="size-4" /> {t.abas.visao}
           </TabsTrigger>
           <TabsTrigger value="noticias">
-            <Newspaper className="size-4" /> Notícias
+            <Newspaper className="size-4" /> {t.abas.noticias}
           </TabsTrigger>
           <TabsTrigger value="documentos">
-            <FileText className="size-4" /> Documentos
+            <FileText className="size-4" /> {t.abas.documentos}
           </TabsTrigger>
           <TabsTrigger value="pastas">
-            <FolderTree className="size-4" /> Pastas
+            <FolderTree className="size-4" /> {t.abas.pastas}
           </TabsTrigger>
           <TabsTrigger value="midia">
-            <Images className="size-4" /> Imagens
+            <Images className="size-4" /> {t.abas.midia}
           </TabsTrigger>
           <TabsTrigger value="mensagens">
-            <Mail className="size-4" /> Mensagens
+            <Mail className="size-4" /> {t.abas.mensagens}
             {naoLidas > 0 && (
               <span className="ml-1 rounded-full bg-primary px-2 text-xs text-primary-foreground">
                 {naoLidas}
@@ -171,7 +178,7 @@ function Painel() {
             )}
           </TabsTrigger>
           <TabsTrigger value="historico">
-            <History className="size-4" /> Histórico
+            <History className="size-4" /> {t.abas.historico}
           </TabsTrigger>
         </TabsList>
 
@@ -179,29 +186,29 @@ function Painel() {
         <TabsContent value="visao" className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Cartao
-              titulo="Notícias"
+              titulo={t.visao.cardNoticias}
               total={noticias.data?.length}
-              detalhe={`${(noticias.data ?? []).filter((n) => n.publicado).length} publicadas`}
+              detalhe={t.visao.publicadas((noticias.data ?? []).filter((n) => n.publicado).length)}
             />
             <Cartao
-              titulo="Documentos"
+              titulo={t.visao.cardDocumentos}
               total={documentos.data?.length}
-              detalhe={`${(documentos.data ?? []).filter((d) => d.publicado).length} no site`}
+              detalhe={t.visao.noSite((documentos.data ?? []).filter((d) => d.publicado).length)}
             />
             <Cartao
-              titulo="Imagens"
+              titulo={t.visao.cardImagens}
               total={midia.data?.length}
-              detalhe="na biblioteca de mídia"
+              detalhe={t.visao.naBiblioteca}
             />
             <Cartao
-              titulo="Mensagens"
+              titulo={t.visao.cardMensagens}
               total={mensagens.data?.length}
-              detalhe={`${naoLidas} sem ler`}
+              detalhe={t.visao.semLer(naoLidas)}
             />
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-lg">Últimas alterações</h2>
+            <h2 className="text-lg">{t.visao.ultimasAlteracoes}</h2>
             <div className="mt-4">
               <Historico limite={5} />
             </div>
@@ -215,13 +222,13 @@ function Painel() {
               className="rounded-full"
               onClick={() => setEditorNoticia({ aberto: true, item: null })}
             >
-              <Plus className="size-4" /> Nova notícia
+              <Plus className="size-4" /> {t.noticias.nova}
             </Button>
           </div>
 
-          {noticias.isLoading && <Vazio texto="Carregando notícias..." />}
-          {noticias.error && <Vazio texto="Não foi possível carregar as notícias." />}
-          {noticias.data?.length === 0 && <Vazio texto="Nenhuma notícia cadastrada ainda." />}
+          {noticias.isLoading && <Vazio texto={t.noticias.carregando} />}
+          {noticias.error && <Vazio texto={t.noticias.erroCarregar} />}
+          {noticias.data?.length === 0 && <Vazio texto={t.noticias.vazio} />}
 
           {noticias.data?.map((n) => (
             <article
@@ -240,7 +247,7 @@ function Painel() {
                 <h2 className="text-lg">{n.titulo}</h2>
                 <p className="text-sm text-muted-foreground">{n.resumo}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {formatarData(n.publicado_em)} · /{n.slug}
+                  {formatarData(n.publicado_em, locale, { day: "2-digit", month: "long", year: "numeric" })} · /{n.slug}
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -249,13 +256,13 @@ function Painel() {
                     checked={n.publicado}
                     onCheckedChange={(v) => publicarNoticia.mutate({ id: n.id, publicado: v })}
                   />
-                  {n.publicado ? "Publicada" : "Rascunho"}
+                  {n.publicado ? t.noticias.publicada : t.noticias.rascunho}
                 </label>
                 <Button
                   size="icon"
                   variant="outline"
                   className="rounded-full"
-                  aria-label={`Editar ${n.titulo}`}
+                  aria-label={t.noticias.editar(n.titulo)}
                   onClick={() => setEditorNoticia({ aberto: true, item: n })}
                 >
                   <Pencil className="size-4" />
@@ -264,7 +271,7 @@ function Painel() {
                   size="icon"
                   variant="outline"
                   className="rounded-full"
-                  aria-label={`Apagar ${n.titulo}`}
+                  aria-label={t.noticias.apagar(n.titulo)}
                   onClick={() => setAExcluir({ tabela: "noticias", id: n.id, titulo: n.titulo })}
                 >
                   <Trash2 className="size-4" />
@@ -284,13 +291,13 @@ function Painel() {
                 setEditorDocumento({ aberto: true, item: null });
               }}
             >
-              <Plus className="size-4" /> Novo documento
+              <Plus className="size-4" /> {t.documentos.novo}
             </Button>
           </div>
 
-          {documentos.isLoading && <Vazio texto="Carregando documentos..." />}
-          {documentos.error && <Vazio texto="Não foi possível carregar os documentos." />}
-          {documentos.data?.length === 0 && <Vazio texto="Nenhum documento cadastrado ainda." />}
+          {documentos.isLoading && <Vazio texto={t.documentos.carregando} />}
+          {documentos.error && <Vazio texto={t.documentos.erroCarregar} />}
+          {documentos.data?.length === 0 && <Vazio texto={t.documentos.vazio} />}
 
           {documentos.data?.map((d) => (
             <article
@@ -302,7 +309,7 @@ function Painel() {
                 <p className="mt-1 text-xs text-muted-foreground">
                   {d.categoria}
                   {d.ano ? ` · ${d.ano}` : ""}
-                  {d.arquivo_url ? "" : " · sem arquivo anexado"}
+                  {d.arquivo_url ? "" : ` · ${t.documentos.semArquivo}`}
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -313,7 +320,7 @@ function Painel() {
                       acoesDocumento.publicar.mutate({ id: d.id, publicado: v })
                     }
                   />
-                  {d.publicado ? "No site" : "Oculto"}
+                  {d.publicado ? t.documentos.noSite : t.documentos.oculto}
                 </label>
                 {d.arquivo_url && (
                   <Button size="icon" variant="outline" className="rounded-full" asChild>
@@ -321,7 +328,7 @@ function Painel() {
                       href={d.arquivo_url}
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`Abrir ${d.titulo}`}
+                      aria-label={t.documentos.abrir(d.titulo)}
                     >
                       <ExternalLink className="size-4" />
                     </a>
@@ -331,7 +338,7 @@ function Painel() {
                   size="icon"
                   variant="outline"
                   className="rounded-full"
-                  aria-label={`Editar ${d.titulo}`}
+                  aria-label={t.documentos.editar(d.titulo)}
                   onClick={() => setEditorDocumento({ aberto: true, item: d })}
                 >
                   <Pencil className="size-4" />
@@ -340,7 +347,7 @@ function Painel() {
                   size="icon"
                   variant="outline"
                   className="rounded-full"
-                  aria-label={`Apagar ${d.titulo}`}
+                  aria-label={t.documentos.apagar(d.titulo)}
                   onClick={() => setAExcluir({ tabela: "documentos", id: d.id, titulo: d.titulo })}
                 >
                   <Trash2 className="size-4" />
@@ -367,9 +374,9 @@ function Painel() {
 
         {/* ---------------- Mensagens ---------------- */}
         <TabsContent value="mensagens" className="mt-6 space-y-4">
-          {mensagens.isLoading && <Vazio texto="Carregando mensagens..." />}
-          {mensagens.error && <Vazio texto="Sem permissão ou tabela ainda não criada." />}
-          {mensagens.data?.length === 0 && <Vazio texto="Nenhuma mensagem recebida ainda." />}
+          {mensagens.isLoading && <Vazio texto={t.mensagens.carregando} />}
+          {mensagens.error && <Vazio texto={t.mensagens.erroCarregar} />}
+          {mensagens.data?.length === 0 && <Vazio texto={t.mensagens.vazio} />}
           {mensagens.data?.map((m) => (
             <article
               key={m.id}
@@ -378,8 +385,8 @@ function Painel() {
               }`}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-lg">{m.assunto || "Sem assunto"}</h2>
-                <span className="text-xs text-muted-foreground">{formatarDataHora(m.criado_em, "pt-BR")}</span>
+                <h2 className="text-lg">{m.assunto || t.mensagens.semAssunto}</h2>
+                <span className="text-xs text-muted-foreground">{formatarDataHora(m.criado_em, locale)}</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {m.nome} — {m.email}
@@ -394,11 +401,11 @@ function Painel() {
                   onClick={() => acoesMensagem.marcarLida.mutate({ id: m.id, lida: !m.lida })}
                 >
                   <MailOpen className="size-4" />
-                  {m.lida ? "Marcar como não lida" : "Marcar como lida"}
+                  {m.lida ? t.mensagens.marcarNaoLida : t.mensagens.marcarLida}
                 </Button>
                 <Button size="sm" variant="outline" className="rounded-full" asChild>
                   <a href={`mailto:${m.email}`}>
-                    <Mail className="size-4" /> Responder
+                    <Mail className="size-4" /> {t.mensagens.responder}
                   </a>
                 </Button>
                 <Button
@@ -409,11 +416,11 @@ function Painel() {
                     setAExcluir({
                       tabela: "mensagens",
                       id: m.id,
-                      titulo: m.assunto || `Mensagem de ${m.nome}`,
+                      titulo: m.assunto || t.mensagens.mensagemDe(m.nome),
                     })
                   }
                 >
-                  <Trash2 className="size-4" /> Apagar
+                  <Trash2 className="size-4" /> {t.mensagens.apagar}
                 </Button>
               </div>
             </article>
@@ -423,7 +430,7 @@ function Painel() {
         {/* ---------------- Histórico / auditoria ---------------- */}
         <TabsContent value="historico" className="mt-6 space-y-4">
           <p className="text-sm text-muted-foreground">
-            Registro de tudo que foi criado, editado, publicado ou apagado em notícias, projetos, documentos e áreas.
+            {t.historico.descricaoAba}
           </p>
           <Historico />
         </TabsContent>
@@ -444,14 +451,14 @@ function Painel() {
       <AlertDialog open={Boolean(aExcluir)} onOpenChange={(v) => !v && setAExcluir(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Apagar “{aExcluir?.titulo}”?</AlertDialogTitle>
+            <AlertDialogTitle>{t.confirmarExclusao.titulo(aExcluir?.titulo ?? "")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita e o conteúdo some do site na hora.
+              {t.confirmarExclusao.texto}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmarExclusao}>Apagar</AlertDialogAction>
+            <AlertDialogCancel>{t.confirmarExclusao.cancelar}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmarExclusao}>{t.confirmarExclusao.apagar}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
