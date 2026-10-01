@@ -5,12 +5,12 @@ import { erroColunaTraducoesAusente } from "@/lib/erro-traducoes";
 
 /** Roda a função com o fuso do processo trocado (simula servidor/visitante). */
 function comFuso<T>(tz: string, fn: () => T): T {
-  const antigo = process.env.TZ;
-  process.env.TZ = tz;
+  const antigo = process.env['TZ'];
+  process.env['TZ'] = tz;
   try {
     return fn();
   } finally {
-    process.env.TZ = antigo;
+    process.env['TZ'] = antigo;
   }
 }
 

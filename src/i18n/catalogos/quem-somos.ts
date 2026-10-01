@@ -83,74 +83,74 @@ export const quemSomos = definirMensagens(
       seo: {
         titulo: "About Us — Instituto IDEX",
         descricao:
-          "Founded in 2007, Instituto IDEX uses football as a tool for human development, inclusion and new opportunities for children and young people.",
+          "Founded in 2007, Instituto IDEX uses soccer as a tool for personal growth, inclusion and new opportunities for children and young people.",
       },
       hero: {
         selo: "About us",
-        titulo: "Formation that transforms. Opportunities that broaden paths.",
+        titulo: "Development that transforms. Opportunities that broaden paths.",
         descricao:
-          "Founded in 2007, IDEX built a journey marked by sport, youth development and the creation of opportunities.",
+          "Founded in 2007, IDEX built a journey marked by sports, youth development and the creation of opportunities.",
       },
       historia: {
         titulo: "Our history",
         paragrafos: [
-          "Over the years, the Institute developed and refined its own sports formation methodology, applied in different cities and social realities. Thousands of children and young people have taken part in programs that use football as a tool for human development, inclusion, discipline, social connection and sporting growth.",
-          "This accumulated experience turned IDEX into an institution with solid know-how in player formation. Many of the young people who went through its programs went on to advance in football, taking part in competitions, evaluation processes, sports exchanges and opportunities in other states and countries.",
-          "The Institute's work follows different stages of the athlete's journey, from sports initiation to qualification, evaluation and broader opportunities. Each program is designed to contribute to the participant's growth, on and off the field.",
-          "Today, IDEX connects formation, competition, evaluation, exchange and opportunity, creating paths for children and young people to develop their potential and build new perspectives through sport.",
+          "Over the years, the Institute developed and refined its own player development methodology, applied in different cities and social settings. Thousands of children and young people have taken part in programs that use soccer as a tool for human development, inclusion, discipline, social connection and growth in sports.",
+          "This accumulated experience turned IDEX into an organization with solid know-how in player development. Many of the young people who went through its programs went on to advance in soccer, taking part in competitions, evaluation processes, sports exchanges and opportunities in other states and countries.",
+          "The Institute's work follows different stages of the athlete's journey, from the first introduction to the sport through qualification, evaluation and broader opportunities. Each program is designed to support the participant's growth, on and off the field.",
+          "Today, IDEX connects development, competition, evaluation, exchange and opportunity, creating paths for children and young people to grow their potential and build new prospects through sports.",
         ],
       },
       compromisso: {
         titulo: "Institutional commitment",
         missaoTitulo: "Mission",
         missaoTexto:
-          "To promote the development of children, adolescents and young people through sport, using football as a tool for human formation, social inclusion, sports development, exchange of experiences and the creation of opportunities in Brazil and abroad.",
+          "To support the growth of children, adolescents and young people through sports, using soccer as a tool for human development, social inclusion, athletic development, exchange of experiences and the creation of opportunities in Brazil and abroad.",
         visaoTitulo: "Vision",
         visaoTexto:
-          "To be a reference in the sports and social formation of young people, recognized for its ability to turn access to sport into paths of development, growth, exchange and new opportunities, broadening horizons on and off the football field.",
+          "To be a reference in the athletic and social development of young people, recognized for turning access to sports into paths of growth, development, exchange and new opportunities, broadening horizons both on and off the field.",
       },
       valores: {
         titulo: "Values",
         lista: [
           {
-            nome: "Human formation",
+            nome: "Human development",
             texto:
-              "Using sport as an environment for developing discipline, respect, responsibility, cooperation, social connection and values that contribute to the integral formation of each participant.",
+              "Using sports as a setting for building discipline, respect, responsibility, cooperation, social connection and values that support the well-rounded development of each participant.",
           },
           {
             nome: "Access and inclusion",
             texto:
-              "Expanding opportunities for sports participation, especially for children and young people in more socially vulnerable contexts, promoting qualified, free and structured access to sport.",
+              "Expanding opportunities for sports participation, especially for children and young people in more socially vulnerable settings, providing qualified, free and structured access to sports.",
           },
           {
-            nome: "Sports development",
+            nome: "Athletic development",
             texto:
-              "Offering structured processes of initiation, formation, evaluation and qualification, respecting each participant's stage of development and creating conditions for technical, tactical, physical and behavioral growth.",
+              "Offering structured programs for introduction, growth, evaluation and qualification, respecting each participant's stage of development and creating the conditions for technical, tactical, physical and behavioral growth.",
           },
           {
             nome: "Sporting meritocracy with responsibility",
             texto:
-              "Recognizing dedication, growth and performance, creating opportunities compatible with each player's stage of development, without losing sight of the educational, formative and social nature of sport.",
+              "Recognizing dedication, growth and performance, creating opportunities that match each player's stage of development, without losing sight of the educational, developmental and social nature of sports.",
           },
           {
             nome: "Sports exchange",
             texto:
-              "Broadening players' experience through participation in activities, competitions, evaluations and sporting experiences in different cities, states and countries, fostering contact with new methodologies, sporting cultures, competitive environments and development opportunities.",
+              "Broadening players' experience through activities, competitions, evaluations and sporting experiences in different cities, states and countries, fostering contact with new methods, sporting cultures, competitive environments and development opportunities.",
           },
           {
             nome: "Opportunity",
             texto:
-              "Creating paths for young people to advance in their sporting journey, broadening prospects of continuing in football, access to new experiences, specialized evaluations and possibilities of joining more developed sporting environments.",
+              "Creating paths for young people to advance in their sporting journey, broadening prospects of continuing in soccer, access to new experiences, specialized evaluations and the chance to join more advanced sporting environments.",
           },
           {
             nome: "Ethics and respect",
             texto:
-              "Acting with transparency, integrity and respect for people, the rules of sport, partner institutions and the different cultures and environments in which the Institute carries out its activities.",
+              "Acting with transparency, integrity and respect for people, the rules of sports, partner organizations and the different cultures and environments in which the Institute carries out its work.",
           },
           {
             nome: "Social commitment",
             texto:
-              "Developing programs capable of generating a positive impact on participants, families, territories and communities served, using sport as an instrument of social transformation, human development and broader perspectives.",
+              "Developing programs capable of making a positive impact on participants, families, neighborhoods and communities served, using sports as a tool for social change, human development and broader prospects.",
           },
         ],
       },
