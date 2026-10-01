@@ -106,7 +106,7 @@ export function BuscaDocumentos({ expandida = false }: { expandida?: boolean }) 
               return (
                 <CommandItem
                   key={doc.id}
-                  value={`${docTraduzido.titulo} ${categorias[doc.categoria] ?? doc.categoria} ${doc.ano ?? ""}`}
+                  value={`${docTraduzido.titulo} ${doc.titulo} ${categorias[doc.categoria] ?? doc.categoria} ${doc.ano ?? ""}`}
                   onSelect={() => irAte(doc.id, doc.categoria)}
                   className="gap-3"
                 >

@@ -60,9 +60,12 @@ export const Route = createFileRoute("/transparencia")({
   component: Transparencia,
 });
 
-/** Escolhe um ícone coerente com o assunto da pasta (sem inventar dados). */
-function iconeDaPasta(nome: string): LucideIcon {
-  const n = normalizar(nome);
+/**
+ * Escolhe um ícone coerente com o assunto da pasta (sem inventar dados).
+ * Usa o slug (sempre em português) para o ícone não mudar com o idioma.
+ */
+function iconeDaPasta(slug: string): LucideIcon {
+  const n = normalizar(slug);
   if (n.includes("relator")) return BarChart3;
   if (n.includes("emenda")) return Landmark;
   if (n.includes("organograma")) return Network;
@@ -261,7 +264,7 @@ function Transparencia() {
           {subpastas.length > 0 && !termoNormalizado && (
             <div className="mt-8 grid gap-4 sm:grid-cols-6">
               {subpastas.map((sub, i) => {
-                const Icone = iconeDaPasta(sub.nome);
+                const Icone = iconeDaPasta(sub.slug);
                 // Alterna cards largos e estreitos para quebrar o ritmo do grid
                 const largo = i % 3 === 0;
                 const total = contagem.get(sub.id) ?? 0;
@@ -391,7 +394,7 @@ function ItemArvore({
   const noCaminho = caminhoIds.includes(no.id);
   // Pastas com muitos filhos começam recolhidas, a menos que estejam no caminho ativo
   const [aberto, setAberto] = useState(noCaminho || no.filhas.length <= 4);
-  const Icone = iconeDaPasta(no.nome);
+  const Icone = iconeDaPasta(no.slug);
   const total = contagem.get(no.id) ?? 0;
 
   useEffect(() => {
