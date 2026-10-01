@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
-import { normalizarLocale } from "@/i18n/locales";
+import { normalizarLocale, urlComLocale } from "@/i18n/locales";
 import { seoPagina } from "@/i18n/seo";
-import { useMensagens } from "@/i18n/mensagens";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { auth } from "@/i18n/catalogos/auth";
 
 export const Route = createFileRoute("/auth")({
