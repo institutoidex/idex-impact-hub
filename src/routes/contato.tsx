@@ -27,7 +27,6 @@ export const Route = createFileRoute("/contato")({
       caminho: "/contato",
       titulo: t.seo.titulo,
       descricao: t.seo.descricao,
-      ogDescricao: t.seo.ogDescricao,
     });
     return { meta: s.meta, links: s.links };
   },
