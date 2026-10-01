@@ -36,6 +36,7 @@ import { GuardaAdmin } from "@/components/admin/GuardaAdmin";
 import { Historico } from "@/components/admin/Historico";
 import { EditorNoticia } from "@/components/admin/EditorNoticia";
 import { EditorDocumento } from "@/components/admin/EditorDocumento";
+import { editores } from "@/i18n/catalogos/editores";
 import { GerenciadorPastas } from "@/components/admin/GerenciadorPastas";
 import { BibliotecaMidia } from "@/components/admin/BibliotecaMidia";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,15 @@ type Exclusao = {
 
 function Painel() {
   const t = useMensagens(admin);
+  const te = useMensagens(editores);
+  /** Mostra o rótulo traduzido da categoria; o valor gravado continua o mesmo. */
+  const rotuloCategoria = (c: string | null | undefined) =>
+    ({
+      estatuto: te.documento.categoriaEstatuto,
+      relatorio: te.documento.categoriaRelatorio,
+      financeiro: te.documento.categoriaFinanceiro,
+      outro: te.documento.categoriaOutro,
+    })[c ?? ""] ?? c ?? "";
   const locale = useLocale();
   const { sessao } = useSessao();
   const logado = Boolean(sessao);
@@ -307,7 +317,7 @@ function Painel() {
               <div className="min-w-56 flex-1">
                 <h2 className="text-lg">{d.titulo}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {d.categoria}
+                  {rotuloCategoria(d.categoria)}
                   {d.ano ? ` · ${d.ano}` : ""}
                   {d.arquivo_url ? "" : ` · ${t.documentos.semArquivo}`}
                 </p>
