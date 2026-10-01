@@ -71,7 +71,8 @@ function Login() {
     }
     setEnviando(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
+      // mantém o idioma atual no link do e-mail
+      redirectTo: urlComLocale(window.location.origin, "/redefinir-senha", locale),
     });
     setEnviando(false);
     if (error) {
