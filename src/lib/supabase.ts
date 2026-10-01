@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./db-types";
+import { classificarLink, type TipoLink } from "./recuperacao-senha";
 
 /**
  * Cliente do banco do Instituto IDEX (navegador/SSR público).
@@ -20,6 +21,11 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
 
 const noNavegador = typeof window !== "undefined";
 
+/** Classificação do link de chegada, lida antes de criar o cliente (que limpa o hash). */
+export const linkInicial: TipoLink = noNavegador
+  ? classificarLink(window.location.hash, window.location.search)
+  : "nenhum";
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     persistSession: noNavegador,
@@ -34,11 +40,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
  * disparou — o ouvinte é registrado aqui, junto da criação do cliente, para não
  * perder o evento numa corrida com a montagem da tela.
  */
-import { classificarLink, type TipoLink } from "./recuperacao-senha";
 
-export const linkInicial: TipoLink = noNavegador
-  ? classificarLink(window.location.hash, window.location.search)
-  : "nenhum";
 
 let recuperacaoVista = false;
 export function foiRecuperacaoVista() {
