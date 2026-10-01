@@ -31,6 +31,8 @@ export type ProjetoRow = {
   destaque: boolean;
   publicado: boolean;
   criado_em: string;
+  /** traduções editoriais en-US/es-ES (jsonb); ausente em bancos sem a migração */
+  traducoes?: unknown;
 }
 
 export type NoticiaRow = {
@@ -45,6 +47,8 @@ export type NoticiaRow = {
   publicado: boolean;
   publicado_em: string;
   criado_em: string;
+  /** traduções editoriais en-US/es-ES (jsonb); ausente em bancos sem a migração */
+  traducoes?: unknown;
 }
 
 /** Pasta (ou subpasta) que organiza os documentos da Transparência. */
@@ -56,6 +60,8 @@ export type PastaRow = {
   pasta_id: string | null;
   ordem: number;
   criado_em: string;
+  /** traduções editoriais en-US/es-ES (jsonb); ausente em bancos sem a migração */
+  traducoes?: unknown;
 }
 
 export type DocumentoRow = {
@@ -68,6 +74,8 @@ export type DocumentoRow = {
   arquivo_url: string | null;
   publicado: boolean;
   criado_em: string;
+  /** traduções editoriais en-US/es-ES (jsonb); ausente em bancos sem a migração */
+  traducoes?: unknown;
 }
 
 export type MensagemRow = {
