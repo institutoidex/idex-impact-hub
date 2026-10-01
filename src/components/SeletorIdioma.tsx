@@ -48,7 +48,6 @@ export function useTrocarIdioma() {
 
 /** Aplica a preferência salva quando o visitante chega sem ?lang na URL. */
 export function SincronizarIdioma() {
-  const trocar = useTrocarIdioma();
   const temLang = useRouterState({
     select: (s) => ehLocale((s.location.search as Record<string, unknown>)["lang"]),
   });
@@ -59,7 +58,14 @@ export function SincronizarIdioma() {
       return;
     }
     const salvo = lerPreferencia();
-    if (salvo && salvo !== atual) trocar(salvo);
+    if (salvo && salvo !== atual) {
+      // Recarrega já com ?lang: o servidor renderiza no idioma certo e evitamos
+      // trocar o texto no meio da hidratação (o que causaria divergência).
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", salvo);
+      if (salvo === "pt-BR") url.searchParams.delete("lang");
+      window.location.replace(url.toString());
+    }
     // roda só na chegada / quando o lang da URL muda
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [temLang, atual]);
