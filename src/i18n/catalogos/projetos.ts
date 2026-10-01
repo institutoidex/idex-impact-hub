@@ -44,7 +44,7 @@ export const projetos = definirMensagens(
       seo: {
         titulo: "Projects — Instituto IDEX",
         descricao:
-          "Instituto IDEX projects, including Talento Brasil, free football for 200 children and young people.",
+          "Instituto IDEX projects, including Talento Brasil, free soccer for 200 kids and young people.",
         ogDescricao: "Get to know the institute's projects.",
       },
       busca: { placeholder: "Search by name or topic", rotulo: "Search projects" },

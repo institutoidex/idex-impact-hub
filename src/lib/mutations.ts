@@ -5,6 +5,7 @@ import type { NoticiaRow, ProjetoRow } from "./db-types";
 import { limparTraducoes, type Traducoes } from "@/i18n/traduzir";
 import { useLocale } from "@/i18n/mensagens";
 import type { Locale } from "@/i18n/locales";
+import { erroColunaTraducoesAusente } from "./erro-traducoes";
 import { editores } from "@/i18n/catalogos/editores";
 
 /**
@@ -24,10 +25,6 @@ export function gerarSlug(texto: string) {
 }
 
 /** O erro do Postgres/PostgREST por coluna inexistente cita o nome da coluna na mensagem. */
-function erroColunaTraducoesAusente(erro: unknown) {
-  const msg = (erro as { message?: string })?.message ?? "";
-  return msg.toLowerCase().includes("traducoes");
-}
 
 /**
  * Monta os campos a enviar ao banco: só inclui `traducoes` quando há algo preenchido

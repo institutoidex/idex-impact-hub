@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
-import { normalizarLocale } from "@/i18n/locales";
+import { normalizarLocale, urlComLocale } from "@/i18n/locales";
 import { seoPagina } from "@/i18n/seo";
-import { useMensagens } from "@/i18n/mensagens";
+import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { auth } from "@/i18n/catalogos/auth";
 
 export const Route = createFileRoute("/auth")({
@@ -38,6 +38,7 @@ function Login() {
   const { motivo } = Route.useSearch();
   const { sessao, carregando } = useSessao();
   const m = useMensagens(auth);
+  const locale = useLocale();
   const [enviando, setEnviando] = useState(false);
   // Alterna entre login e pedido de redefinição de senha (não há cadastro)
   const [modo, setModo] = useState<"login" | "recuperar">("login");
@@ -71,7 +72,8 @@ function Login() {
     }
     setEnviando(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
+      // mantém o idioma atual no link do e-mail
+      redirectTo: urlComLocale(window.location.origin, "/redefinir-senha", locale),
     });
     setEnviando(false);
     if (error) {

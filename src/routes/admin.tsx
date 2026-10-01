@@ -16,6 +16,7 @@ import {
   MailOpen,
 } from "lucide-react";
 
+import { formatarDataHora } from "@/i18n/formatar";
 import { useSessao } from "@/hooks/useSessao";
 import { supabase } from "@/lib/supabase";
 import {
@@ -378,7 +379,7 @@ function Painel() {
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 className="text-lg">{m.assunto || "Sem assunto"}</h2>
-                <span className="text-xs text-muted-foreground">{formatarData(m.criado_em)}</span>
+                <span className="text-xs text-muted-foreground">{formatarDataHora(m.criado_em, "pt-BR")}</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {m.nome} — {m.email}

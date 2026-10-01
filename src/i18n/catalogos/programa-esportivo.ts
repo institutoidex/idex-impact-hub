@@ -79,19 +79,19 @@ export const programaEsportivo = definirMensagens(
       seo: {
         titulo: "Sports Program — Instituto IDEX",
         descricao:
-          "Instituto IDEX's football programs: Talento em Campo, Festival de Talentos, Draft Day and Talento Brasil — from initiation to sports qualification.",
+          "Instituto IDEX's soccer programs: Talento em Campo, Festival de Talentos, Draft Day and Talento Brasil — from first touches to sports qualification.",
       },
       hero: {
         selo: "Sports program",
-        titulo: "Instituto IDEX Football Programs",
-        descricao: "A journey of sports formation, integration, evaluation and talent qualification.",
+        titulo: "Instituto IDEX Soccer Programs",
+        descricao: "A journey of player development, integration, evaluation and talent qualification.",
       },
       introducao: {
         titulo: "From the first touch of the ball to new opportunities",
         paragrafos: [
-          "IDEX develops football programs that follow different moments of sports formation, from the first contact with the sport to the qualification of young people who show conditions to advance in it.",
-          "The initiatives are structured to be enabled by different funding sources, such as the Federal Sports Incentive Law, the São Paulo State Sports Incentive Law, parliamentary amendments, public and private calls for proposals and institutional partnerships.",
-          "The Institute's methodology integrates access to sport, formation, social connection, technical development and opportunities for continuity, using football as an instrument of social transformation and human development.",
+          "IDEX runs soccer programs that follow kids and young people through every stage of their development, from their first contact with the sport to the qualification of those who show potential to go further.",
+          "The initiatives are structured to be funded through different sources, such as the Federal Sports Incentive Law, the São Paulo State Sports Incentive Law, parliamentary amendments, public and private calls for proposals, and institutional partnerships.",
+          "The Institute's methodology combines access to sports, personal growth, social connection, technical development and opportunities for continuity, using soccer as a tool for social change and human development.",
         ],
       },
       jornada: {
@@ -102,17 +102,17 @@ export const programaEsportivo = definirMensagens(
         projeto: (numero: string, etapa: string) => `Project ${numero} · ${etapa}`,
       },
       chamadaFinal: {
-        texto: "IDEX. Formation that transforms. Opportunities that broaden paths.",
+        texto: "IDEX. Development that transforms. Opportunities that broaden paths.",
         cta: "Support the programs",
       },
       programas: [
         {
           nome: "Talento em Campo",
-          lema: "Sport starts here.",
-          etapa: "Sports initiation and foundational formation",
+          lema: "Sports start here.",
+          etapa: "Sports introduction and foundational development",
           textos: [
-            "A sports initiation program that brings structured field football to children and adolescents, especially in areas of greater social vulnerability.",
-            "Through regular, guided activities, the program expands access to the sport and works on values that are part of IDEX's essence, such as discipline, respect, cooperation, responsibility and social connection.",
+            "A sports introduction program that brings structured field soccer to children and teens, especially in areas of greater social vulnerability.",
+            "Through regular, guided activities, the program expands access to the sport and instills values that are part of IDEX's essence, such as discipline, respect, cooperation, responsibility and social connection.",
           ],
         },
         {
@@ -120,8 +120,8 @@ export const programaEsportivo = definirMensagens(
           lema: "Where learning comes into play.",
           etapa: "Integration, competition and development",
           textos: [
-            "A sports integration program that brings together young people and teams in organized stages of field football, turning the game into an experience of formation, social connection and development.",
-            "With technical guidance, rules, refereeing and proper structure, the festivals give participants the chance to put what they've learned into practice, experience the sporting environment and strengthen their relationship with the sport.",
+            "A sports integration program that brings young people and teams together in organized rounds of field soccer, turning the game into an experience of growth, social connection and development.",
+            "With technical guidance, clear rules, refereeing and the right structure, the festivals give participants the chance to put what they've learned into practice, experience the sporting environment and strengthen their relationship with the sport.",
           ],
         },
         {
@@ -130,19 +130,19 @@ export const programaEsportivo = definirMensagens(
           etapa: "Evaluation, growth and sporting visibility",
           textos: [
             "Draft Day is IDEX's program focused on sports evaluation and visibility for young players at an advanced stage of development.",
-            "Through matches organized and monitored by specialized professionals, athletes have the opportunity to show their performance in real game situations, being observed in technical, tactical, physical, behavioral and game-intelligence aspects.",
-            "The idea is to turn the competitive experience into a genuine sporting showcase and a technical follow-up tool, bringing formation, evaluation and new possibilities of continuing in football closer together. The scouts' evaluation generates a qualified record of the player's performance, contributing to building their track record of growth throughout the sports formation process.",
-            "Within the Institute's methodology, Draft Day represents the moment when the player can bring onto the field everything they have developed throughout their journey, allowing their technical, tactical, physical and behavioral growth to be observed and recorded. This follow-up strengthens the athlete's formative process and broadens the references for their continuity and future opportunities in the sport.",
+            "In matches organized and monitored by specialized professionals, athletes get the chance to show their performance in real game situations, with their technical, tactical, physical, behavioral and game-intelligence skills observed closely.",
+            "The idea is to turn the competitive experience into a genuine sporting showcase and a technical follow-up tool, bringing player development, evaluation and new possibilities of continuing in soccer closer together. The scouts' evaluation generates a qualified record of the player's performance, helping build a track record of growth throughout their sports development.",
+            "Within the Institute's methodology, Draft Day represents the moment when players can bring onto the field everything they've developed throughout their journey, allowing their technical, tactical, physical and behavioral growth to be observed and recorded. This follow-up strengthens the athlete's development and broadens the references for their continuity and future opportunities in the sport.",
           ],
         },
         {
           nome: "Talento Brasil",
-          lema: "From formation to new opportunities.",
+          lema: "From development to new opportunities.",
           etapa: "Qualification and preparation for new opportunities",
           textos: [
             "Talento Brasil represents the most advanced stage of the sporting journey developed by IDEX.",
-            "Focused on the sports qualification of young people who went through the formation process and show potential to advance in the sport, the program expands technical development and prepares these players for real opportunities to continue in football.",
-            "This is when the work begun in formation starts to turn talent, dedication and sporting journey into a concrete future possibility.",
+            "Focused on the sports qualification of young people who went through the program and show potential to go further in the sport, the program expands technical development and prepares these players for real opportunities to continue in soccer.",
+            "This is when the work that began with player development starts to turn talent, dedication and sporting journey into a concrete future possibility.",
           ],
         },
       ],
@@ -204,7 +204,7 @@ export const programaEsportivo = definirMensagens(
             "El Draft Day es el programa del IDEX dedicado a la evaluación deportiva y a la visibilidad de jóvenes jugadores en una etapa avanzada de desarrollo.",
             "Mediante partidos organizados y monitoreados por profesionales especializados, los atletas tienen la oportunidad de demostrar su rendimiento en una situación real de juego, siendo observados en aspectos técnicos, tácticos, físicos, conductuales y de inteligencia de juego.",
             "La propuesta es transformar la vivencia competitiva en una verdadera vitrina deportiva e instrumento de seguimiento técnico, acercando formación, evaluación y nuevas posibilidades de continuidad en el fútbol. La evaluación realizada por los ojeadores genera un registro cualificado del rendimiento del jugador, contribuyendo a construir su historial de evolución a lo largo del proceso de formación deportiva.",
-            "El Draft Day representa, dentro de la metodología del Instituto, el momento en que el jugador puede poner en la cancha todo lo que desarrolló a lo largo de su trayectoria, permitiendo que su evolución técnica, táctica, física y conductual sea observada y registrada. Ese seguimiento fortalece el proceso formativo del atleta y amplía las referencias para su continuidad y futuras oportunidades en el deporte.",
+            "El Draft Day representa, dentro de la metodología del Instituto, el momento en que el jugador puede poner en el campo todo lo que desarrolló a lo largo de su trayectoria, permitiendo que su evolución técnica, táctica, física y conductual sea observada y registrada. Ese seguimiento fortalece el proceso formativo del atleta y amplía las referencias para su continuidad y futuras oportunidades en el deporte.",
           ],
         },
         {
