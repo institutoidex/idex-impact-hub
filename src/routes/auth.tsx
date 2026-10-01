@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-idex-horizontal-v2.png.asset.json";
-import { normalizarLocale, urlComLocale } from "@/i18n/locales";
+import { normalizarLocale } from "@/i18n/locales";
+import { urlRedefinicao } from "@/lib/recuperacao-senha";
 import { seoPagina } from "@/i18n/seo";
 import { useLocale, useMensagens } from "@/i18n/mensagens";
 import { auth } from "@/i18n/catalogos/auth";
@@ -17,8 +18,13 @@ import { auth } from "@/i18n/catalogos/auth";
 export const Route = createFileRoute("/auth")({
   ssr: false,
   // Motivo (opcional) da chegada ao login: ex. redirecionado do painel sem sessão
-  validateSearch: (search: Record<string, unknown>): { motivo?: "restrito" } =>
-    search["motivo"] === "restrito" ? { motivo: "restrito" } : {},
+  // motivo: chegou redirecionado do painel; modo=recuperar: abre direto o pedido de novo link
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { motivo?: "restrito"; modo?: "recuperar" } => ({
+    ...(search["motivo"] === "restrito" ? { motivo: "restrito" as const } : {}),
+    ...(search["modo"] === "recuperar" ? { modo: "recuperar" as const } : {}),
+  }),
   head: ({ match }) => {
     const m = auth[normalizarLocale(match.search.lang)];
     const s = seoPagina({
@@ -35,13 +41,16 @@ export const Route = createFileRoute("/auth")({
 
 function Login() {
   const navigate = useNavigate();
-  const { motivo } = Route.useSearch();
+  const { motivo, modo: modoInicial } = Route.useSearch();
   const { sessao, carregando } = useSessao();
   const m = useMensagens(auth);
   const locale = useLocale();
   const [enviando, setEnviando] = useState(false);
   // Alterna entre login e pedido de redefinição de senha (não há cadastro)
-  const [modo, setModo] = useState<"login" | "recuperar">("login");
+  const [modo, setModo] = useState<"login" | "recuperar">(modoInicial ?? "login");
+  // Confirmação persistente do pedido (genérica: não revela se a conta existe)
+  const [pedidoEnviado, setPedidoEnviado] = useState(false);
+  const [erroPedido, setErroPedido] = useState(false);
   const avisou = useRef(false); // dispara o aviso de acesso restrito só uma vez
 
   // Validação simples do formulário de acesso
@@ -70,20 +79,26 @@ function Login() {
       toast.error(email.error.issues[0]?.message ?? m.login.emailInvalido);
       return;
     }
+    if (enviando) return; // evita pedido duplicado
     setEnviando(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
-      // mantém o idioma atual no link do e-mail
-      redirectTo: urlComLocale(window.location.origin, "/redefinir-senha", locale),
-    });
-    setEnviando(false);
-    if (error) {
-      toast.error(m.recuperar.erroEnviarTitulo, { description: error.message });
-      return;
+    setErroPedido(false);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
+        // Sempre o domínio publicado + idioma atual, mesmo pedindo pelo preview
+        redirectTo: urlRedefinicao(locale),
+      });
+      // Erro de rede/limite: avisa sem detalhar. Conta inexistente não gera erro,
+      // então a confirmação abaixo nunca revela se o e-mail está cadastrado.
+      if (error && (error.status === 0 || error.status === 429 || (error.status ?? 0) >= 500)) {
+        setErroPedido(true);
+        return;
+      }
+      setPedidoEnviado(true);
+    } catch {
+      setErroPedido(true);
+    } finally {
+      setEnviando(false);
     }
-    toast.success(m.recuperar.sucessoTitulo, {
-      description: m.recuperar.sucessoDescricao,
-    });
-    setModo("login");
   }
 
   // Já logado? vai direto para o painel
@@ -167,7 +182,31 @@ function Login() {
           </form>
         ) : (
           /* Sem cadastro: troca de senha apenas via e-mail */
-          <form onSubmit={recuperarSenha} className="mt-7 space-y-5">
+          pedidoEnviado ? (
+            <div className="mt-7 space-y-4" role="status" aria-live="polite">
+              <h2 className="text-xl">{m.recuperar.confirmacaoTitulo}</h2>
+              <p className="text-sm text-muted-foreground">{m.recuperar.confirmacaoTexto}</p>
+              <Button
+                type="button"
+                variant="idexContorno"
+                className="w-full"
+                onClick={() => {
+                  setPedidoEnviado(false);
+                  setModo("login");
+                }}
+              >
+                {m.recuperar.voltarLogin}
+              </Button>
+              <button
+                type="button"
+                onClick={() => setPedidoEnviado(false)}
+                className="w-full text-center text-sm font-medium text-primary hover:underline"
+              >
+                {m.recuperar.outroEmail}
+              </button>
+            </div>
+          ) : (
+          <form onSubmit={recuperarSenha} className="mt-7 space-y-5" noValidate>
             <div className="space-y-2">
               <Label htmlFor="email-recuperar">{m.recuperar.email}</Label>
               <Input
@@ -176,9 +215,17 @@ function Login() {
                 type="email"
                 required
                 autoComplete="email"
+                aria-describedby="aviso-recuperar"
               />
-              <p className="text-xs text-muted-foreground">{m.recuperar.aviso}</p>
+              <p id="aviso-recuperar" className="text-xs text-muted-foreground">
+                {m.recuperar.aviso}
+              </p>
             </div>
+            {erroPedido && (
+              <p role="alert" className="text-sm text-destructive">
+                {m.recuperar.erroGenerico}
+              </p>
+            )}
             <Button type="submit" size="lg" variant="idex" className="w-full" disabled={enviando}>
               {enviando ? m.recuperar.enviando : m.recuperar.enviar}
             </Button>
@@ -190,6 +237,7 @@ function Login() {
               {m.recuperar.voltarLogin}
             </button>
           </form>
+          )
         )}
       </div>
     </section>
