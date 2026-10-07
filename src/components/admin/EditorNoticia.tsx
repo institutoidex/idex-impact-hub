@@ -210,6 +210,7 @@ export function EditorNoticia({
             valor={form.imagem_url || null}
             aoMudar={(url) => setForm((f) => ({ ...f, imagem_url: url }))}
             pasta="noticias"
+            tituloCapa={form.titulo}
           />
 
           <UploadMidia pasta="noticias" />

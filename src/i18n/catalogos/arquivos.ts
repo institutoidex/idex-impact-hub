@@ -11,6 +11,7 @@ export const arquivos = definirMensagens(
     duplicada: (nome: string) =>
       `Já existe uma imagem chamada “${nome}” nesta pasta. Renomeie o arquivo e envie de novo.`,
     nomePastaInvalido: "Informe um nome válido para a pasta.",
+    tituloCapaAusente: "Preencha o título da notícia antes de enviar a capa — ele dá nome ao arquivo.",
   },
   {
     "en-US": {
@@ -21,6 +22,7 @@ export const arquivos = definirMensagens(
       duplicada: (nome: string) =>
         `An image named “${nome}” already exists in this folder. Rename the file and upload it again.`,
       nomePastaInvalido: "Enter a valid folder name.",
+      tituloCapaAusente: "Fill in the news title before uploading the cover — it's used to name the file.",
     },
     "es-ES": {
       formatoImagem: "Formato no admitido. Usa JPG, PNG, WEBP, GIF o AVIF.",
@@ -30,6 +32,7 @@ export const arquivos = definirMensagens(
       duplicada: (nome: string) =>
         `Ya existe una imagen llamada «${nome}» en esta carpeta. Cambia el nombre del archivo y vuelve a subirlo.`,
       nomePastaInvalido: "Indica un nombre de carpeta válido.",
+      tituloCapaAusente: "Completa el título de la noticia antes de subir la portada: se usa para nombrar el archivo.",
     },
   },
 );

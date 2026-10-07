@@ -5,40 +5,67 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { enviarImagem, validarImagem } from "@/lib/storage";
+import { enviarCapa, enviarImagem, nomeCapa, validarImagem } from "@/lib/storage";
 import { useMensagens } from "@/i18n/mensagens";
 import { midia } from "@/i18n/catalogos/midia";
 
 /**
  * Campo de capa: envia a imagem para o armazenamento, mostra a pré-visualização
  * e mantém a possibilidade de colar uma URL externa.
+ *
+ * Prop opcional `tituloCapa` (usada pelo editor de notícia com o título em
+ * português): quando informada, o arquivo é salvo como
+ * "<titulo>-capa.<ext>" numa subpasta única por envio (ver enviarCapa) e o
+ * envio é recusado, com aviso traduzido, se o título estiver vazio.
+ * Sem a prop, o comportamento antigo (nome do arquivo original) continua.
+ * URL colada no campo de texto não é baixada nem renomeada: fica como está.
+ * Se o envio falhar, a capa anterior e o formulário ficam intactos.
  */
 export function UploadCapa({
   valor,
   aoMudar,
   pasta,
   rotulo,
+  tituloCapa,
 }: {
   valor: string | null;
   aoMudar: (url: string | null) => void;
   pasta: string;
   rotulo?: string;
+  /** Título que dá nome ao arquivo da capa (ativa o modo "titulo-capa.ext") */
+  tituloCapa?: string;
 }) {
   const t = useMensagens(midia).upload;
   const ea = useMensagemArquivo();
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [enviando, setEnviando] = useState(false);
 
+  /** Título ainda sem letras/números: avisa e não abre o seletor. */
+  const tituloInvalido = () =>
+    tituloCapa !== undefined && !nomeCapa(tituloCapa, { name: "", type: "image/jpeg" });
+
+  function abrirSeletor() {
+    if (tituloInvalido()) {
+      toast.error(ea.deCodigo("tituloCapaAusente"));
+      return;
+    }
+    inputArquivo.current?.click();
+  }
+
   async function selecionar(arquivo?: File | null) {
-    if (!arquivo) return;
+    if (!arquivo) return; // seletor cancelado: nada muda
     const erro = validarImagem(arquivo);
     if (erro) {
       toast.error(ea.deCodigo(erro));
+      if (inputArquivo.current) inputArquivo.current.value = "";
       return;
     }
     setEnviando(true);
     try {
-      const url = await enviarImagem(arquivo, pasta);
+      const url =
+        tituloCapa !== undefined
+          ? await enviarCapa(arquivo, pasta, tituloCapa)
+          : await enviarImagem(arquivo, pasta);
       aoMudar(url);
       toast.success(t.imagemEnviada);
     } catch (e) {
@@ -83,7 +110,7 @@ export function UploadCapa({
           variant="outline"
           className="rounded-full"
           disabled={enviando}
-          onClick={() => inputArquivo.current?.click()}
+          onClick={abrirSeletor}
         >
           {enviando ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
           {enviando ? t.enviando : valor ? t.trocarImagem : t.enviarImagem}
