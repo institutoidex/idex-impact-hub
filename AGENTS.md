@@ -15,7 +15,7 @@
 - Nota histórica: em 2026-09-29 o host `rhgiuskcuowphhwuewcf.supabase.co` retornou NXDOMAIN temporariamente. Em 2026-10-01 a conexão foi verificada funcional (leituras, formulários e painel) — não usar essa nota como diagnóstico; só investigar pausa do projeto se um erro de DNS reaparecer agora.
 
 - Link de recuperação de senha sempre aponta para o domínio publicado (`urlRedefinicao` em `src/lib/recuperacao-senha.ts`) — por quê: o preview/localhost não está na allowlist do Supabase. Detalhes em `docs/recuperacao-senha.md`.
-- GuardaAdmin só expulsa por erro de papel antes da primeira confirmação do servidor, e o papel não revalida ao voltar o foco — por quê: uma falha passageira (ex.: seletor de arquivos) mandava para /auth → /admin e apagava o editor aberto; o RLS continua barrando gravações.
+- GuardaAdmin ignora falha passageira de revalidação do papel só se uma busca real (dataUpdateCount > 0, nunca initialData/isFetched) já confirmou admin para o MESMO usuario.id; troca/perda de usuário zera, resposta false revoga, e o papel revalida ao voltar o foco — por quê: a falha passageira (ex.: seletor de arquivos) apagava o editor aberto, sem abrir brecha entre identidades; o RLS continua barrando gravações.
 
 ## Idiomas
 

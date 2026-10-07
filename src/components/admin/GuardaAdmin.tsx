@@ -7,7 +7,7 @@ import { useSessao } from "@/hooks/useSessao";
 import { usePapelAdmin } from "@/hooks/usePapelAdmin";
 import { useMensagens } from "@/i18n/mensagens";
 import { admin } from "@/i18n/catalogos/admin";
-import { estadoGuarda } from "./estado-guarda";
+import { confirmacaoPara, estadoGuarda } from "./estado-guarda";
 
 /**
  * Proteção de rota do painel.
@@ -22,9 +22,17 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
   const m = useMensagens(admin);
   const avisou = useRef(false); // evita repetir o toast em re-renderizações
 
-  // Marca quando o servidor confirmou admin de verdade (não só o cache otimista)
-  const confirmado = useRef(false);
-  if (papel.isFetched && papel.isSuccess && papel.data === true) confirmado.current = true;
+  // Guarda o ID do usuário que o servidor confirmou como admin (busca real,
+  // nunca o cache otimista do sessionStorage). Recalculado a cada render:
+  // trocar/perder o usuário zera na hora; resposta real `false` revoga.
+  const userId = usuario?.id ?? null;
+  const confirmadoPara = useRef<string | null>(null);
+  confirmadoPara.current = confirmacaoPara(confirmadoPara.current, {
+    userId,
+    temSessao: Boolean(sessao),
+    respostaServidor:
+      papel.isSuccess && papel.dataUpdateCount > 0 ? papel.data : undefined,
+  });
 
   const estado = estadoGuarda({
     carregandoSessao: carregando,
@@ -32,7 +40,7 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
     papel: papel.data,
     papelSucesso: papel.isSuccess,
     papelErro: papel.isError,
-    confirmadoNoServidor: confirmado.current,
+    confirmadoNoServidor: userId !== null && confirmadoPara.current === userId,
   });
   const semSessao = estado === "semSessao";
   const semPermissao = estado === "semPermissao";
