@@ -182,7 +182,7 @@ export async function enviarCapa(
   const { error } = await supabase.storage.from(BUCKET_MIDIA).upload(caminho, arquivo, {
     cacheControl: "31536000",
     upsert: false,
-    contentType: arquivo.type || undefined, // preserva o MIME original
+    ...(arquivo.type ? { contentType: arquivo.type } : {}), // preserva o MIME original
   });
   if (error) throw error;
   const { data } = supabase.storage.from(BUCKET_MIDIA).getPublicUrl(caminho);
