@@ -30,8 +30,7 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
   confirmadoPara.current = confirmacaoPara(confirmadoPara.current, {
     userId,
     temSessao: Boolean(sessao),
-    respostaServidor:
-      papel.isSuccess && papel.dataUpdateCount > 0 ? papel.data : undefined,
+    respostaServidor: papel.respostaServidor,
   });
 
   const estado = estadoGuarda({
