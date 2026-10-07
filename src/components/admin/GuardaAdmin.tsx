@@ -7,6 +7,7 @@ import { useSessao } from "@/hooks/useSessao";
 import { usePapelAdmin } from "@/hooks/usePapelAdmin";
 import { useMensagens } from "@/i18n/mensagens";
 import { admin } from "@/i18n/catalogos/admin";
+import { estadoGuarda } from "./estado-guarda";
 
 /**
  * Proteção de rota do painel.
@@ -21,8 +22,21 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
   const m = useMensagens(admin);
   const avisou = useRef(false); // evita repetir o toast em re-renderizações
 
-  const semSessao = !carregando && !sessao;
-  const semPermissao = Boolean(sessao) && papel.isSuccess && papel.data === false;
+  // Marca quando o servidor confirmou admin de verdade (não só o cache otimista)
+  const confirmado = useRef(false);
+  if (papel.isFetched && papel.isSuccess && papel.data === true) confirmado.current = true;
+
+  const estado = estadoGuarda({
+    carregandoSessao: carregando,
+    temSessao: Boolean(sessao),
+    papel: papel.data,
+    papelSucesso: papel.isSuccess,
+    papelErro: papel.isError,
+    confirmadoNoServidor: confirmado.current,
+  });
+  const semSessao = estado === "semSessao";
+  const semPermissao = estado === "semPermissao";
+  const erroPapel = estado === "erro";
 
   useEffect(() => {
     if (semSessao && !avisou.current) {
@@ -40,16 +54,16 @@ export function GuardaAdmin({ children }: { children: ReactNode }) {
     }
   }, [semPermissao, navigate, m]);
 
-  // Falha ao consultar o papel: por segurança, não libera o painel
+  // Falha ao consultar o papel ANTES de qualquer confirmação: por segurança, não libera
   useEffect(() => {
-    if (papel.isError && !avisou.current) {
+    if (erroPapel && !avisou.current) {
       avisou.current = true;
       toast(m.guarda.erroConfirmarTitulo, { description: m.guarda.erroConfirmarDescricao });
       navigate({ to: "/auth", replace: true });
     }
-  }, [papel.isError, navigate, m]);
+  }, [erroPapel, navigate, m]);
 
-  const liberado = Boolean(sessao) && papel.data === true;
+  const liberado = estado === "liberado";
 
   if (!liberado) {
     return (
