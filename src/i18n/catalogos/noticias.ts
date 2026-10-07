@@ -28,6 +28,8 @@ export const noticias = definirMensagens(
     detalhe: {
       voltar: "Todas as notícias",
       semConteudo: "O texto completo desta notícia ainda não foi publicado.",
+      galeriaTitulo: "Galeria de fotos",
+      galeriaAlt: (titulo: string, n: number, total: number) => `${titulo} — foto ${n} de ${total}`,
       tituloSeoSufixo: "Notícias",
       secaoProjetos: "Projetos",
       secaoInstituto: "Instituto",
@@ -71,6 +73,8 @@ export const noticias = definirMensagens(
       detalhe: {
         voltar: "All news",
         semConteudo: "The full text of this news item hasn't been published yet.",
+        galeriaTitulo: "Photo gallery",
+        galeriaAlt: (titulo: string, n: number, total: number) => `${titulo} — photo ${n} of ${total}`,
         tituloSeoSufixo: "News",
         secaoProjetos: "Projects",
         secaoInstituto: "Institute",
@@ -113,6 +117,8 @@ export const noticias = definirMensagens(
       detalhe: {
         voltar: "Todas las noticias",
         semConteudo: "El texto completo de esta noticia todavía no se ha publicado.",
+        galeriaTitulo: "Galería de fotos",
+        galeriaAlt: (titulo: string, n: number, total: number) => `${titulo} — foto ${n} de ${total}`,
         tituloSeoSufixo: "Noticias",
         secaoProjetos: "Proyectos",
         secaoInstituto: "Instituto",
