@@ -20,3 +20,4 @@
 ## Idiomas
 
 - Idioma vem do search param `?lang` validado no root e propagado por `retainSearchParams` — por quê: funciona em SSR/reload/links compartilhados sem mudar rotas. Textos ficam em catálogos tipados `src/i18n/catalogos/*` via `definirMensagens` (pt-BR é a referência; falta de chave quebra o typecheck). Conteúdo do banco usa coluna jsonb `traducoes` + `traduzir()` com fallback explícito ao português. Detalhes em `docs/i18n.md`.
+- Capa de notícia enviada por arquivo vira `noticias/capas/<uuid>/<titulo-pt>-capa.<ext>` (enviarCapa/nomeCapa em src/lib/storage.ts; UploadCapa só ativa com a prop `tituloCapa`) — por quê: a mesma foto precisa servir de capa em várias notícias sem colisão nem sobrescrita; URL colada não é baixada e outros envios mantêm o nome original.

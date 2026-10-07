@@ -51,7 +51,8 @@ export type CodigoErroArquivo =
   | "formatoDocumento"
   | "documentoGrande"
   | "duplicada"
-  | "nomePastaInvalido";
+  | "nomePastaInvalido"
+  | "tituloCapaAusente";
 
 /** Erro com código traduzível (nome = nome do arquivo, mantido original). */
 export class ErroArquivo extends Error {
@@ -115,6 +116,78 @@ export async function enviarImagem(arquivo: File, pasta: string): Promise<string
   return data.publicUrl;
 }
 
+/* ------------------------------------------------------------------ */
+/* Capa de notícia: nome a partir do título + subpasta única por envio */
+/* ------------------------------------------------------------------ */
+
+/** Extensão segura a partir do tipo da imagem (o MIME já foi validado). */
+const EXTENSAO_POR_TIPO: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
+
+/** Tamanho máximo da parte do título no nome (antes de "-capa"). */
+export const LIMITE_BASE_CAPA = 60;
+
+/**
+ * Nome final da capa: "titulo-normalizado-capa.ext" (ex.: "Talento Brasil"
+ * + JPEG → "talento-brasil-capa.jpg"). A palavra "capa" é literal em
+ * qualquer idioma; o nome do arquivo original nunca é usado.
+ * Título longo é cortado ANTES de acrescentar "-capa".
+ * Devolve null se o título não tiver nenhuma letra/número aproveitável.
+ */
+export function nomeCapa(titulo: string, arquivo: Pick<File, "name" | "type">): string | null {
+  const base = (titulo ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, LIMITE_BASE_CAPA)
+    .replace(/-+$/g, "");
+  if (!base) return null;
+  const doNome = (arquivo.name.includes(".") ? arquivo.name.split(".").pop() : "") ?? "";
+  const extensao =
+    EXTENSAO_POR_TIPO[arquivo.type] ?? (doNome.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg");
+  return `${base}-capa.${extensao}`;
+}
+
+/** Identificador único da subpasta de cada envio de capa. */
+function novoIdEnvio() {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/**
+ * Envia a capa como `<pasta>/capas/<uuid>/<titulo>-capa.<ext>` e devolve a URL.
+ * - A subpasta UUID torna cada envio único: a mesma foto pode ser capa de
+ *   duas notícias, títulos iguais não colidem e trocar a capa nunca
+ *   sobrescreve a anterior (upsert sempre false; nada é apagado/renomeado).
+ * - Profundidade 3 a partir da raiz: continua visível em listarMidia
+ *   (que desce até o nível 3) e navegável em listarConteudoPasta.
+ * - Lança ErroArquivo("tituloCapaAusente") se o título não servir de nome.
+ * - URL colada à mão no campo da capa NÃO passa por aqui (fica como está).
+ */
+export async function enviarCapa(
+  arquivo: File,
+  pasta: string,
+  titulo: string,
+  gerarId: () => string = novoIdEnvio,
+): Promise<string> {
+  const nome = nomeCapa(titulo, arquivo);
+  if (!nome) throw new ErroArquivo("tituloCapaAusente");
+  const caminho = `${pasta}/capas/${gerarId()}/${nome}`;
+  const { error } = await supabase.storage.from(BUCKET_MIDIA).upload(caminho, arquivo, {
+    cacheControl: "31536000",
+    upsert: false,
+    ...(arquivo.type ? { contentType: arquivo.type } : {}), // preserva o MIME original
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(BUCKET_MIDIA).getPublicUrl(caminho);
+  return data.publicUrl;
+}
 
 /** Envia qualquer arquivo (documento) e devolve caminho + URL pública. */
 export async function enviarArquivo(arquivo: File, pasta: string) {
