@@ -227,7 +227,8 @@ function Contato() {
               <div className="mt-5 space-y-3 rounded-2xl bg-ink-card p-5 text-sm">
                 {CONTATO.telefone && (
                   <a
-                    href={`tel:${CONTATO.telefone.replace(/\D/g, "")}`}
+                    {/* Link de telefone com código do país (tel:+55...) para discagem correta */}
+                    href={`tel:+55${CONTATO.telefone.replace(/\D/g, "")}`}
                     className="flex items-center gap-3 text-ink-foreground/70 transition-colors hover:text-ink-foreground"
                   >
                     <Phone className="size-4 text-primary" /> {CONTATO.telefone}
