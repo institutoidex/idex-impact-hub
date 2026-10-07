@@ -93,7 +93,7 @@ export const editores = definirMensagens(
       semPermissao: "Sua conta não tem permissão para essa ação.",
       generico: "Não foi possível salvar. Tente de novo.",
       galeriaColunaAusente:
-        "A galeria ainda não pode ser salva: o banco precisa da migração supabase/migracoes/2026-10-07-galeria-noticias.sql. Nada foi perdido — o editor continua aberto.",
+        "Não foi possível salvar a galeria agora. Tente novamente ou contate o suporte. Suas alterações continuam neste formulário.",
     },
     toasts: {
       publicadoNoSite: "Publicado no site.",
@@ -196,7 +196,7 @@ export const editores = definirMensagens(
         semPermissao: "Your account doesn't have permission for this action.",
         generico: "Couldn't save. Please try again.",
         galeriaColunaAusente:
-          "The gallery can't be saved yet: the database needs the migration supabase/migracoes/2026-10-07-galeria-noticias.sql. Nothing was lost — the editor stays open.",
+          "We couldn't save the gallery right now. Please try again or contact support. Your changes are still in this form.",
       },
       toasts: {
         publicadoNoSite: "Published on the site.",
@@ -299,7 +299,7 @@ export const editores = definirMensagens(
         semPermissao: "Tu cuenta no tiene permiso para esta acción.",
         generico: "No se pudo guardar. Inténtalo de nuevo.",
         galeriaColunaAusente:
-          "La galería aún no se puede guardar: la base de datos necesita la migración supabase/migracoes/2026-10-07-galeria-noticias.sql. No se perdió nada: el editor sigue abierto.",
+          "No se pudo guardar la galería ahora. Inténtalo de nuevo o contacta con soporte. Tus cambios siguen en este formulario.",
       },
       toasts: {
         publicadoNoSite: "Publicado en el sitio.",

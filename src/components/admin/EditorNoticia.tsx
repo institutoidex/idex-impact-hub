@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -41,9 +41,16 @@ export function EditorNoticia({
   const [galeria, setGaleria] = useState<Galeria>([]);
   const [enviandoGaleria, setEnviandoGaleria] = useState(false);
   const tm = useMensagens(midia).upload;
+  // Identidade da abertura atual do editor: cada abertura/troca de notícia
+  // incrementa. Resultados de envio de uma abertura antiga são ignorados,
+  // para nunca caírem na galeria da próxima notícia.
+  const sessaoRef = useRef(0);
+  const sessaoRender = sessaoRef.current;
 
   // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
+    sessaoRef.current += 1; // abriu, fechou ou trocou de notícia: nova identidade
+    setEnviandoGaleria(false);
     if (!aberto) return;
     setForm(
       noticia
@@ -64,6 +71,28 @@ export function EditorNoticia({
     // registro antigo/sem migração: galeria vazia (nunca inferida por nome/pasta)
     setGaleria(normalizarGaleria(noticia?.galeria));
   }, [aberto, noticia]);
+
+  /** Atualizações da galeria só valem para a abertura em que o envio começou. */
+  function mudarGaleria(urls: Galeria) {
+    if (sessaoRef.current !== sessaoRender) return;
+    setGaleria(urls);
+  }
+  function mudarEnviando(v: boolean) {
+    if (sessaoRef.current !== sessaoRender) return;
+    setEnviandoGaleria(v);
+  }
+
+  /**
+   * Fechamento intencional (Cancelar, X, Esc, clique fora). Durante o envio
+   * de fotos da galeria é bloqueado com aviso, para não perder o formulário.
+   */
+  function pedirFechar() {
+    if (enviandoGaleria) {
+      toast.warning(tm.galeriaAguardeFechar);
+      return;
+    }
+    aoFechar();
+  }
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -101,7 +130,7 @@ export function EditorNoticia({
   }
 
   return (
-    <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
+    <Dialog open={aberto} onOpenChange={(v) => !v && pedirFechar()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{noticia ? t.noticia.tituloEditar : t.noticia.tituloNova}</DialogTitle>
@@ -237,8 +266,8 @@ export function EditorNoticia({
           <UploadMidia
             pasta="noticias"
             valor={galeria}
-            aoMudar={setGaleria}
-            aoMudarEnviando={setEnviandoGaleria}
+            aoMudar={mudarGaleria}
+            aoMudarEnviando={mudarEnviando}
           />
 
           <div className="space-y-2">
@@ -263,7 +292,7 @@ export function EditorNoticia({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
+            <Button type="button" variant="outline" className="rounded-full" onClick={pedirFechar}>
               {t.acoes.cancelar}
             </Button>
             <Button type="submit" className="rounded-full" disabled={salvar.isPending || enviandoGaleria}>

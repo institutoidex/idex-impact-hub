@@ -93,6 +93,7 @@ export const midia = definirMensagens(
       galeriaDepois: (n: number) => `Mover a foto ${n} para depois`,
       galeriaCheia: (limite: number) => `A galeria aceita até ${limite} fotos.`,
       galeriaEnviando: "Aguarde o envio das fotos terminar para salvar.",
+      galeriaAguardeFechar: "Aguarde o envio das fotos terminar antes de fechar.",
     },
     storage: {
       formatoImagemInvalido: "Formato não aceito. Use JPG, PNG, WEBP, GIF ou AVIF.",
@@ -195,6 +196,7 @@ export const midia = definirMensagens(
         galeriaDepois: (n: number) => `Move photo ${n} later`,
         galeriaCheia: (limite: number) => `The gallery holds up to ${limite} photos.`,
         galeriaEnviando: "Wait for the photos to finish uploading before saving.",
+        galeriaAguardeFechar: "Wait for the photos to finish uploading before closing.",
       },
       storage: {
         formatoImagemInvalido: "Format not accepted. Use JPG, PNG, WEBP, GIF or AVIF.",
@@ -296,6 +298,7 @@ export const midia = definirMensagens(
         galeriaDepois: (n: number) => `Mover la foto ${n} después`,
         galeriaCheia: (limite: number) => `La galería admite hasta ${limite} fotos.`,
         galeriaEnviando: "Espera a que terminen de subirse las fotos para guardar.",
+        galeriaAguardeFechar: "Espera a que terminen de subirse las fotos antes de cerrar.",
       },
       storage: {
         formatoImagemInvalido: "Formato no admitido. Usa JPG, PNG, WEBP, GIF o AVIF.",

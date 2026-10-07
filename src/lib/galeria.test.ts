@@ -137,7 +137,8 @@ describe("gravarNoticia com galeria", () => {
 describe("textos PT/EN/ES", () => {
   test("aviso de migração, título e alt da galeria nos três idiomas", () => {
     for (const l of ["pt-BR", "en-US", "es-ES"]) {
-      expect(editores[l].erros.galeriaColunaAusente).toContain("2026-10-07-galeria-noticias.sql");
+      expect(editores[l].erros.galeriaColunaAusente).not.toMatch(/sql|migra|banco|database|base de datos/i);
+      expect(midia[l].upload.galeriaAguardeFechar.length).toBeGreaterThan(3);
       expect(noticias[l].detalhe.galeriaTitulo.length).toBeGreaterThan(3);
       expect(noticias[l].detalhe.galeriaAlt("T", 1, 3)).toContain("T");
       expect(midia[l].upload.galeriaEnviando.length).toBeGreaterThan(3);
