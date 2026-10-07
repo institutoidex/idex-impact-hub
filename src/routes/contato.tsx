@@ -224,9 +224,9 @@ function Contato() {
               </p>
               {/* E-mail fica de fora por decisão do instituto (anti-spam);
                   canais oficiais: telefone, formulário e redes sociais */}
+              {/* Tel com código do país (+55) para discagem correta em qualquer lugar */}
               <div className="mt-5 space-y-3 rounded-2xl bg-ink-card p-5 text-sm">
                 {CONTATO.telefone && (
-                  {/* Tel com código do país (+55) para discagem correta em qualquer lugar */}
                   <a
                     href={`tel:+55${CONTATO.telefone.replace(/\D/g, "")}`}
                     className="flex items-center gap-3 text-ink-foreground/70 transition-colors hover:text-ink-foreground"
