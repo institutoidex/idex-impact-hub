@@ -12,6 +12,8 @@ import { comum } from "@/i18n/catalogos/comum";
 import { Imagem } from "@/components/Imagem";
 import { Reveal } from "@/components/Reveal";
 import { FOTO_TALENTO } from "@/data/fotos";
+import GaleriaLightbox from "@/components/GaleriaLightbox";
+import { normalizarGaleria, type Galeria } from "@/lib/galeria";
 
 /** Formato usado pela página, vindo sempre do banco (somente publicadas). */
 type NoticiaDetalhe = {
@@ -26,6 +28,8 @@ type NoticiaDetalhe = {
   projeto: string | null;
   /** traduções editoriais (jsonb) usadas por traduzir() */
   traducoes?: unknown;
+  /** fotos da galeria (URLs já validadas), iguais nos três idiomas */
+  galeria: Galeria;
 };
 
 export const Route = createFileRoute("/noticias/$slug")({
@@ -51,6 +55,8 @@ export const Route = createFileRoute("/noticias/$slug")({
         publicadoEm: data.publicado_em,
         projeto: data.projeto_slug,
         traducoes: data.traducoes,
+        // coluna ausente (migração pendente) ou valor malformado → []
+        galeria: normalizarGaleria(data.galeria),
       },
     };
   },
@@ -182,6 +188,20 @@ function NoticiaDetalhePagina() {
           )}
         </Reveal>
 
+        {/* Galeria depois do texto principal: só aparece se houver fotos */}
+        {noticia.galeria.length > 0 && (
+          <section aria-labelledby="galeria-noticia" className="mt-14">
+            <h2 id="galeria-noticia" className="mb-6 text-2xl sm:text-3xl">
+              {m.detalhe.galeriaTitulo}
+            </h2>
+            <GaleriaLightbox
+              fotos={noticia.galeria.map((url, i, todas) => ({
+                url,
+                alt: m.detalhe.galeriaAlt(traduzida.titulo, i + 1, todas.length),
+              }))}
+            />
+          </section>
+        )}
       </section>
     </article>
   );

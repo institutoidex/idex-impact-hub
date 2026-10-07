@@ -92,6 +92,8 @@ export const editores = definirMensagens(
       duplicado: "Já existe um registro com esse slug.",
       semPermissao: "Sua conta não tem permissão para essa ação.",
       generico: "Não foi possível salvar. Tente de novo.",
+      galeriaColunaAusente:
+        "A galeria ainda não pode ser salva: o banco precisa da migração supabase/migracoes/2026-10-07-galeria-noticias.sql. Nada foi perdido — o editor continua aberto.",
     },
     toasts: {
       publicadoNoSite: "Publicado no site.",
@@ -193,6 +195,8 @@ export const editores = definirMensagens(
         duplicado: "A record with that slug already exists.",
         semPermissao: "Your account doesn't have permission for this action.",
         generico: "Couldn't save. Please try again.",
+        galeriaColunaAusente:
+          "The gallery can't be saved yet: the database needs the migration supabase/migracoes/2026-10-07-galeria-noticias.sql. Nothing was lost — the editor stays open.",
       },
       toasts: {
         publicadoNoSite: "Published on the site.",
@@ -294,6 +298,8 @@ export const editores = definirMensagens(
         duplicado: "Ya existe un registro con ese slug.",
         semPermissao: "Tu cuenta no tiene permiso para esta acción.",
         generico: "No se pudo guardar. Inténtalo de nuevo.",
+        galeriaColunaAusente:
+          "La galería aún no se puede guardar: la base de datos necesita la migración supabase/migracoes/2026-10-07-galeria-noticias.sql. No se perdió nada: el editor sigue abierto.",
       },
       toasts: {
         publicadoNoSite: "Publicado en el sitio.",

@@ -7,6 +7,12 @@ import { useLocale } from "@/i18n/mensagens";
 import type { Locale } from "@/i18n/locales";
 import { erroColunaTraducoesAusente } from "./erro-traducoes";
 import { editores } from "@/i18n/catalogos/editores";
+import {
+  ErroGaleriaColunaAusente,
+  erroColunaGaleriaAusente,
+  normalizarGaleria,
+  type Galeria,
+} from "./galeria";
 
 /**
  * Mutações do painel: criar, editar, publicar e apagar conteúdo.
@@ -61,6 +67,7 @@ async function executarComFallbackTraducoes<R>(
 function traduzirErro(erro: Error, locale: Locale) {
   const t = editores[locale].erros;
   const texto = erro.message ?? "";
+  if (erro instanceof ErroGaleriaColunaAusente) return t.galeriaColunaAusente;
   if (texto.includes("duplicate key")) return t.duplicado;
   if (texto.includes("row-level security")) return t.semPermissao;
   return texto || t.generico;
@@ -81,7 +88,55 @@ export type NoticiaForm = {
   traducoes?: Traducoes;
   /** indica se o registro original já tinha a coluna `traducoes` no banco */
   traducoesColunaExistente?: boolean;
+  /** fotos da galeria (URLs em ordem), exibidas depois do texto; ver src/lib/galeria.ts */
+  galeria?: Galeria;
+  /** indica se o registro original já tinha a coluna `galeria` no banco */
+  galeriaColunaExistente?: boolean;
 };
+
+/**
+ * Campos de galeria a enviar: inclui `galeria` quando há fotos ou quando o
+ * registro já tinha a coluna (permite esvaziar). Notícia sem fotos num banco
+ * sem a migração não manda a coluna — edição antiga continua funcionando.
+ */
+export function camposGaleria(
+  galeria: Galeria | undefined,
+  colunaJaExistia: boolean | undefined,
+): { galeria?: Galeria } {
+  const limpa = normalizarGaleria(galeria ?? []);
+  return limpa.length > 0 || colunaJaExistia ? { galeria: limpa } : {};
+}
+
+/**
+ * Grava a notícia (insert/update) — função pura de dados, testável sem React.
+ * - Fallback de `traducoes` ausente: repete sem traduções, MAS mantém a galeria.
+ * - Coluna `galeria` ausente com fotos: lança ErroGaleriaColunaAusente
+ *   (nunca repete descartando as fotos; o editor fica aberto).
+ */
+export async function gravarNoticia(
+  valores: NoticiaForm,
+): Promise<{ dado: NoticiaRow; avisoColunaAusente: boolean }> {
+  const { id, traducoes, traducoesColunaExistente, galeria, galeriaColunaExistente, ...resto } =
+    valores;
+  const extraGaleria = camposGaleria(galeria, galeriaColunaExistente);
+  try {
+    const { data, avisoColunaAusente } = await executarComFallbackTraducoes<NoticiaRow>(
+      (incluirTraducoes) => {
+        const base = { ...resto, ...extraGaleria };
+        const campos = incluirTraducoes
+          ? camposComTraducoes(base, traducoes, traducoesColunaExistente)
+          : base;
+        return id
+          ? supabase.from("noticias").update(campos).eq("id", id).select().single()
+          : supabase.from("noticias").insert(campos).select().single();
+      },
+    );
+    return { dado: data, avisoColunaAusente };
+  } catch (erro) {
+    if (erroColunaGaleriaAusente(erro)) throw new ErroGaleriaColunaAusente();
+    throw erro;
+  }
+}
 
 export type ProjetoForm = {
   id?: string;
@@ -111,22 +166,7 @@ export function useSalvarNoticia() {
   const locale = useLocale();
   const t = editores[locale].noticia;
   return useMutation({
-    mutationFn: async (
-      valores: NoticiaForm,
-    ): Promise<{ dado: NoticiaRow; avisoColunaAusente: boolean }> => {
-      const { id, traducoes, traducoesColunaExistente, ...resto } = valores;
-      const { data, avisoColunaAusente } = await executarComFallbackTraducoes<NoticiaRow>(
-        (incluirTraducoes) => {
-          const campos = incluirTraducoes
-            ? camposComTraducoes(resto, traducoes, traducoesColunaExistente)
-            : resto;
-          return id
-            ? supabase.from("noticias").update(campos).eq("id", id).select().single()
-            : supabase.from("noticias").insert(campos).select().single();
-        },
-      );
-      return { dado: data, avisoColunaAusente };
-    },
+    mutationFn: gravarNoticia,
     onSuccess: ({ avisoColunaAusente }, valores) => {
       invalidar("noticias");
       if (avisoColunaAusente) toast.warning(editores[locale].traducao.colunaIndisponivel);

@@ -189,6 +189,29 @@ export async function enviarCapa(
   return data.publicUrl;
 }
 
+/**
+ * Envia uma foto da galeria da notícia como `<pasta>/galeria/<uuid>/<nome-limpo>.<ext>`.
+ * A subpasta UUID por envio deixa a mesma foto (mesmo nome) entrar na galeria
+ * de várias notícias sem cair na regra de nome duplicado de enviarImagem.
+ * Nada é sobrescrito (upsert false), apagado ou renomeado; profundidade 3,
+ * igual às capas, continua visível na Biblioteca de Mídia.
+ */
+export async function enviarFotoGaleria(
+  arquivo: File,
+  pasta: string,
+  gerarId: () => string = novoIdEnvio,
+): Promise<string> {
+  const caminho = caminhoDoArquivo(`${pasta}/galeria/${gerarId()}`, arquivo, false);
+  const { error } = await supabase.storage.from(BUCKET_MIDIA).upload(caminho, arquivo, {
+    cacheControl: "31536000",
+    upsert: false,
+    ...(arquivo.type ? { contentType: arquivo.type } : {}),
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(BUCKET_MIDIA).getPublicUrl(caminho);
+  return data.publicUrl;
+}
+
 /** Envia qualquer arquivo (documento) e devolve caminho + URL pública. */
 export async function enviarArquivo(arquivo: File, pasta: string) {
   const caminho = caminhoDoArquivo(pasta, arquivo);

@@ -49,6 +49,8 @@ export type NoticiaRow = {
   criado_em: string;
   /** traduções editoriais en-US/es-ES (jsonb); ausente em bancos sem a migração */
   traducoes?: unknown;
+  /** galeria (jsonb array de URLs); ausente em bancos sem a migração — use normalizarGaleria */
+  galeria?: unknown;
 }
 
 /** Pasta (ou subpasta) que organiza os documentos da Transparência. */
