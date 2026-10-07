@@ -21,6 +21,9 @@ export function usePapelAdmin(userId: string | undefined) {
     queryKey: ["papel-admin", userId],
     enabled: Boolean(userId),
     staleTime: 5 * 60 * 1000,
+    // Voltar o foco (ex.: ao fechar o seletor de arquivos) não revalida o papel:
+    // evita checagens no meio da edição. Ainda revalida ao montar o painel.
+    refetchOnWindowFocus: false,
     // Valor otimista vindo do cache da sessão do navegador
     initialData: lerCache(userId),
     queryFn: async () => {
