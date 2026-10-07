@@ -6,7 +6,7 @@ export const contato = definirMensagens(
     seo: {
       titulo: "Contato — Instituto IDEX",
       descricao:
-        "Fale com o Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Telefone (11) 2645-4565. Instagram @idexbrasil.",
+        "Fale com o Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Telefone (11) 92544-6046. Instagram @idexbrasil.",
       ogDescricao: "Envie sua mensagem para o instituto.",
     },
     hero: {
@@ -50,7 +50,7 @@ export const contato = definirMensagens(
       seo: {
         titulo: "Contact — Instituto IDEX",
         descricao:
-          "Get in touch with Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Phone (11) 2645-4565. Instagram @idexbrasil.",
+          "Get in touch with Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Phone (11) 92544-6046. Instagram @idexbrasil.",
         ogDescricao: "Send your message to the institute.",
       },
       hero: {
@@ -93,7 +93,7 @@ export const contato = definirMensagens(
       seo: {
         titulo: "Contacto — Instituto IDEX",
         descricao:
-          "Habla con el Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Teléfono (11) 2645-4565. Instagram @idexbrasil.",
+          "Habla con el Instituto IDEX: Rua Cel. José Eusébio, 95 – Higienópolis – São Paulo/SP. Teléfono (11) 92544-6046. Instagram @idexbrasil.",
         ogDescricao: "Envía tu mensaje al instituto.",
       },
       hero: {

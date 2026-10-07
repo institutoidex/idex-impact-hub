@@ -42,7 +42,8 @@ export const PROJETOS: Projeto[] = [
 export const CONTATO = {
   // Endereço oficial da sede (informado pelo instituto em 29/09/2026)
   endereco: "Rua Cel. José Eusébio, 95 – casa 13 – Higienópolis – São Paulo/SP – CEP 01.239-030",
-  telefone: "(11) 2645-4565",
+  // Telefone institucional atualizado em 07/10/2026 (informado pelo Pedro)
+  telefone: "(11) 92544-6046",
   cnpj: "08.666.490/0001-71",
   // Decisão do instituto: e-mail NÃO aparece no site (anti-spam contra robôs).
   // Não adicionar por conta própria — o contato é pelo formulário, telefone e redes.
