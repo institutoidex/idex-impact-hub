@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 /** Chave do cache local do papel (por usuário) — evita esperar a rede a cada entrada */
@@ -17,13 +17,14 @@ function lerCache(userId: string | undefined): boolean | undefined {
  * chega em segundo plano (revalidação).
  */
 export function usePapelAdmin(userId: string | undefined) {
-  return useQuery({
-    queryKey: ["papel-admin", userId],
+  const qc = useQueryClient();
+  const queryKey = ["papel-admin", userId] as const;
+  const r = useQuery({
+    queryKey,
     enabled: Boolean(userId),
     staleTime: 5 * 60 * 1000,
-    // Voltar o foco (ex.: ao fechar o seletor de arquivos) não revalida o papel:
-    // evita checagens no meio da edição. Ainda revalida ao montar o painel.
-    refetchOnWindowFocus: false,
+    // Revalida ao voltar o foco (padrão do React Query) para revogar rápido um
+    // papel retirado; falhas passageiras não expulsam (ver GuardaAdmin).
     // Valor otimista vindo do cache da sessão do navegador
     initialData: lerCache(userId),
     queryFn: async () => {
@@ -39,4 +40,11 @@ export function usePapelAdmin(userId: string | undefined) {
       return ehAdmin;
     },
   });
+
+  // Resposta de uma busca REAL concluída com sucesso. `dataUpdateCount` só
+  // cresce com dado vindo da queryFn — o `initialData` (sessionStorage) não
+  // conta. `isFetched` não serve: também fica true após busca que falhou.
+  const contagem = qc.getQueryState(queryKey)?.dataUpdateCount ?? 0;
+  const respostaServidor = r.isSuccess && contagem > 0 ? r.data : undefined;
+  return { ...r, respostaServidor };
 }
