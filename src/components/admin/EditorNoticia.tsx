@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,8 @@ import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
 import { useMensagens } from "@/i18n/mensagens";
 import { editores } from "@/i18n/catalogos/editores";
 import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
+import { midia } from "@/i18n/catalogos/midia";
+import { normalizarGaleria, type Galeria } from "@/lib/galeria";
 
 /** Formulário de criação/edição de notícia dentro de um diálogo. */
 export function EditorNoticia({
@@ -34,6 +37,10 @@ export function EditorNoticia({
   const salvar = useSalvarNoticia();
   const [form, setForm] = useState<NoticiaForm>(vazia());
   const [trad, setTrad] = useState<Traducoes>({});
+  // Galeria controlada aqui (salva com a notícia); enviandoGaleria bloqueia o Salvar
+  const [galeria, setGaleria] = useState<Galeria>([]);
+  const [enviandoGaleria, setEnviandoGaleria] = useState(false);
+  const tm = useMensagens(midia).upload;
 
   // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
@@ -54,11 +61,19 @@ export function EditorNoticia({
         : vazia(),
     );
     setTrad(lerTraducoes(noticia?.traducoes));
+    // registro antigo/sem migração: galeria vazia (nunca inferida por nome/pasta)
+    setGaleria(normalizarGaleria(noticia?.galeria));
   }, [aberto, noticia]);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    await salvar.mutateAsync({
+    // não salva durante envio de fotos nem em clique duplo
+    if (enviandoGaleria || salvar.isPending) {
+      if (enviandoGaleria) toast.warning(tm.galeriaEnviando);
+      return;
+    }
+    try {
+      await salvar.mutateAsync({
       ...form,
       slug: form.slug || gerarSlug(form.titulo),
       imagem_url: form.imagem_url || null,
@@ -67,7 +82,13 @@ export function EditorNoticia({
       publicado_em: form.publicado_em || new Date().toISOString().slice(0, 10),
       traducoes: limparTraducoes(trad),
       traducoesColunaExistente: Boolean(noticia && "traducoes" in noticia),
-    });
+      galeria,
+      galeriaColunaExistente: Boolean(noticia && "galeria" in noticia),
+      });
+    } catch {
+      // erro já mostrado pelo onError da mutação; editor e campos ficam como estão
+      return;
+    }
     aoFechar();
   }
 
@@ -213,7 +234,12 @@ export function EditorNoticia({
             tituloCapa={form.titulo}
           />
 
-          <UploadMidia pasta="noticias" />
+          <UploadMidia
+            pasta="noticias"
+            valor={galeria}
+            aoMudar={setGaleria}
+            aoMudarEnviando={setEnviandoGaleria}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="data">{t.noticia.campoData}</Label>
@@ -240,7 +266,7 @@ export function EditorNoticia({
             <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
               {t.acoes.cancelar}
             </Button>
-            <Button type="submit" className="rounded-full" disabled={salvar.isPending}>
+            <Button type="submit" className="rounded-full" disabled={salvar.isPending || enviandoGaleria}>
               {salvar.isPending ? t.acoes.salvando : t.acoes.salvar}
             </Button>
           </DialogFooter>
