@@ -196,20 +196,22 @@ export function UploadMidia({
           toast.error(t.galeriaCheia(LIMITE_GALERIA));
           break;
         }
-        if (modoGaleria) {
-          const url = await enviarFotoGaleria(arquivo, pasta);
-          atual = [...atual, url];
-          aoMudar(atual);
-        } else {
-          const url = await enviarImagem(arquivo, `${pasta}/midia`);
-          setUrlsLivres((v) => [...v, url]);
+        // falha de um arquivo não interrompe os outros; nada do formulário muda
+        try {
+          if (modoGaleria) {
+            const url = await enviarFotoGaleria(arquivo, pasta);
+            atual = [...atual, url];
+            aoMudar(atual);
+          } else {
+            const url = await enviarImagem(arquivo, `${pasta}/midia`);
+            setUrlsLivres((v) => [...v, url]);
+          }
+          algumEnviado = true;
+        } catch (e) {
+          toast.error(`${arquivo.name}: ${ea.deErro(e, t.erroEnviarMidia)}`);
         }
-        algumEnviado = true;
       }
       if (algumEnviado) toast.success(t.midiaEnviada);
-    } catch (e) {
-      // falha no meio: fotos já enviadas continuam; o resto do formulário não muda
-      toast.error(ea.deErro(e, t.erroEnviarMidia));
     } finally {
       marcarEnvio(false);
       if (inputArquivo.current) inputArquivo.current.value = "";
