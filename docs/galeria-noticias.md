@@ -6,7 +6,7 @@ Fotos extras de uma notícia, exibidas **depois do texto principal**, iguais nos
 `supabase/migracoes/2026-10-07-galeria-noticias.sql` — aditiva e idempotente:
 - `noticias.galeria jsonb not null default '[]'` + constraint `noticias_galeria_array` (`jsonb_typeof = 'array'`);
 - não mexe em RLS, papéis, registros ou arquivos; `notify pgrst, 'reload schema'` no fim.
-Em 07/10/2026 a leitura REST (`select=galeria`) respondeu `42703 column noticias.galeria does not exist`: migração **pendente**.
+**Aplicada pelo Pedro em 07/10/2026** no SQL Editor (8 notícias preservadas, 8 galerias vazias, demais campos idênticos por hash). Não executar de novo (é idempotente, mas desnecessário).
 
 ## Arquivos
 - `src/lib/galeria.ts` — tipo `Galeria`, `LIMITE_GALERIA` (30), `normalizarGaleria` (só http/https, sem repetidos, ordem mantida, malformado → `[]`), `moverNaGaleria`, `erroColunaGaleriaAusente`, `ErroGaleriaColunaAusente`.
@@ -23,3 +23,5 @@ Em 07/10/2026 a leitura REST (`select=galeria`) respondeu `42703 column noticias
 3. Salvar manda `galeria` quando há fotos ou quando o registro já tinha a coluna.
 4. Banco sem migração: notícia sem fotos salva normalmente; com fotos aparece o aviso da migração e o editor fica aberto (nunca grava descartando as fotos). Fallback de `traducoes` ausente mantém a galeria.
 5. Notícias antigas ficam com galeria vazia; fotos antigas não são associadas por nome/pasta.
+6. Durante o envio de fotos, Cancelar/X/Esc/clique fora ficam bloqueados com aviso; cada abertura do editor tem uma identidade (`sessaoRef`) e respostas de envio de uma abertura antiga são ignoradas.
+7. O aviso de falha ao salvar a galeria é genérico para o usuário (não cita banco nem SQL).
