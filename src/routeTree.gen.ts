@@ -23,6 +23,7 @@ import { Route as QuemSomosRouteImport } from './routes/quem-somos'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TransparenciaRouteImport } from './routes/transparencia'
+import { Route as ApiTraducaoNoticiaRouteImport } from './routes/api/traducao-noticia'
 import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
 import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
 import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
@@ -99,6 +100,11 @@ const TransparenciaRoute = TransparenciaRouteImport.update({
   path: '/transparencia',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTraducaoNoticiaRoute = ApiTraducaoNoticiaRouteImport.update({
+  id: '/api/traducao-noticia',
+  path: '/api/traducao-noticia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NoticiasIndexRoute = NoticiasIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
+  '/api/traducao-noticia': typeof ApiTraducaoNoticiaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias/': typeof NoticiasIndexRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
+  '/api/traducao-noticia': typeof ApiTraducaoNoticiaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias': typeof NoticiasIndexRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/transparencia': typeof TransparenciaRoute
+  '/api/traducao-noticia': typeof ApiTraducaoNoticiaRoute
   '/noticias/$slug': typeof NoticiasSlugRoute
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias/': typeof NoticiasIndexRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/sitemap.xml'
     | '/transparencia'
+    | '/api/traducao-noticia'
     | '/noticias/$slug'
     | '/projetos/$slug'
     | '/noticias/'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/sitemap.xml'
     | '/transparencia'
+    | '/api/traducao-noticia'
     | '/noticias/$slug'
     | '/projetos/$slug'
     | '/noticias'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/sitemap.xml'
     | '/transparencia'
+    | '/api/traducao-noticia'
     | '/noticias/$slug'
     | '/projetos/$slug'
     | '/noticias/'
@@ -267,6 +279,7 @@ export interface RootRouteChildren {
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TransparenciaRoute: typeof TransparenciaRoute
+  ApiTraducaoNoticiaRoute: typeof ApiTraducaoNoticiaRoute
   ApiPublicDocumentosSplatRoute: typeof ApiPublicDocumentosSplatRoute
 }
 
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransparenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/traducao-noticia': {
+      id: '/api/traducao-noticia'
+      path: '/api/traducao-noticia'
+      fullPath: '/api/traducao-noticia'
+      preLoaderRoute: typeof ApiTraducaoNoticiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/noticias/': {
       id: '/noticias/'
       path: '/'
@@ -451,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TransparenciaRoute: TransparenciaRoute,
+  ApiTraducaoNoticiaRoute: ApiTraducaoNoticiaRoute,
   ApiPublicDocumentosSplatRoute: ApiPublicDocumentosSplatRoute,
 }
 export const routeTree = rootRouteImport
