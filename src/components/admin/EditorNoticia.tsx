@@ -22,6 +22,10 @@ import { editores } from "@/i18n/catalogos/editores";
 import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
 import { midia } from "@/i18n/catalogos/midia";
 import { normalizarGaleria, type Galeria } from "@/lib/galeria";
+import { BotaoTraduzir } from "@/components/admin/BotaoTraduzir";
+import { mesclarTraducoes } from "@/lib/traducao-ia/cliente";
+import type { TraducoesGeradas } from "@/lib/traducao-ia/contrato";
+import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
 
 /** Formulário de criação/edição de notícia dentro de um diálogo. */
 export function EditorNoticia({
@@ -41,6 +45,9 @@ export function EditorNoticia({
   const [galeria, setGaleria] = useState<Galeria>([]);
   const [enviandoGaleria, setEnviandoGaleria] = useState(false);
   const tm = useMensagens(midia).upload;
+  const ti = useMensagens(traducaoIa);
+  // tradução automática em andamento: bloqueia Salvar
+  const [traduzindo, setTraduzindo] = useState(false);
   // Identidade da abertura atual do editor: cada abertura/troca de notícia
   // incrementa. Resultados de envio de uma abertura antiga são ignorados,
   // para nunca caírem na galeria da próxima notícia.
@@ -51,6 +58,7 @@ export function EditorNoticia({
   useEffect(() => {
     sessaoRef.current += 1; // abriu, fechou ou trocou de notícia: nova identidade
     setEnviandoGaleria(false);
+    setTraduzindo(false);
     if (!aberto) return;
     setForm(
       noticia
@@ -82,6 +90,16 @@ export function EditorNoticia({
     setEnviandoGaleria(v);
   }
 
+  /** Traduções automáticas só valem para a abertura em que foram pedidas. */
+  function aplicarTraducao(novas: TraducoesGeradas) {
+    if (sessaoRef.current !== sessaoRender) return;
+    setTrad((v) => mesclarTraducoes(v, novas));
+  }
+  function mudarTraduzindo(v: boolean) {
+    if (sessaoRef.current !== sessaoRender) return;
+    setTraduzindo(v);
+  }
+
   /**
    * Fechamento intencional (Cancelar, X, Esc, clique fora). Durante o envio
    * de fotos da galeria é bloqueado com aviso, para não perder o formulário.
@@ -97,8 +115,9 @@ export function EditorNoticia({
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     // não salva durante envio de fotos nem em clique duplo
-    if (enviandoGaleria || salvar.isPending) {
+    if (enviandoGaleria || traduzindo || salvar.isPending) {
       if (enviandoGaleria) toast.warning(tm.galeriaEnviando);
+      else if (traduzindo) toast.warning(ti.aguardeSalvar);
       return;
     }
     try {
@@ -255,6 +274,16 @@ export function EditorNoticia({
             </TabsContent>
           </Tabs>
 
+          {/* Tradução automática (Gemini): só no clique, resultado revisável nas abas.
+              Fechar o editor durante a tradução aborta a chamada (desmonta o botão). */}
+          <BotaoTraduzir
+            entrada={{ titulo: form.titulo, resumo: form.resumo, conteudo: form.conteudo ?? "" }}
+            traducoes={trad}
+            aoAplicar={aplicarTraducao}
+            aoMudarTraduzindo={mudarTraduzindo}
+            desabilitado={enviandoGaleria || salvar.isPending}
+          />
+
           {/* Capa com envio de arquivo e pré-visualização */}
           <UploadCapa
             valor={form.imagem_url || null}
@@ -295,7 +324,7 @@ export function EditorNoticia({
             <Button type="button" variant="outline" className="rounded-full" onClick={pedirFechar}>
               {t.acoes.cancelar}
             </Button>
-            <Button type="submit" className="rounded-full" disabled={salvar.isPending || enviandoGaleria}>
+            <Button type="submit" className="rounded-full" disabled={salvar.isPending || enviandoGaleria || traduzindo}>
               {salvar.isPending ? t.acoes.salvando : t.acoes.salvar}
             </Button>
           </DialogFooter>
