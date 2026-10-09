@@ -39,12 +39,20 @@ function erro(codigo: CodigoServidor) {
 }
 
 export async function processarTraducao(request: Request, deps: Dependencias): Promise<Response> {
-  const admin = await deps.verificar(request);
+  // falha inesperada na verificação (rede, Supabase fora): resposta JSON segura,
+  // log só com o código — nunca o erro bruto (pode conter token/URL)
+  let admin: ResultadoAdmin;
+  try {
+    admin = await deps.verificar(request);
+  } catch {
+    console.warn("[traducao-ia] falha_verificacao");
+    return erro("falha_verificacao");
+  }
   if (!admin.ok) return erro(admin.codigo);
 
-  // corpo bruto limitado antes do parse
-  const texto = await request.text().catch(() => "");
-  if (!texto || texto.length > LIMITE_CORPO) return erro("payload_invalido");
+  // corpo bruto lido em stream e cortado em LIMITE_CORPO bytes reais
+  const texto = await lerCorpoLimitado(request, LIMITE_CORPO);
+  if (!texto) return erro("payload_invalido");
   let json: unknown;
   try {
     json = JSON.parse(texto);
@@ -71,5 +79,45 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
     return erro(codigo);
   } finally {
     deps.limitador.liberar(admin.userId);
+  }
+}
+
+/**
+ * Lê o corpo em pedaços e para assim que passar de `limite` bytes, sem
+ * materializar o texto inteiro. Retorna null se vazio, grande demais,
+ * UTF-8 inválido ou se a leitura falhar.
+ */
+export async function lerCorpoLimitado(request: Request, limite: number): Promise<string | null> {
+  const declarado = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declarado) && declarado > limite) return null;
+  if (!request.body) return null;
+  const leitor = request.body.getReader();
+  const pedacos: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await leitor.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > limite) {
+        await leitor.cancel().catch(() => {});
+        return null;
+      }
+      pedacos.push(value);
+    }
+  } catch {
+    return null;
+  }
+  if (total === 0) return null;
+  const junto = new Uint8Array(total);
+  let pos = 0;
+  for (const p of pedacos) {
+    junto.set(p, pos);
+    pos += p.byteLength;
+  }
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(junto);
+  } catch {
+    return null;
   }
 }

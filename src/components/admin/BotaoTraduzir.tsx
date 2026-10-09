@@ -67,6 +67,10 @@ export function BotaoTraduzir({
 
   async function traduzir() {
     setConfirmando(false);
+    // revalida tudo: a confirmação aberta não pode contornar bloqueios
+    if (traduzindo || controle.current || desabilitado) return;
+    if (semTitulo) return void toast.error(t.semTitulo);
+    if (acima) return void toast.error(t.acimaDoLimite);
     const meu = new AbortController();
     controle.current = meu;
     const foto = retrato(entrada, traducoes);
@@ -103,7 +107,13 @@ export function BotaoTraduzir({
           <p id="confirmar-traducao" className="text-sm font-semibold">{t.confirmarTitulo}</p>
           <p className="text-sm text-muted-foreground">{t.confirmarTexto}</p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" size="sm" className="rounded-full" onClick={() => void traduzir()}>
+            <Button
+              type="button"
+              size="sm"
+              className="rounded-full"
+              disabled={traduzindo || desabilitado || acima || semTitulo}
+              onClick={() => void traduzir()}
+            >
               {t.confirmarSim}
             </Button>
             <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setConfirmando(false)}>

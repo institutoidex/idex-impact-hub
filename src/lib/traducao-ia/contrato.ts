@@ -12,7 +12,8 @@ export const LIMITE_TOTAL = 12_000;
 export const LIMITE_TITULO = 300;
 export const LIMITE_RESUMO = 1_500;
 /** Limite do corpo HTTP bruto (bytes aproximados) antes de qualquer parse. */
-export const LIMITE_CORPO = 64_000;
+/** Limite do corpo bruto em BYTES reais (lido em stream, antes de virar texto). */
+export const LIMITE_CORPO = 64 * 1024;
 /** Saída pode ser maior que a entrada (inglês/espanhol se expandem): folga de 2x. */
 const FOLGA_SAIDA = 2;
 
@@ -59,6 +60,8 @@ export const STATUS_POR_CODIGO = {
   resposta_invalida: 502,
   resposta_truncada: 502,
   falha_provedor: 502,
+  /** Falha inesperada ao conferir o administrador (ex.: Supabase fora do ar). */
+  falha_verificacao: 503,
 } as const;
 
 export type CodigoServidor = keyof typeof STATUS_POR_CODIGO;
