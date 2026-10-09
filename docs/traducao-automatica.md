@@ -54,3 +54,8 @@ Sucesso: `{ ok: true, traducoes: { "en-US": {...}, "es-ES": {...} } }`. Erro: `{
 ## Limites conhecidos
 - O limite por usuário vive na memória de cada instância do servidor: com várias instâncias ou reinício, a contagem não é compartilhada. A cota real é a do Gemini (429).
 - O endpoint real com a chave real não foi testado (chave ainda não configurada).
+
+## Proteções extras (revisão 305e919)
+- O corpo do pedido é lido em stream e cortado em 64 KB reais (bytes) antes de virar texto; `content-length` maior já é recusado (400).
+- Falha inesperada ao conferir o administrador responde 503 `falha_verificacao` em JSON, com log só do código.
+- O "Substituir" da confirmação refaz as mesmas checagens do botão (`bloqueioTraducao`): não traduz com galeria enviando, salvamento, outra tradução, título vazio ou acima do limite.

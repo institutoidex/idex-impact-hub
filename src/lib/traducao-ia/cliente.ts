@@ -82,7 +82,7 @@ export function retrato(entrada: EntradaTraducao, traducoes: Traducoes) {
  */
 export function bloqueioTraducao(estado: {
   traduzindo: boolean;
-  desabilitado?: boolean;
+  desabilitado: boolean | undefined;
   entrada: { titulo: string; resumo: string; conteudo: string };
   limite: number;
 }): "bloqueado" | "semTitulo" | "acima" | null {
