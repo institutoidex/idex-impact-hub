@@ -70,6 +70,48 @@ describe("endpoint", () => {
   });
 });
 
+describe("proteções extras (revisão 305e919)", () => {
+  test("falha inesperada do verificarAdmin = 503 JSON seguro, sem token no log", async () => {
+    const logs = []; const orig = console.warn; console.warn = (...a) => logs.push(a.join(" "));
+    let chamou = false;
+    const r = await processarTraducao(req(PT, "tok-secreto"), deps({
+      verificar: async () => { throw new Error("falhou com Bearer tok-secreto"); },
+      traduzir: async () => { chamou = true; return TR; },
+    }));
+    console.warn = orig;
+    expect(r.headers.get("content-type")).toContain("application/json");
+    expect(await status(r)).toEqual([503, "falha_verificacao"]);
+    expect(chamou).toBe(false);
+    expect(logs.join()).not.toMatch(/tok-secreto|Bearer/);
+  });
+  test("corpo lido em stream para em 64KB reais sem ler o resto", async () => {
+    const e = await import("./endpoint.server");
+    let entregues = 0;
+    const pedaco = new Uint8Array(16 * 1024).fill(65);
+    const corpo = new ReadableStream({ pull(c) { entregues++; if (entregues > 100) c.close(); else c.enqueue(pedaco); } });
+    const r = new Request("http://x", { method: "POST", body: corpo, duplex: "half" });
+    expect(await e.lerCorpoLimitado(r, 64 * 1024)).toBeNull();
+    expect(entregues).toBeLessThan(10);
+  });
+  test("limite conta bytes (acentos), não caracteres; content-length grande recusa", async () => {
+    const e = await import("./endpoint.server");
+    const acentos = "ç".repeat(40 * 1024); // 40K caracteres = 80KB
+    expect(await e.lerCorpoLimitado(new Request("http://x", { method: "POST", body: acentos }), 64 * 1024)).toBeNull();
+    expect(await e.lerCorpoLimitado(new Request("http://x", { method: "POST", body: "ok" }), 64 * 1024)).toBe("ok");
+    const grande = new Request("http://x", { method: "POST", body: "ok", headers: { "content-length": "999999" } });
+    expect(await e.lerCorpoLimitado(grande, 64 * 1024)).toBeNull();
+    expect(await e.lerCorpoLimitado(new Request("http://x", { method: "POST", body: new Uint8Array([0xff, 0xfe]) }), 64)).toBeNull();
+  });
+  test("bloqueioTraducao: confirmação não contorna galeria/salvamento/limite", () => {
+    const base = { traduzindo: false, desabilitado: false, entrada: PT, limite: LIMITE_TOTAL };
+    expect(c.bloqueioTraducao(base)).toBeNull();
+    expect(c.bloqueioTraducao({ ...base, desabilitado: true })).toBe("bloqueado");
+    expect(c.bloqueioTraducao({ ...base, traduzindo: true })).toBe("bloqueado");
+    expect(c.bloqueioTraducao({ ...base, entrada: { ...PT, titulo: "  " } })).toBe("semTitulo");
+    expect(c.bloqueioTraducao({ ...base, entrada: { ...PT, conteudo: "a".repeat(LIMITE_TOTAL) } })).toBe("acima");
+  });
+});
+
 describe("limite por usuário", () => {
   test("uma por vez e no máximo N por janela", () => {
     const l = criarLimitador(2, 1000);

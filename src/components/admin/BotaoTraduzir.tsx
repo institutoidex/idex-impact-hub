@@ -6,7 +6,7 @@ import { useMensagens } from "@/i18n/mensagens";
 import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
 import type { Traducoes } from "@/i18n/traduzir";
 import { LIMITE_TOTAL, totalCaracteres, type EntradaTraducao, type TraducoesGeradas } from "@/lib/traducao-ia/contrato";
-import { pedirTraducao, retrato, temTraducaoExistente } from "@/lib/traducao-ia/cliente";
+import { bloqueioTraducao, pedirTraducao, retrato, temTraducaoExistente } from "@/lib/traducao-ia/cliente";
 
 /**
  * Botão "Traduzir para inglês e espanhol" do editor de notícia.
@@ -57,16 +57,24 @@ export function BotaoTraduzir({
     aoMudarTraduzindo?.(v);
   }
 
+  // mesma checagem no clique e no "Substituir"; true = pode seguir
+  function liberado() {
+    const motivo = bloqueioTraducao({ traduzindo: traduzindo || !!controle.current, desabilitado, entrada, limite: LIMITE_TOTAL });
+    if (motivo === "semTitulo") toast.error(t.semTitulo);
+    if (motivo === "acima") toast.error(t.acimaDoLimite);
+    return motivo === null;
+  }
+
   function clicar() {
-    if (traduzindo || desabilitado) return;
-    if (semTitulo) return void toast.error(t.semTitulo);
-    if (acima) return void toast.error(t.acimaDoLimite);
+    if (!liberado()) return;
     if (temTraducaoExistente(traducoes)) return setConfirmando(true);
     void traduzir();
   }
 
   async function traduzir() {
     setConfirmando(false);
+    // revalida tudo: a confirmação aberta não pode contornar bloqueios
+    if (!liberado()) return;
     const meu = new AbortController();
     controle.current = meu;
     const foto = retrato(entrada, traducoes);
@@ -103,7 +111,13 @@ export function BotaoTraduzir({
           <p id="confirmar-traducao" className="text-sm font-semibold">{t.confirmarTitulo}</p>
           <p className="text-sm text-muted-foreground">{t.confirmarTexto}</p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" size="sm" className="rounded-full" onClick={() => void traduzir()}>
+            <Button
+              type="button"
+              size="sm"
+              className="rounded-full"
+              disabled={traduzindo || desabilitado || acima || semTitulo}
+              onClick={() => void traduzir()}
+            >
               {t.confirmarSim}
             </Button>
             <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setConfirmando(false)}>

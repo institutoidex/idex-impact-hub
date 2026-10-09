@@ -74,3 +74,21 @@ export function mesclarTraducoes(atual: Traducoes, novas: TraducoesGeradas): Tra
 export function retrato(entrada: EntradaTraducao, traducoes: Traducoes) {
   return JSON.stringify([entrada.titulo, entrada.resumo, entrada.conteudo, traducoes]);
 }
+
+/**
+ * Motivo para NÃO traduzir agora (null = pode). Usado no clique do botão E no
+ * "Substituir" da confirmação, para que a confirmação aberta não contorne
+ * galeria enviando, salvamento, outra tradução ou limite de caracteres.
+ */
+export function bloqueioTraducao(estado: {
+  traduzindo: boolean;
+  desabilitado: boolean | undefined;
+  entrada: { titulo: string; resumo: string; conteudo: string };
+  limite: number;
+}): "bloqueado" | "semTitulo" | "acima" | null {
+  if (estado.traduzindo || estado.desabilitado) return "bloqueado";
+  if (!estado.entrada.titulo.trim()) return "semTitulo";
+  const total = estado.entrada.titulo.length + estado.entrada.resumo.length + estado.entrada.conteudo.length;
+  if (total > estado.limite) return "acima";
+  return null;
+}
