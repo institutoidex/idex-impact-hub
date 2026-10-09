@@ -62,6 +62,8 @@ export const STATUS_POR_CODIGO = {
   falha_provedor: 502,
   /** Falha inesperada ao conferir o administrador (ex.: Supabase fora do ar). */
   falha_verificacao: 503,
+  /** A chave existe no servidor, mas o Google a recusou (inválida/API desativada). */
+  chave_recusada: 503,
 } as const;
 
 export type CodigoServidor = keyof typeof STATUS_POR_CODIGO;

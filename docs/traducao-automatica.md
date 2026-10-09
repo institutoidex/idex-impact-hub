@@ -43,6 +43,7 @@ Sucesso: `{ ok: true, traducoes: { "en-US": {...}, "es-ES": {...} } }`. Erro: `{
 | em_andamento | 409 |
 | tempo_esgotado | 504 |
 | resposta_invalida, resposta_truncada, falha_provedor | 502 |
+| falha_verificacao, chave_recusada (chave existe mas o Google recusou) | 503 |
 
 ## Regras do editor
 - Traduz só no clique; com traduções existentes pede confirmação ("Substituir" / "Manter as atuais").
@@ -59,3 +60,6 @@ Sucesso: `{ ok: true, traducoes: { "en-US": {...}, "es-ES": {...} } }`. Erro: `{
 - O corpo do pedido é lido em stream e cortado em 64 KB reais (bytes) antes de virar texto; `content-length` maior já é recusado (400).
 - Falha inesperada ao conferir o administrador responde 503 `falha_verificacao` em JSON, com log só do código.
 - O "Substituir" da confirmação refaz as mesmas checagens do botão (`bloqueioTraducao`): não traduz com galeria enviando, salvamento, outra tradução, título vazio ou acima do limite.
+
+## Diagnóstico: "ainda não está configurada" na prévia
+`nao_configurado` significa que o servidor que atendeu o pedido não tinha `GEMINI_API_KEY` no ambiente. O secret entra no servidor quando ele é montado de novo: a prévia montada antes do cadastro continua sem a chave até a próxima atualização, e o site publicado só recebe a chave ao publicar. Chave presente mas recusada pelo Google aparece como `chave_recusada`.

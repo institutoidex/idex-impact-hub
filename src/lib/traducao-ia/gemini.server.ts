@@ -149,7 +149,7 @@ export async function traduzirComGemini(
     // chave ausente/inválida ou API não habilitada: problema de configuração
     if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
       const corpo = await resp.text().catch(() => "");
-      if (/API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) throw new ErroTraducao("nao_configurado");
+      if (/API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) throw new ErroTraducao("chave_recusada");
       throw new ErroTraducao("falha_provedor");
     }
     if (!resp.ok) throw new ErroTraducao("falha_provedor");
