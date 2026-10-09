@@ -36,7 +36,7 @@ export async function pedirTraducao(
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
       body: JSON.stringify({ titulo: entrada.titulo, resumo: entrada.resumo, conteudo: entrada.conteudo }),
-      signal: sinal,
+      signal: sinal ?? null,
     });
     const json = (await resp.json().catch(() => null)) as RespostaTraducao | null;
     if (json?.ok === true) {
