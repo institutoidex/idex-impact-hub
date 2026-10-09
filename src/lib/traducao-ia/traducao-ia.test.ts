@@ -166,9 +166,9 @@ describe("serviço Gemini (fetch simulado)", () => {
     const f = resposta({ en_US: { ...TR["en-US"], conteudo: "" }, es_ES: { ...TR["es-ES"], conteudo: "" } });
     expect((await g.traduzirComGemini(pt, { chave: "k", fetchImpl: f }))["en-US"].conteudo).toBe("");
   });
-  test("429 = cota, chave inválida = nao_configurado, timeout = tempo_esgotado", async () => {
+  test("429 = cota, chave recusada = chave_recusada, timeout = tempo_esgotado", async () => {
     await expect(g.traduzirComGemini(PT, { chave: "k", fetchImpl: async () => new Response("{}", { status: 429 }) })).rejects.toMatchObject({ codigo: "cota" });
-    await expect(g.traduzirComGemini(PT, { chave: "k", fetchImpl: async () => new Response('{"error":{"message":"API key not valid"}}', { status: 400 }) })).rejects.toMatchObject({ codigo: "nao_configurado" });
+    await expect(g.traduzirComGemini(PT, { chave: "k", fetchImpl: async () => new Response('{"error":{"message":"API key not valid"}}', { status: 400 }) })).rejects.toMatchObject({ codigo: "chave_recusada" });
     const lento = (_u, init) => new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("abort"))));
     await expect(g.traduzirComGemini(PT, { chave: "k", fetchImpl: lento, tempoLimiteMs: 20 })).rejects.toMatchObject({ codigo: "tempo_esgotado" });
   });
@@ -201,6 +201,6 @@ describe("cliente e regras do editor", () => {
     expect(c.retrato(PT, { "en-US": { titulo: "x" } })).not.toBe(a);
   });
   test("mensagens de erro existem nos três idiomas", () => {
-    for (const l of ["pt-BR", "en-US", "es-ES"]) for (const k of ["cota", "nao_configurado", "cancelado", "rede"]) expect(traducaoIa[l].erros[k].length).toBeGreaterThan(5);
+    for (const l of ["pt-BR", "en-US", "es-ES"]) for (const k of ["cota", "nao_configurado", "chave_recusada", "cancelado", "rede"]) expect(traducaoIa[l].erros[k].length).toBeGreaterThan(5);
   });
 });
