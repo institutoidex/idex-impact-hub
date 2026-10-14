@@ -25,6 +25,8 @@ mock.module("./supabase", () => ({
   supabase: {
     from: () => ({
       insert: (campos) => ({ select: () => ({ single: async () => resposta("insert", campos) }) }),
+      // consulta de slugs parecidos (escolha de endereço livre): nenhum ocupado
+      select: () => ({ like: async () => ({ data: [], error: null }) }),
       update: (campos) => ({ eq: (_c, id) => ({ select: () => ({ single: async () => resposta("update", campos, id) }) }) }),
     }),
     storage: {
@@ -145,5 +147,15 @@ describe("textos PT/EN/ES", () => {
     }
     expect(noticias["en-US"].detalhe.galeriaTitulo).toBe("Photo gallery");
     expect(noticias["es-ES"].detalhe.galeriaTitulo).toBe("Galería de fotos");
+  });
+});
+
+// Escolha de endereço livre para notícias com títulos iguais.
+describe("escolherSlugLivre", () => {
+  test("mantém, acrescenta -2 e pula sufixos ocupados", async () => {
+    const { escolherSlugLivre } = await import("./mutations");
+    expect(escolherSlugLivre("treino", ["treino-de-futebol"])).toBe("treino");
+    expect(escolherSlugLivre("treino", ["treino"])).toBe("treino-2");
+    expect(escolherSlugLivre("treino", ["treino", "treino-2", "treino-3"])).toBe("treino-4");
   });
 });
