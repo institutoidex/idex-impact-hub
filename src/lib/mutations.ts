@@ -108,7 +108,32 @@ export function camposGaleria(
 }
 
 /**
+ * Escolhe um slug livre: devolve `base` se ninguém usa; senão `base-2`, `base-3`...
+ * Função pura (testável). `existentes` = slugs já gravados que começam com `base`.
+ */
+export function escolherSlugLivre(base: string, existentes: string[]): string {
+  const usados = new Set(existentes);
+  if (!usados.has(base)) return base;
+  for (let n = 2; ; n++) {
+    const candidato = `${base}-${n}`;
+    if (!usados.has(candidato)) return candidato;
+  }
+}
+
+/** Busca no banco os slugs de notícias parecidos com `base` e devolve um livre. */
+async function resolverSlugLivre(base: string): Promise<string> {
+  const { data, error } = await supabase
+    .from("noticias")
+    .select("slug")
+    .like("slug", `${base}%`);
+  if (error) throw error;
+  return escolherSlugLivre(base, (data ?? []).map((l: { slug: string }) => l.slug));
+}
+
+/**
  * Grava a notícia (insert/update) — função pura de dados, testável sem React.
+ * - Notícia nova: o slug vem do título e ganha sufixo (-2, -3...) se já existir
+ *   outra notícia com o mesmo endereço. Edição mantém o slug atual (links não quebram).
  * - Fallback de `traducoes` ausente: repete sem traduções, MAS mantém a galeria.
  * - Coluna `galeria` ausente com fotos: lança ErroGaleriaColunaAusente
  *   (nunca repete descartando as fotos; o editor fica aberto).
@@ -119,19 +144,38 @@ export async function gravarNoticia(
   const { id, traducoes, traducoesColunaExistente, galeria, galeriaColunaExistente, ...resto } =
     valores;
   const extraGaleria = camposGaleria(galeria, galeriaColunaExistente);
+  const baseSlug = resto.slug || gerarSlug(resto.titulo) || "noticia";
+
+  // Executa a gravação com o slug informado.
+  const gravar = (slug: string) =>
+    executarComFallbackTraducoes<NoticiaRow>((incluirTraducoes) => {
+      const base = { ...resto, slug, ...extraGaleria };
+      const campos = incluirTraducoes
+        ? camposComTraducoes(base, traducoes, traducoesColunaExistente)
+        : base;
+      return id
+        ? supabase.from("noticias").update(campos).eq("id", id).select().single()
+        : supabase.from("noticias").insert(campos).select().single();
+    });
+
   try {
-    const { data, avisoColunaAusente } = await executarComFallbackTraducoes<NoticiaRow>(
-      (incluirTraducoes) => {
-        const base = { ...resto, ...extraGaleria };
-        const campos = incluirTraducoes
-          ? camposComTraducoes(base, traducoes, traducoesColunaExistente)
-          : base;
-        return id
-          ? supabase.from("noticias").update(campos).eq("id", id).select().single()
-          : supabase.from("noticias").insert(campos).select().single();
-      },
-    );
-    return { dado: data, avisoColunaAusente };
+    if (id) {
+      const { data, avisoColunaAusente } = await gravar(resto.slug);
+      return { dado: data, avisoColunaAusente };
+    }
+    // Nova notícia: escolhe slug livre; se outra pessoa gravou o mesmo no meio
+    // tempo (chave duplicada), tenta de novo uma única vez com novo sufixo.
+    let slug = await resolverSlugLivre(baseSlug);
+    try {
+      const { data, avisoColunaAusente } = await gravar(slug);
+      return { dado: data, avisoColunaAusente };
+    } catch (erro) {
+      const msg = (erro as { message?: string })?.message ?? "";
+      if (!msg.includes("duplicate key")) throw erro;
+      slug = await resolverSlugLivre(baseSlug);
+      const { data, avisoColunaAusente } = await gravar(slug);
+      return { dado: data, avisoColunaAusente };
+    }
   } catch (erro) {
     if (erroColunaGaleriaAusente(erro)) throw new ErroGaleriaColunaAusente();
     throw erro;
