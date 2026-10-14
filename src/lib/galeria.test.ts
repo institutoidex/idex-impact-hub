@@ -25,6 +25,8 @@ mock.module("./supabase", () => ({
   supabase: {
     from: () => ({
       insert: (campos) => ({ select: () => ({ single: async () => resposta("insert", campos) }) }),
+      // consulta de slugs parecidos (escolha de endereço livre): nenhum ocupado
+      select: () => ({ like: async () => ({ data: [], error: null }) }),
       update: (campos) => ({ eq: (_c, id) => ({ select: () => ({ single: async () => resposta("update", campos, id) }) }) }),
     }),
     storage: {
