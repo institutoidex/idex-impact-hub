@@ -157,15 +157,9 @@ export function EditorNoticia({
         </DialogHeader>
 
         <form onSubmit={enviar} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="slug">{t.noticia.campoSlug}</Label>
-            <Input
-              id="slug"
-              required
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: gerarSlug(e.target.value) }))}
-            />
-          </div>
+          {/* O slug é gerado automaticamente a partir do título (em notícias
+              novas); em notícias existentes ele fica preservado, para o endereço
+              público da notícia nunca mudar sem intenção. */}
 
           <Tabs defaultValue="pt" className="w-full">
             <TabsList>
