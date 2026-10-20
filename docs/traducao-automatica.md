@@ -93,6 +93,8 @@ Em falha do provedor, o log de produção traz uma única linha, por exemplo
 - Nunca: texto traduzido, mensagem/corpo do provedor, chave, token. Função: `diagnosticoSeguro` em `gemini.server.ts`.
 
 ### Ocorrência de 20/10/2026
-Os 502 `falha_provedor` intermitentes no cadastro de pasta eram o Google respondendo
-`http=503 status=UNAVAILABLE` (modelo sobrecarregado). Agora isso vira `provedor_ocupado`
-(HTTP 503) com aviso próprio nos 3 idiomas; continua sem novas tentativas automáticas.
+A falha das 14:35 de 20/10/2026 teve causa confirmada no log: Google HTTP 503
+`UNAVAILABLE` (modelo sobrecarregado). As falhas das 14:23, 14:24 e 14:33 não tinham
+diagnóstico suficiente e sua causa não foi confirmada. A partir de agora esse 503 do
+Google vira `provedor_ocupado` (HTTP 503) com aviso próprio nos 3 idiomas; continua sem
+novas tentativas automáticas.
