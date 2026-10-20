@@ -32,13 +32,13 @@
 | Secret | Exemplo | Situação |
 |---|---|---|
 | `RESEND_API_KEY` | chave da API Resend | **não cadastrada** |
-| `RESEND_FROM_EMAIL` | `Instituto IDEX <contato@institutoidex.org>` | aguardando domínio verificado no Resend (DNS em preparo) |
+| `RESEND_FROM_EMAIL` | `Instituto IDEX <formularios@institutoidex.org>` | **cadastrado** (20/10/2026); domínio verificado na conta Resend institutoidex.projetos (sa-east-1) |
 
 Sem os dois, nada é enviado e o status fica `nao_configurado`.
 Se a chave vier pelo conector Resend da Lovable (gateway), `resend.server.ts` precisa trocar a URL/cabeçalhos para o gateway.
 
 ## Primeiro teste real (ainda NÃO executado)
-Somente para `tecnologia@zas.com.br`, sem cópia, por script rodado direto no servidor usando
+Somente para `tecnologia@zas.com.br`, sem cópia: `bun ./scripts/teste-email-contato.ts` (assunto "[TESTE] IDEX — formulário de contato"), que usa
 `configTesteIsolado(process.env, "tecnologia@zas.com.br")` + `montarEmailContato` + `enviarViaResend`
 com dados fictícios. Nenhuma rota aceita destinatário de teste; produção continua com os destinos fixos.
 
