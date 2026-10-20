@@ -1,11 +1,18 @@
 // Configuração do aviso por e-mail — SOMENTE servidor (endereços nunca vão ao navegador).
-// Tudo vem do ambiente (cofre de secrets da Lovable):
-//  - RESEND_API_KEY            chave da API do Resend
-//  - CONTATO_EMAIL_REMETENTE   From, ex.: "Instituto IDEX <contato@dominio-verificado>"
-//  - CONTATO_EMAIL_PARA        destino principal
-//  - CONTATO_EMAIL_COPIA       cópia (opcional)
-// Enquanto faltar chave, remetente ou destino, nada é enviado: a mensagem é
-// gravada normalmente e o aviso fica como "nao_configurado".
+// Destinos de produção são FIXOS aqui (confirmados pelo Pedro em 20/10/2026) e não podem
+// ser trocados por variável de ambiente nem pelo navegador — sem "override" persistente.
+// Do ambiente (cofre de secrets da Lovable) vêm só:
+//  - RESEND_API_KEY      chave da API do Resend
+//  - RESEND_FROM_EMAIL   remetente, OBRIGATORIAMENTE no domínio institutoidex.org
+//                        (ex.: "Instituto IDEX <contato@institutoidex.org>")
+// Enquanto faltar chave ou remetente válido, nada é enviado: a mensagem é gravada
+// normalmente e o aviso fica como "nao_configurado". Não há remetente padrão.
+
+/** Destinos fixos de produção. */
+export const DESTINO_PRINCIPAL = "idex.secretaria@gmail.com";
+export const DESTINO_COPIA = "idex2007@hotmail.com";
+/** Único domínio aceito no remetente (nunca zas.com.br nem resend.dev). */
+export const DOMINIO_REMETENTE = "institutoidex.org";
 
 export type ConfigEmail = {
   chave: string;
@@ -23,21 +30,31 @@ export function emailValido(s: string): boolean {
   return s.length <= 255 && !CONTROLE.test(s) && EMAIL.test(s);
 }
 
-/** Remetente: "email" ou "Nome <email>", sem quebras de linha. */
+/** Remetente "email" ou "Nome <email>", sem quebras e no domínio institutoidex.org. */
 export function remetenteValido(s: string): boolean {
   if (CONTROLE.test(s) || s.length > 300) return false;
   const m = /^([^<>"\r\n]{1,100}) <([^<>]+)>$/.exec(s);
-  return m ? emailValido(m[2]!) : emailValido(s);
+  const email = m ? m[2]! : s;
+  return emailValido(email) && email.toLowerCase().endsWith(`@${DOMINIO_REMETENTE}`);
 }
 
-/** Lê e valida a configuração; devolve null se incompleta ou inválida. */
+/** Lê e valida a configuração de produção; devolve null se incompleta ou inválida. */
 export function lerConfigEmail(env: Record<string, string | undefined>): ConfigEmail | null {
   const chave = env["RESEND_API_KEY"]?.trim();
-  const remetente = env["CONTATO_EMAIL_REMETENTE"]?.trim();
-  const para = env["CONTATO_EMAIL_PARA"]?.trim();
-  const copia = env["CONTATO_EMAIL_COPIA"]?.trim() || null;
-  if (!chave || !remetente || !para) return null;
-  if (!remetenteValido(remetente) || !emailValido(para)) return null;
-  if (copia && !emailValido(copia)) return null;
-  return { chave, remetente, para, copia };
+  const remetente = env["RESEND_FROM_EMAIL"]?.trim();
+  if (!chave || !remetente || !remetenteValido(remetente)) return null;
+  return { chave, remetente, para: DESTINO_PRINCIPAL, copia: DESTINO_COPIA };
+}
+
+/**
+ * Configuração ISOLADA para o primeiro teste real, usada só por script executado
+ * direto no servidor (nunca por rota/navegador): um único destinatário, sem cópia.
+ */
+export function configTesteIsolado(
+  env: Record<string, string | undefined>,
+  destinoTeste: string,
+): ConfigEmail | null {
+  const prod = lerConfigEmail(env);
+  if (!prod || !emailValido(destinoTeste)) return null;
+  return { ...prod, para: destinoTeste, copia: null };
 }
