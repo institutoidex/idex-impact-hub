@@ -167,7 +167,7 @@ export function EditorPasta({
             {/* Tradução automática: só o NOME vai ao Gemini (slug, pasta mãe e ordem nunca) */}
             <BotaoTraduzir
               entidade="pasta"
-              chaveAbertura={`${aberto}:${pasta?.id ?? "nova"}`}
+              chaveAbertura={`${aberto}:${pasta?.id ?? "nova"}:${paiPadrao ?? "raiz"}`}
               entrada={{ nome: form.nome }}
               traducoes={trad}
               aoAplicar={(novas) => setTrad((v) => mesclarTraducoes(v, novas))}
