@@ -31,6 +31,9 @@ import type { DocumentoRow } from "@/lib/db-types";
 import { useMensagens } from "@/i18n/mensagens";
 import { editores } from "@/i18n/catalogos/editores";
 import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
+import { BotaoTraduzir } from "@/components/admin/BotaoTraduzir";
+import { mesclarTraducoes } from "@/lib/traducao-ia/cliente";
+import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
 
 /** Formulário de documento da página de Transparência (PDF, planilhas). */
 export function EditorDocumento({
@@ -54,8 +57,12 @@ export function EditorDocumento({
   const [enviando, setEnviando] = useState(false);
   const [form, setForm] = useState<DocumentoForm>(() => vazio());
   const [trad, setTrad] = useState<Traducoes>({});
+  // Tradução automática (Gemini) em andamento: bloqueia o Salvar.
+  const ti = useMensagens(traducaoIa);
+  const [traduzindo, setTraduzindo] = useState(false);
 
   useEffect(() => {
+    setTraduzindo(false); // nova abertura: nenhuma tradução pendente vale
     if (!aberto) return;
     setForm(
       documento
@@ -103,11 +110,18 @@ export function EditorDocumento({
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    await salvar.mutateAsync({
-      ...form,
-      traducoes: limparTraducoes(trad),
-      traducoesColunaExistente: Boolean(documento && "traducoes" in documento),
-    });
+    if (salvar.isPending) return;
+    if (traduzindo) return void toast.warning(ti.aguardeSalvar);
+    try {
+      await salvar.mutateAsync({
+        ...form,
+        traducoes: limparTraducoes(trad),
+        traducoesColunaExistente: Boolean(documento && "traducoes" in documento),
+      });
+    } catch {
+      // erro já mostrado pelo onError da mutação; editor e campos ficam como estão
+      return;
+    }
     aoFechar();
   }
 
@@ -163,6 +177,18 @@ export function EditorDocumento({
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Tradução automática: só o TÍTULO vai ao Gemini (arquivo, URL, ano,
+              categoria e pasta nunca). Bloqueada durante envio do arquivo. */}
+          <BotaoTraduzir
+            entidade="documento"
+            chaveAbertura={`${aberto}:${documento?.id ?? "novo"}`}
+            entrada={{ titulo: form.titulo }}
+            traducoes={trad}
+            aoAplicar={(novas) => setTrad((v) => mesclarTraducoes(v, novas))}
+            aoMudarTraduzindo={setTraduzindo}
+            desabilitado={enviando || salvar.isPending}
+          />
 
           <div className="space-y-2">
             <Label>{t.documento.campoPasta}</Label>
@@ -281,7 +307,7 @@ export function EditorDocumento({
             <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
               {t.acoes.cancelar}
             </Button>
-            <Button type="submit" className="rounded-full" disabled={salvar.isPending}>
+            <Button type="submit" className="rounded-full" disabled={salvar.isPending || traduzindo}>
               {salvar.isPending ? t.acoes.salvando : t.acoes.salvar}
             </Button>
           </DialogFooter>

@@ -19,6 +19,10 @@ import { UploadCapa, UploadMidia } from "@/components/admin/UploadImagem";
 import { useMensagens } from "@/i18n/mensagens";
 import { editores } from "@/i18n/catalogos/editores";
 import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
+import { BotaoTraduzir } from "@/components/admin/BotaoTraduzir";
+import { mesclarTraducoes } from "@/lib/traducao-ia/cliente";
+import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
+import { toast } from "sonner";
 
 /**
  * Cadastro/edição de projeto — mesmo fluxo simples das notícias:
@@ -37,9 +41,13 @@ export function EditorProjeto({
   const salvar = useSalvarProjeto();
   const [form, setForm] = useState<ProjetoForm>(vazio());
   const [trad, setTrad] = useState<Traducoes>({});
+  // Tradução automática (Gemini) em andamento: bloqueia o Salvar.
+  const ti = useMensagens(traducaoIa);
+  const [traduzindo, setTraduzindo] = useState(false);
 
   // Recarrega os campos sempre que abrir para editar outro registro
   useEffect(() => {
+    setTraduzindo(false); // nova abertura: nenhuma tradução pendente vale
     if (!aberto) return;
     setForm(
       projeto
@@ -60,14 +68,21 @@ export function EditorProjeto({
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    await salvar.mutateAsync({
-      ...form,
-      slug: form.slug || gerarSlug(form.titulo),
-      imagem_url: form.imagem_url || null,
-      iniciado_em: form.iniciado_em || null,
-      traducoes: limparTraducoes(trad),
-      traducoesColunaExistente: Boolean(projeto && "traducoes" in projeto),
-    });
+    if (salvar.isPending) return;
+    if (traduzindo) return void toast.warning(ti.aguardeSalvar);
+    try {
+      await salvar.mutateAsync({
+        ...form,
+        slug: form.slug || gerarSlug(form.titulo),
+        imagem_url: form.imagem_url || null,
+        iniciado_em: form.iniciado_em || null,
+        traducoes: limparTraducoes(trad),
+        traducoesColunaExistente: Boolean(projeto && "traducoes" in projeto),
+      });
+    } catch {
+      // erro já mostrado pelo onError da mutação; editor e campos ficam como estão
+      return;
+    }
     aoFechar();
   }
 
@@ -209,6 +224,17 @@ export function EditorProjeto({
             </TabsContent>
           </Tabs>
 
+          {/* Tradução automática: título, resumo e descrição (slug, capa e data nunca) */}
+          <BotaoTraduzir
+            entidade="projeto"
+            chaveAbertura={`${aberto}:${projeto?.id ?? "novo"}`}
+            entrada={{ titulo: form.titulo, resumo: form.resumo, descricao: form.descricao ?? "" }}
+            traducoes={trad}
+            aoAplicar={(novas) => setTrad((v) => mesclarTraducoes(v, novas))}
+            aoMudarTraduzindo={setTraduzindo}
+            desabilitado={salvar.isPending}
+          />
+
           {/* Capa com envio de arquivo e pré-visualização */}
           <UploadCapa
             valor={form.imagem_url || null}
@@ -243,7 +269,7 @@ export function EditorProjeto({
             <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
               {t.acoes.cancelar}
             </Button>
-            <Button type="submit" className="rounded-full" disabled={salvar.isPending}>
+            <Button type="submit" className="rounded-full" disabled={salvar.isPending || traduzindo}>
               {salvar.isPending ? t.acoes.salvando : t.acoes.salvar}
             </Button>
           </DialogFooter>

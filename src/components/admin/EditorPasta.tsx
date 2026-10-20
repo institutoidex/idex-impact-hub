@@ -24,6 +24,10 @@ import type { PastaRow } from "@/lib/db-types";
 import { useMensagens } from "@/i18n/mensagens";
 import { editores } from "@/i18n/catalogos/editores";
 import { lerTraducoes, limparTraducoes, type Traducoes } from "@/i18n/traduzir";
+import { BotaoTraduzir } from "@/components/admin/BotaoTraduzir";
+import { mesclarTraducoes } from "@/lib/traducao-ia/cliente";
+import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
+import { toast } from "sonner";
 
 const RAIZ = "__raiz__"; // valor do select para "nenhuma pasta mãe"
 
@@ -48,8 +52,12 @@ export function EditorPasta({
   const [form, setForm] = useState<PastaForm | null>(null);
   const [slugEditado, setSlugEditado] = useState(false);
   const [trad, setTrad] = useState<Traducoes>({});
+  // Tradução automática (Gemini) em andamento: bloqueia o Salvar.
+  const ti = useMensagens(traducaoIa);
+  const [traduzindo, setTraduzindo] = useState(false);
 
   useEffect(() => {
+    setTraduzindo(false); // nova abertura: nenhuma tradução pendente vale
     if (!aberto) return;
     setSlugEditado(Boolean(pasta));
     setForm(
@@ -80,13 +88,19 @@ export function EditorPasta({
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!form) return;
-    await salvar.mutateAsync({
-      ...form,
-      slug: form.slug || gerarSlug(form.nome),
-      traducoes: limparTraducoes(trad),
-      traducoesColunaExistente: Boolean(pasta && "traducoes" in pasta),
-    });
+    if (!form || salvar.isPending) return;
+    if (traduzindo) return void toast.warning(ti.aguardeSalvar);
+    try {
+      await salvar.mutateAsync({
+        ...form,
+        slug: form.slug || gerarSlug(form.nome),
+        traducoes: limparTraducoes(trad),
+        traducoesColunaExistente: Boolean(pasta && "traducoes" in pasta),
+      });
+    } catch {
+      // erro já mostrado pelo onError da mutação; editor e campos ficam como estão
+      return;
+    }
     aoFechar();
   }
 
@@ -150,6 +164,17 @@ export function EditorPasta({
               </TabsContent>
             </Tabs>
 
+            {/* Tradução automática: só o NOME vai ao Gemini (slug, pasta mãe e ordem nunca) */}
+            <BotaoTraduzir
+              entidade="pasta"
+              chaveAbertura={`${aberto}:${pasta?.id ?? "nova"}`}
+              entrada={{ nome: form.nome }}
+              traducoes={trad}
+              aoAplicar={(novas) => setTrad((v) => mesclarTraducoes(v, novas))}
+              aoMudarTraduzindo={setTraduzindo}
+              desabilitado={salvar.isPending}
+            />
+
             <div className="space-y-2">
               <Label htmlFor="p-slug">{t.pasta.campoSlug}</Label>
               <Input
@@ -202,7 +227,7 @@ export function EditorPasta({
               <Button type="button" variant="outline" className="rounded-full" onClick={aoFechar}>
                 {t.acoes.cancelar}
               </Button>
-              <Button type="submit" className="rounded-full" disabled={salvar.isPending}>
+              <Button type="submit" className="rounded-full" disabled={salvar.isPending || traduzindo}>
                 {salvar.isPending ? t.acoes.salvando : pasta ? t.acoes.salvar : t.pasta.criarPasta}
               </Button>
             </DialogFooter>

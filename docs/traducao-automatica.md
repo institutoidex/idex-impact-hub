@@ -1,4 +1,23 @@
-# Tradução automática de notícias (Gemini, plano gratuito)
+# Tradução automática dos cadastros trilíngues (Gemini, plano gratuito)
+
+## Inventário (out/2026)
+| Editor | Entidade | Campos enviados ao Gemini | Nunca enviados |
+|---|---|---|---|
+| EditorNoticia | noticia | titulo, resumo, conteudo | slug, capa, galeria, data, projeto, publicado |
+| EditorProjeto (rota de projetos segue oculta) | projeto | titulo, resumo, descricao | slug, capa, mídia, data |
+| EditorDocumento | documento | titulo | arquivo/URL, ano, categoria, pasta |
+| EditorPasta (pastas e subpastas) | pasta | nome | slug, pasta mãe, ordem |
+Não há outro editor com abas PT/EN/ES no painel.
+
+## Como incluir um novo formulário trilíngue
+1. Acrescentar a entidade em `ENTIDADES` (`contrato.ts`) com `campos` e `obrigatorio` (campo novo também em `LIMITE_POR_CAMPO`).
+2. Acrescentar `envio.<entidade>` e `confirmarTexto.<entidade>` nos 3 idiomas em `catalogos/traducao-ia.ts` (o typecheck exige).
+3. Acrescentar uma linha em `CONTEXTO` (`gemini.server.ts`).
+4. No editor: `<BotaoTraduzir entidade="..." chaveAbertura={`${aberto}:${id}`} entrada={{...}} traducoes={trad} aoAplicar={(n) => setTrad((v) => mesclarTraducoes(v, n))} aoMudarTraduzindo={setTraduzindo} desabilitado={envio || salvar.isPending} />`, bloquear o Salvar com `traduzindo` e envolver o `mutateAsync` em try/catch.
+O servidor só aceita entidades do registro e campos estritos; o limite por usuário é o mesmo para todas.
+
+---
+
 
 Botão no editor de notícia: traduz título, resumo e texto do português para inglês dos EUA (en-US) e espanhol da Espanha (es-ES), numa única chamada. O resultado só preenche as abas do editor: nada é salvo nem publicado sem clicar em Salvar.
 
@@ -31,7 +50,7 @@ EditorNoticia → BotaoTraduzir (clique) → pedirTraducao (token da sessão)
 - Teste: `src/lib/traducao-ia/traducao-ia.test.ts`.
 
 ## Payload e respostas
-Entrada: `{ titulo, resumo, conteudo }` (strict; nada de id/slug/fotos). Título obrigatório (≤300), resumo ≤1.500, total ≤12.000 caracteres; corpo ≤64 KB.
+Entrada da notícia (formato original, mantido): `{ titulo, resumo, conteudo }` (strict; nada de id/slug/fotos). Demais: `{ entidade: "projeto"|"documento"|"pasta", campos: {...} }` com campos estritos do registro. Título obrigatório (≤300), resumo ≤1.500, total ≤12.000 caracteres; corpo ≤64 KB.
 Sucesso: `{ ok: true, traducoes: { "en-US": {...}, "es-ES": {...} } }`. Erro: `{ ok: false, codigo }`.
 | código | status |
 |---|---|

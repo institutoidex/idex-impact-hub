@@ -204,3 +204,90 @@ describe("cliente e regras do editor", () => {
     for (const l of ["pt-BR", "en-US", "es-ES"]) for (const k of ["cota", "nao_configurado", "chave_recusada", "cancelado", "rede"]) expect(traducaoIa[l].erros[k].length).toBeGreaterThan(5);
   });
 });
+
+describe("todas as entidades trilíngues (registro/allowlist)", () => {
+  const ct = () => import("./contrato");
+  test("registro: campos permitidos por entidade", async () => {
+    const { ENTIDADES } = await ct();
+    expect(ENTIDADES.noticia.campos).toEqual(["titulo", "resumo", "conteudo"]);
+    expect(ENTIDADES.projeto.campos).toEqual(["titulo", "resumo", "descricao"]);
+    expect(ENTIDADES.documento.campos).toEqual(["titulo"]);
+    expect(ENTIDADES.pasta.campos).toEqual(["nome"]);
+  });
+  test("analisarEntrada: aceita formato antigo da notícia e {entidade,campos}; recusa extras", async () => {
+    const { analisarEntrada } = await ct();
+    expect(analisarEntrada(PT)).toEqual({ entidade: "noticia", campos: PT });
+    expect(analisarEntrada({ entidade: "pasta", campos: { nome: "Relatórios 2023" } })).toEqual({ entidade: "pasta", campos: { nome: "Relatórios 2023" } });
+    expect(analisarEntrada({ entidade: "documento", campos: { titulo: "Balanço 2023" } })?.entidade).toBe("documento");
+    expect(analisarEntrada({ entidade: "projeto", campos: { titulo: "T", resumo: "", descricao: "D" } })?.entidade).toBe("projeto");
+    for (const ruim of [
+      { entidade: "pasta", campos: { nome: "X", slug: "x" } },
+      { entidade: "pasta", campos: { nome: "  " } },
+      { entidade: "documento", campos: { titulo: "X", arquivo_url: "https://a/b.pdf" } },
+      { entidade: "documento", campos: { titulo: "X", ano: "2023" } },
+      { entidade: "projeto", campos: { titulo: "X", resumo: "", conteudo: "" } },
+      { entidade: "usuarios", campos: { titulo: "X" } },
+      { entidade: "__proto__", campos: { titulo: "X" } },
+      { entidade: "pasta", campos: { nome: "X" }, extra: 1 },
+      { entidade: "projeto", campos: { titulo: "X", resumo: "", descricao: "a".repeat(LIMITE_TOTAL) } },
+    ]) expect(analisarEntrada(ruim)).toBeNull();
+  });
+  test("endpoint: pasta/documento/projeto chegam ao tradutor só com campos permitidos", async () => {
+    const vistos = [];
+    const d = deps({ traduzir: async (p) => { vistos.push(p); return { "en-US": { nome: "Reports" }, "es-ES": { nome: "Informes" } }; } });
+    expect((await processarTraducao(req({ entidade: "pasta", campos: { nome: "Relatórios" } }), d)).status).toBe(200);
+    expect(vistos[0]).toEqual({ entidade: "pasta", campos: { nome: "Relatórios" } });
+    expect((await processarTraducao(req({ entidade: "documento", campos: { titulo: "X", arquivo_url: "u" } }), d)).status).toBe(400);
+    expect(vistos.length).toBe(1);
+  });
+  test("limite por usuário é o MESMO entre entidades (não contorna a cota)", async () => {
+    const lim = criarLimitador(2, 60_000);
+    const d = deps({ limitador: lim, traduzir: async () => ({ "en-US": { nome: "a" }, "es-ES": { nome: "b" } }) });
+    expect((await processarTraducao(req({ entidade: "pasta", campos: { nome: "A" } }), d)).status).toBe(200);
+    expect((await processarTraducao(req(PT), deps({ limitador: lim }))).status).toBe(200);
+    expect(await status(await processarTraducao(req({ entidade: "pasta", campos: { nome: "B" } }), d))).toEqual([429, "limite_local"]);
+  });
+  test("Gemini: corpo e esquema só com os campos da entidade; mapeia pasta e projeto", async () => {
+    const pasta = { entidade: "pasta", campos: { nome: "Relatórios anuais" } };
+    const corpo = g.montarCorpo(pasta);
+    expect(JSON.parse(corpo.contents[0].parts[0].text)).toEqual({ nome: "Relatórios anuais" });
+    expect(Object.keys(corpo.generationConfig.responseJsonSchema.properties.en_US.properties)).toEqual(["nome"]);
+    const f = async () => new Response(JSON.stringify({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: JSON.stringify({ en_US: { nome: "Annual reports" }, es_ES: { nome: "Informes anuales" } }) }] } }] }));
+    expect(await g.traduzirComGemini(pasta, { chave: "k", fetchImpl: f })).toEqual({ "en-US": { nome: "Annual reports" }, "es-ES": { nome: "Informes anuales" } });
+    // projeto: descricao mapeada; campo "conteudo" na resposta é recusado
+    const proj = { entidade: "projeto", campos: { titulo: "T", resumo: "", descricao: "D" } };
+    const ok = { en_US: { titulo: "T", resumo: "", descricao: "D-en" }, es_ES: { titulo: "T", resumo: "", descricao: "D-es" } };
+    const resp = (o) => async () => new Response(JSON.stringify({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: JSON.stringify(o) }] } }] }));
+    expect((await g.traduzirComGemini(proj, { chave: "k", fetchImpl: resp(ok) }))["es-ES"].descricao).toBe("D-es");
+    await expect(g.traduzirComGemini(proj, { chave: "k", fetchImpl: resp({ ...ok, en_US: { titulo: "T", resumo: "", conteudo: "D" } }) })).rejects.toMatchObject({ codigo: "resposta_invalida" });
+  });
+  test("cliente: documento envia só o título (URL/ano/categoria nunca); notícia mantém formato antigo", async () => {
+    let corpo;
+    const f = async (_u, init) => { corpo = JSON.parse(init.body); return new Response(JSON.stringify({ ok: true, traducoes: { "en-US": { titulo: "Balance" }, "es-ES": { titulo: "Balance" } } })); };
+    await c.pedirTraducao({ entidade: "documento", campos: { titulo: "Balanço", arquivo_url: "https://x/a.pdf", ano: 2023, categoria: "financeiro" } }, undefined, f, async () => "t");
+    expect(corpo).toEqual({ entidade: "documento", campos: { titulo: "Balanço" } });
+    await c.pedirTraducao({ entidade: "noticia", campos: PT }, undefined, async (_u, init) => { corpo = JSON.parse(init.body); return new Response("{}"); }, async () => "t");
+    expect(corpo).toEqual(PT);
+    // resposta de outra entidade (campo errado) é recusada no navegador
+    const r = await c.pedirTraducao({ entidade: "pasta", campos: { nome: "A" } }, undefined, async () => new Response(JSON.stringify({ ok: true, traducoes: TR })), async () => "t");
+    expect(r).toEqual({ ok: false, codigo: "resposta_invalida" });
+  });
+  test("pasta: confirmação só pelo campo nome; mescla preserva outras chaves", () => {
+    expect(c.temTraducaoExistente({ "en-US": { titulo: "outro campo" } }, "pasta")).toBe(false);
+    expect(c.temTraducaoExistente({ "es-ES": { nome: "Informes" } }, "pasta")).toBe(true);
+    const m = c.mesclarTraducoes({ "en-US": { nome: "velho", extra: "fica" } }, { "en-US": { nome: "Reports" }, "es-ES": { nome: "Informes" } });
+    expect(m).toEqual({ "en-US": { nome: "Reports", extra: "fica" }, "es-ES": { nome: "Informes" } });
+  });
+  test("bloqueio: pasta exige nome; documento em envio de arquivo bloqueia", () => {
+    expect(c.bloqueioTraducao({ traduzindo: false, desabilitado: false, entrada: { nome: " " }, limite: LIMITE_TOTAL, obrigatorio: "nome" })).toBe("semTitulo");
+    expect(c.bloqueioTraducao({ traduzindo: false, desabilitado: false, entrada: { nome: "A" }, limite: LIMITE_TOTAL, obrigatorio: "nome" })).toBeNull();
+    expect(c.bloqueioTraducao({ traduzindo: false, desabilitado: true, entrada: { titulo: "Doc" }, limite: LIMITE_TOTAL })).toBe("bloqueado");
+  });
+  test("textos de envio/confirmação existem para as 4 entidades nos 3 idiomas; documento avisa do PDF", () => {
+    for (const l of ["pt-BR", "en-US", "es-ES"]) for (const e of ["noticia", "projeto", "documento", "pasta"]) {
+      expect(traducaoIa[l].envio[e].length).toBeGreaterThan(20);
+      expect(traducaoIa[l].confirmarTexto[e].length).toBeGreaterThan(20);
+    }
+    expect(traducaoIa["pt-BR"].envio.documento).toMatch(/PDF/);
+  });
+});

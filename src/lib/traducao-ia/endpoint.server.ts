@@ -1,14 +1,15 @@
-// Lógica do endpoint POST /api/traducao-noticia, separada da rota para ser testável.
+// Lógica do endpoint POST /api/traducao-noticia (todas as entidades do registro),
+// separada da rota para ser testável. Limite por usuário é o MESMO para todas.
 // Ordem: token → admin → corpo/validação → chave configurada → limite → Gemini.
 // Logs só com o código do erro (nunca texto, token, chave ou corpo do provedor).
 import {
   LIMITE_CORPO,
   STATUS_POR_CODIGO,
-  esquemaEntrada,
+  analisarEntrada,
   type CodigoServidor,
-  type EntradaTraducao,
+  type PedidoTraducao,
   type RespostaTraducao,
-  type TraducoesGeradas,
+  type TraducoesCampos,
 } from "./contrato";
 import type { ResultadoAdmin } from "./auth.server";
 import { ErroTraducao } from "./gemini.server";
@@ -18,9 +19,9 @@ export type Dependencias = {
   /** Lê GEMINI_API_KEY do ambiente do servidor na hora do pedido. */
   lerChave: () => string | undefined;
   traduzir: (
-    entrada: EntradaTraducao,
+    pedido: PedidoTraducao,
     opcoes: { chave: string; sinal?: AbortSignal },
-  ) => Promise<TraducoesGeradas>;
+  ) => Promise<TraducoesCampos>;
   limitador: {
     reservar: (userId: string) => "em_andamento" | "limite_local" | null;
     liberar: (userId: string) => void;
@@ -59,8 +60,9 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
   } catch {
     return erro("payload_invalido");
   }
-  const entrada = esquemaEntrada.safeParse(json);
-  if (!entrada.success) return erro("payload_invalido");
+  // notícia no formato antigo ou { entidade, campos } do registro (allowlist)
+  const pedido = analisarEntrada(json);
+  if (!pedido) return erro("payload_invalido");
 
   const chave = deps.lerChave();
   if (!chave) {
@@ -71,7 +73,7 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
   const recusa = deps.limitador.reservar(admin.userId);
   if (recusa) return erro(recusa);
   try {
-    const traducoes = await deps.traduzir(entrada.data, { chave, sinal: request.signal });
+    const traducoes = await deps.traduzir(pedido, { chave, sinal: request.signal });
     return responder({ ok: true, traducoes });
   } catch (e) {
     const codigo = e instanceof ErroTraducao ? e.codigo : "falha_provedor";
