@@ -1,7 +1,7 @@
 // Lógica do endpoint POST /api/traducao-noticia (todas as entidades do registro),
 // separada da rota para ser testável. Limite por usuário é o MESMO para todas.
 // Ordem: token → admin → corpo/validação → chave configurada → limite → Gemini.
-// Logs só com o código do erro (nunca texto, token, chave ou corpo do provedor).
+// Logs só com o código do erro + diagnóstico allowlisted (nunca texto, token, chave ou corpo do provedor).
 import {
   LIMITE_CORPO,
   STATUS_POR_CODIGO,
