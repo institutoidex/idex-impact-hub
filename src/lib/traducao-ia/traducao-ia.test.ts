@@ -312,7 +312,7 @@ describe("diagnosticoSeguro", () => {
     expect(diagnosticoSeguro(500, "null")).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
     expect(diagnosticoSeguro(500, JSON.stringify({ error: "texto" }))).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
   });
-  test("classificação inalterada: 500 → falha_provedor com diag; 403 de chave → chave_recusada", async () => {
+  test("classificação: 500 → falha_provedor; 403 de chave → chave_recusada; 503 → provedor_ocupado; rede → falha_provedor", async () => {
     const entrada = { entidade: "pasta", campos: { nome: "Pasta fictícia" } } as never;
     const f500 = (async () => new Response(JSON.stringify({ error: { code: 500, status: "INTERNAL" } }), { status: 500 })) as unknown as typeof fetch;
     const e1 = await traduzirDiag(entrada, { chave: "k", fetchImpl: f500 }).catch((e) => e);
@@ -322,6 +322,10 @@ describe("diagnosticoSeguro", () => {
     const f403 = (async () => new Response(JSON.stringify({ error: { code: 403, status: "PERMISSION_DENIED" } }), { status: 403 })) as unknown as typeof fetch;
     const e2 = await traduzirDiag(entrada, { chave: "k", fetchImpl: f403 }).catch((e) => e);
     expect(e2.codigo).toBe("chave_recusada");
+    const f503 = (async () => new Response(JSON.stringify({ error: { code: 503, status: "UNAVAILABLE", message: "overloaded" } }), { status: 503 })) as unknown as typeof fetch;
+    const e4 = await traduzirDiag(entrada, { chave: "k", fetchImpl: f503 }).catch((e) => e);
+    expect(e4.codigo).toBe("provedor_ocupado");
+    expect(e4.diag).toBe("http=503 status=UNAVAILABLE code=503 reason=- regiao_bloqueada=false");
     const fRede = (async () => { throw new TypeError("detalhe sensível"); }) as unknown as typeof fetch;
     const e3 = await traduzirDiag(entrada, { chave: "k", fetchImpl: fRede }).catch((e) => e);
     expect(e3.codigo).toBe("falha_provedor");

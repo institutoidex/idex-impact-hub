@@ -91,3 +91,8 @@ Em falha do provedor, o log de produção traz uma única linha, por exemplo
 - `regiao_bloqueada` é só verdadeiro/falso (mensagem do Google nunca é copiada).
 - Falha de rede: `rede=<TipoDoErro>`; exceção fora do serviço: `excecao=<TipoDoErro>`; erro de validação do próprio serviço: `origem=servico`.
 - Nunca: texto traduzido, mensagem/corpo do provedor, chave, token. Função: `diagnosticoSeguro` em `gemini.server.ts`.
+
+### Ocorrência de 20/10/2026
+Os 502 `falha_provedor` intermitentes no cadastro de pasta eram o Google respondendo
+`http=503 status=UNAVAILABLE` (modelo sobrecarregado). Agora isso vira `provedor_ocupado`
+(HTTP 503) com aviso próprio nos 3 idiomas; continua sem novas tentativas automáticas.

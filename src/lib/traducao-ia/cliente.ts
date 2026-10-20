@@ -19,7 +19,7 @@ import {
 const CODIGOS_CONHECIDOS = new Set<CodigoErroTraducao>([
   "sem_token", "token_invalido", "sem_permissao", "payload_invalido", "nao_configurado",
   "limite_local", "em_andamento", "cota", "tempo_esgotado", "resposta_invalida",
-  "resposta_truncada", "falha_provedor", "falha_verificacao", "chave_recusada", "rede", "cancelado",
+  "resposta_truncada", "falha_provedor", "falha_verificacao", "chave_recusada", "provedor_ocupado", "rede", "cancelado",
 ]);
 
 /** Separa SÓ os campos permitidos da entidade (descarta slug, url, ano, ids…). */
