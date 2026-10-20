@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { supabase } from "@/lib/supabase";
-import { notificarContato } from "@/lib/notificar-contato.functions";
+import { enviarContato } from "@/lib/contato/cliente";
 import { MapPin, Instagram, Facebook, Phone, Building2 } from "lucide-react";
 import { CONTATO } from "@/data/idex";
 import { FOTO_VOLUNTARIADO } from "@/data/fotos";
@@ -58,9 +57,14 @@ function Contato() {
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState<ErrosContato>({});
   const refs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
+  // Id de envio estável: criado uma vez e reaproveitado em clique duplo/nova tentativa
+  // (o servidor não duplica). Renovado quando o texto muda ou após sucesso.
+  const idEnvio = useRef<string | null>(null);
+  const novoId = () => (idEnvio.current = null);
 
   // Limpa o erro de um campo assim que o usuário começa a corrigi-lo.
   function aoMudar(campo: Campo) {
+    novoId();
     setErros((anteriores) => {
       if (!anteriores[campo]) return anteriores;
       const novo = { ...anteriores };
@@ -69,9 +73,11 @@ function Contato() {
     });
   }
 
-  // Grava a mensagem na tabela `mensagens` (leitura só pela equipe logada).
+  // Envia ao servidor, que grava a mensagem (leitura só pela equipe logada)
+  // e depois avisa a equipe por e-mail.
   async function aoEnviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (enviando) return;
     const form = e.currentTarget;
     const dados = new FormData(form);
     const parsed = criarEsquemaContato(t).safeParse({
@@ -96,15 +102,23 @@ function Contato() {
 
     setErros({});
     setEnviando(true);
-    const { error } = await supabase.from("mensagens").insert([parsed.data]);
+    idEnvio.current ??= crypto.randomUUID();
+    const resposta = await enviarContato({
+      id: idEnvio.current,
+      ...parsed.data,
+      site: String(dados.get("site") ?? ""),
+    });
     setEnviando(false);
 
-    if (error) {
-      toast.error(t.toasts.falhaTitulo, { description: t.toasts.falhaDescricao });
+    if (!resposta.ok) {
+      if (resposta.codigo === "limite") {
+        toast.error(t.toasts.limiteTitulo, { description: t.toasts.limiteDescricao });
+      } else {
+        toast.error(t.toasts.falhaTitulo, { description: t.toasts.falhaDescricao });
+      }
       return;
     }
-    // Aviso por e-mail à equipe (inativo até definir o remetente); falha não afeta o visitante
-    notificarContato({ data: parsed.data }).catch(() => {});
+    novoId();
     toast.success(t.toasts.sucessoTitulo, { description: t.toasts.sucessoDescricao });
     form.reset();
   }
@@ -127,7 +141,7 @@ function Contato() {
         <Reveal>
           <form
             onSubmit={aoEnviar}
-            className="space-y-5 rounded-3xl border border-border bg-card p-7 sm:p-9"
+            className="relative space-y-5 rounded-3xl border border-border bg-card p-7 sm:p-9"
           >
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
@@ -204,6 +218,11 @@ function Contato() {
                   {t.validacao.mensagem}
                 </p>
               )}
+            </div>
+            {/* Armadilha anti-robô: invisível para pessoas e leitores de tela */}
+            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label htmlFor="site">Site</label>
+              <input id="site" name="site" type="text" tabIndex={-1} autoComplete="off" />
             </div>
             <Button type="submit" size="lg" variant="idex" disabled={enviando}>
               {enviando ? t.form.enviando : t.form.enviar}

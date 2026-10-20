@@ -35,6 +35,8 @@ export const contato = definirMensagens(
       falhaDescricao: "Tente novamente em instantes ou fale com a gente pelo Instagram.",
       sucessoTitulo: "Mensagem enviada!",
       sucessoDescricao: "A equipe do IDEX vai te responder.",
+      limiteTitulo: "Muitas mensagens seguidas",
+      limiteDescricao: "Aguarde alguns minutos e tente de novo.",
     },
     onde: {
       titulo: "Onde estamos",
@@ -79,6 +81,8 @@ export const contato = definirMensagens(
         falhaDescricao: "Try again in a moment or reach us on Instagram.",
         sucessoTitulo: "Message sent!",
         sucessoDescricao: "IDEX's team will get back to you.",
+      limiteTitulo: "Too many messages in a row",
+        limiteDescricao: "Please wait a few minutes and try again.",
       },
       onde: {
         titulo: "Where we are",
@@ -122,6 +126,8 @@ export const contato = definirMensagens(
         falhaDescricao: "Inténtalo de nuevo en unos instantes o escríbenos por Instagram.",
         sucessoTitulo: "¡Mensaje enviado!",
         sucessoDescricao: "El equipo del IDEX te responderá.",
+      limiteTitulo: "Demasiados mensajes seguidos",
+        limiteDescricao: "Espera unos minutos y vuelve a intentarlo.",
       },
       onde: {
         titulo: "Dónde estamos",

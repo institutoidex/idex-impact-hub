@@ -28,6 +28,7 @@ import { Route as NoticiasIndexRouteImport } from './routes/noticias.index'
 import { Route as NoticiasSlugRouteImport } from './routes/noticias.$slug'
 import { Route as ProjetosIndexRouteImport } from './routes/projetos.index'
 import { Route as ProjetosSlugRouteImport } from './routes/projetos.$slug'
+import { Route as ApiPublicContatoRouteImport } from './routes/api/public/contato'
 import { Route as ApiPublicDocumentosSplatRouteImport } from './routes/api/public/documentos/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -125,6 +126,11 @@ const ProjetosSlugRoute = ProjetosSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ProjetosRoute,
 } as any)
+const ApiPublicContatoRoute = ApiPublicContatoRouteImport.update({
+  id: '/api/public/contato',
+  path: '/api/public/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDocumentosSplatRoute =
   ApiPublicDocumentosSplatRouteImport.update({
     id: '/api/public/documentos/$',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
+  '/api/public/contato': typeof ApiPublicContatoRoute
   '/api/public/documentos/$': typeof ApiPublicDocumentosSplatRoute
 }
 export interface FileRoutesByTo {
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias': typeof NoticiasIndexRoute
   '/projetos': typeof ProjetosIndexRoute
+  '/api/public/contato': typeof ApiPublicContatoRoute
   '/api/public/documentos/$': typeof ApiPublicDocumentosSplatRoute
 }
 export interface FileRoutesById {
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/projetos/$slug': typeof ProjetosSlugRoute
   '/noticias/': typeof NoticiasIndexRoute
   '/projetos/': typeof ProjetosIndexRoute
+  '/api/public/contato': typeof ApiPublicContatoRoute
   '/api/public/documentos/$': typeof ApiPublicDocumentosSplatRoute
 }
 export interface FileRouteTypes {
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/projetos/$slug'
     | '/noticias/'
     | '/projetos/'
+    | '/api/public/contato'
     | '/api/public/documentos/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/projetos/$slug'
     | '/noticias'
     | '/projetos'
+    | '/api/public/contato'
     | '/api/public/documentos/$'
   id:
     | '__root__'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/projetos/$slug'
     | '/noticias/'
     | '/projetos/'
+    | '/api/public/contato'
     | '/api/public/documentos/$'
   fileRoutesById: FileRoutesById
 }
@@ -280,6 +292,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TransparenciaRoute: typeof TransparenciaRoute
   ApiTraducaoNoticiaRoute: typeof ApiTraducaoNoticiaRoute
+  ApiPublicContatoRoute: typeof ApiPublicContatoRoute
   ApiPublicDocumentosSplatRoute: typeof ApiPublicDocumentosSplatRoute
 }
 
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetosSlugRouteImport
       parentRoute: typeof ProjetosRoute
     }
+    '/api/public/contato': {
+      id: '/api/public/contato'
+      path: '/api/public/contato'
+      fullPath: '/api/public/contato'
+      preLoaderRoute: typeof ApiPublicContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/documentos/$': {
       id: '/api/public/documentos/$'
       path: '/api/public/documentos/$'
@@ -472,6 +492,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TransparenciaRoute: TransparenciaRoute,
   ApiTraducaoNoticiaRoute: ApiTraducaoNoticiaRoute,
+  ApiPublicContatoRoute: ApiPublicContatoRoute,
   ApiPublicDocumentosSplatRoute: ApiPublicDocumentosSplatRoute,
 }
 export const routeTree = rootRouteImport
