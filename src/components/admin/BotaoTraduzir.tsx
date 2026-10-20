@@ -71,15 +71,20 @@ export function BotaoTraduzir<E extends Entidade = "noticia">({
   atual.current = { campos, traducoes };
   const avisar = useRef(aoMudarTraduzindo);
   avisar.current = aoMudarTraduzindo;
+  // identidade ATUAL (entidade + abertura), atualizada já no render: a resposta
+  // só é aplicada se ainda bater com a identidade capturada no clique
+  const identidade = useRef("");
+  identidade.current = `${entidade}|${chaveAbertura ?? ""}`;
 
-  // editor fechado, desmontado ou trocado de registro: aborta e esquece a chamada
+  // Toda troca de chaveAbertura (fechou, reabriu, outro registro, outra pasta mãe)
+  // ou desmontagem: fecha a confirmação SEMPRE e aborta a chamada pendente, se houver.
   useEffect(
     () => () => {
+      setConfirmando(false);
       if (!controle.current) return;
       controle.current.abort();
       controle.current = null;
       setTraduzindo(false);
-      setConfirmando(false);
       avisar.current?.(false);
     },
     [chaveAbertura],
@@ -120,11 +125,18 @@ export function BotaoTraduzir<E extends Entidade = "noticia">({
     if (!liberado()) return;
     const meu = new AbortController();
     controle.current = meu;
+    const minhaIdentidade = identidade.current;
     const foto = retrato(campos, traducoes);
     marcar(true);
     const r = await pedirTraducao({ entidade, campos } as PedidoTraducao, meu.signal);
     // chamada antiga (cancelada, editor fechado ou outra mais nova): ignora
     if (controle.current !== meu || meu.signal.aborted) return;
+    // trocou de entidade/abertura antes do cleanup rodar: aborta e ignora
+    if (identidade.current !== minhaIdentidade) {
+      meu.abort();
+      controle.current = null;
+      return marcar(false);
+    }
     controle.current = null;
     marcar(false);
     if (!r.ok) return void toast.error(t.erros[r.codigo]);
