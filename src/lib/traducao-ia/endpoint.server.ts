@@ -77,7 +77,9 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
     return responder({ ok: true, traducoes });
   } catch (e) {
     const codigo = e instanceof ErroTraducao ? e.codigo : "falha_provedor";
-    console.warn(`[traducao-ia] ${codigo}`);
+    // TEMPORÁRIO (diagnóstico de produção): só códigos allowlisted, nunca texto/chave/token
+    const diag = e instanceof ErroTraducao && e.diag ? ` ${e.diag}` : "";
+    console.warn(`[traducao-ia] ${codigo}${diag}`);
     return erro(codigo);
   } finally {
     deps.limitador.liberar(admin.userId);

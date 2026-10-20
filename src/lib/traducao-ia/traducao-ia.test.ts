@@ -291,3 +291,19 @@ describe("todas as entidades trilíngues (registro/allowlist)", () => {
     expect(traducaoIa["pt-BR"].envio.documento).toMatch(/PDF/);
   });
 });
+
+// Diagnóstico seguro: só status/códigos allowlisted, nunca mensagem ou texto do corpo
+import { diagnosticoSeguro } from "./gemini.server";
+describe("diagnosticoSeguro", () => {
+  test("resume região bloqueada sem copiar a mensagem", () => {
+    const corpo = JSON.stringify({ error: { code: 400, status: "FAILED_PRECONDITION", message: "User location is not supported for the API use. segredo@x.com" } });
+    const d = diagnosticoSeguro(400, corpo);
+    expect(d).toBe("http=400 status=FAILED_PRECONDITION code=400 reason=- regiao_bloqueada=true");
+    expect(d).not.toContain("segredo");
+  });
+  test("descarta campos fora do formato e corpo não-JSON", () => {
+    expect(diagnosticoSeguro(500, "<html>chave AIza123</html>")).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
+    const d = diagnosticoSeguro(403, JSON.stringify({ error: { status: "texto livre com PII", details: [{ reason: "API_KEY_INVALID" }] } }));
+    expect(d).toBe("http=403 status=- code=- reason=API_KEY_INVALID regiao_bloqueada=false");
+  });
+});
