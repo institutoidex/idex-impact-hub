@@ -23,7 +23,7 @@ export type MensagemGravada = {
   assunto: string | null;
   mensagem: string;
   criado_em?: string | null;
-  notificacao_status?: string | null;
+  notificacao_status?: string | null | undefined;
 };
 
 export type ResultadoInsercao =
