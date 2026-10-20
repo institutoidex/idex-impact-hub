@@ -24,7 +24,7 @@ import { midia } from "@/i18n/catalogos/midia";
 import { normalizarGaleria, type Galeria } from "@/lib/galeria";
 import { BotaoTraduzir } from "@/components/admin/BotaoTraduzir";
 import { mesclarTraducoes } from "@/lib/traducao-ia/cliente";
-import type { TraducoesGeradas } from "@/lib/traducao-ia/contrato";
+import type { TraducoesCampos } from "@/lib/traducao-ia/contrato";
 import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
 
 /** Formulário de criação/edição de notícia dentro de um diálogo. */
@@ -91,7 +91,7 @@ export function EditorNoticia({
   }
 
   /** Traduções automáticas só valem para a abertura em que foram pedidas. */
-  function aplicarTraducao(novas: TraducoesGeradas) {
+  function aplicarTraducao(novas: TraducoesCampos) {
     if (sessaoRef.current !== sessaoRender) return;
     setTrad((v) => mesclarTraducoes(v, novas));
   }
@@ -271,6 +271,8 @@ export function EditorNoticia({
           {/* Tradução automática (Gemini): só no clique, resultado revisável nas abas.
               Fechar o editor durante a tradução aborta a chamada (desmonta o botão). */}
           <BotaoTraduzir
+            entidade="noticia"
+            chaveAbertura={`${aberto}:${noticia?.id ?? "nova"}`}
             entrada={{ titulo: form.titulo, resumo: form.resumo, conteudo: form.conteudo ?? "" }}
             traducoes={trad}
             aoAplicar={aplicarTraducao}
