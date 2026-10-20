@@ -195,6 +195,8 @@ export async function traduzirComGemini(
       if ([400, 401, 403].includes(resp.status) && /API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) {
         throw new ErroTraducao("chave_recusada", diag);
       }
+      // 503/UNAVAILABLE = Google sobrecarregado (visto em produção em 20/10/2026): aviso próprio, sem retry
+      if (resp.status === 503 || / status=UNAVAILABLE /.test(diag)) throw new ErroTraducao("provedor_ocupado", diag);
       throw new ErroTraducao("falha_provedor", diag);
     }
     let json: unknown;
