@@ -1,4 +1,4 @@
-// Mensagens do botão de tradução automática (Gemini) no editor de notícias.
+// Mensagens do botão de tradução automática (Gemini), usado em todos os editores trilíngues.
 import { definirMensagens } from "../mensagens";
 
 export const traducaoIa = definirMensagens(
@@ -6,13 +6,25 @@ export const traducaoIa = definirMensagens(
     botao: "Traduzir para inglês e espanhol",
     traduzindo: "Traduzindo…",
     cancelar: "Cancelar tradução",
-    nota: (limite: number) =>
-      `O título, o resumo e o texto em português são enviados ao Google Gemini para gerar as versões em inglês e espanhol. Revise as abas antes de salvar. Limite: ${limite.toLocaleString("pt-BR")} caracteres.`,
+    // o que é enviado ao Gemini, por tipo de cadastro
+    envio: {
+      noticia: "O título, o resumo e o texto em português são enviados ao Google Gemini para gerar as versões em inglês e espanhol.",
+      projeto: "O título, o resumo e a descrição em português são enviados ao Google Gemini para gerar as versões em inglês e espanhol.",
+      documento: "Só o título do documento em português é enviado ao Google Gemini. O arquivo (PDF ou planilha), o ano, a categoria e a pasta não são enviados nem alterados.",
+      pasta: "Só o nome da pasta em português é enviado ao Google Gemini. O endereço, a pasta mãe e a ordem não mudam.",
+    },
+    revisar: (limite: number) => `Revise as abas antes de salvar. Limite: ${limite.toLocaleString("pt-BR")} caracteres.`,
     contador: (usados: number, limite: number) => `${usados.toLocaleString("pt-BR")} / ${limite.toLocaleString("pt-BR")} caracteres`,
     acimaDoLimite: "O texto passou do limite para tradução automática.",
     semTitulo: "Preencha o título em português antes de traduzir.",
+    semNome: "Preencha o nome da pasta em português antes de traduzir.",
     confirmarTitulo: "Substituir as traduções atuais?",
-    confirmarTexto: "Já existe texto em inglês ou espanhol. A tradução automática vai substituir título, resumo e texto nos dois idiomas.",
+    confirmarTexto: {
+      noticia: "Já existe texto em inglês ou espanhol. A tradução automática vai substituir título, resumo e texto nos dois idiomas.",
+      projeto: "Já existe texto em inglês ou espanhol. A tradução automática vai substituir título, resumo e descrição nos dois idiomas.",
+      documento: "Já existe um título em inglês ou espanhol. A tradução automática vai substituir o título nos dois idiomas.",
+      pasta: "Já existe um nome em inglês ou espanhol. A tradução automática vai substituir o nome nos dois idiomas.",
+    },
     confirmarSim: "Substituir",
     confirmarNao: "Manter as atuais",
     sucesso: "Traduções prontas. Revise as abas English e Español antes de salvar.",
@@ -42,13 +54,24 @@ export const traducaoIa = definirMensagens(
       botao: "Translate to English and Spanish",
       traduzindo: "Translating…",
       cancelar: "Cancel translation",
-      nota: (limite: number) =>
-        `The Portuguese title, summary and text are sent to Google Gemini to create the English and Spanish versions. Review the tabs before saving. Limit: ${limite.toLocaleString("en-US")} characters.`,
+      envio: {
+        noticia: "The Portuguese title, summary and text are sent to Google Gemini to create the English and Spanish versions.",
+        projeto: "The Portuguese title, summary and description are sent to Google Gemini to create the English and Spanish versions.",
+        documento: "Only the document's Portuguese title is sent to Google Gemini. The file (PDF or spreadsheet), year, category and folder are not sent or changed.",
+        pasta: "Only the folder's Portuguese name is sent to Google Gemini. The address, parent folder and order don't change.",
+      },
+      revisar: (limite: number) => `Review the tabs before saving. Limit: ${limite.toLocaleString("en-US")} characters.`,
       contador: (usados: number, limite: number) => `${usados.toLocaleString("en-US")} / ${limite.toLocaleString("en-US")} characters`,
       acimaDoLimite: "The text is over the automatic translation limit.",
       semTitulo: "Fill in the Portuguese title before translating.",
+      semNome: "Fill in the Portuguese folder name before translating.",
       confirmarTitulo: "Replace the current translations?",
-      confirmarTexto: "There is already English or Spanish text. Automatic translation will replace the title, summary and text in both languages.",
+      confirmarTexto: {
+        noticia: "There is already English or Spanish text. Automatic translation will replace the title, summary and text in both languages.",
+        projeto: "There is already English or Spanish text. Automatic translation will replace the title, summary and description in both languages.",
+        documento: "There is already an English or Spanish title. Automatic translation will replace the title in both languages.",
+        pasta: "There is already an English or Spanish name. Automatic translation will replace the name in both languages.",
+      },
       confirmarSim: "Replace",
       confirmarNao: "Keep current",
       sucesso: "Translations ready. Review the English and Español tabs before saving.",
@@ -77,13 +100,24 @@ export const traducaoIa = definirMensagens(
       botao: "Traducir al inglés y al español",
       traduzindo: "Traduciendo…",
       cancelar: "Cancelar traducción",
-      nota: (limite: number) =>
-        `El título, el resumen y el texto en portugués se envían a Google Gemini para crear las versiones en inglés y español. Revisa las pestañas antes de guardar. Límite: ${limite.toLocaleString("es-ES")} caracteres.`,
+      envio: {
+        noticia: "El título, el resumen y el texto en portugués se envían a Google Gemini para crear las versiones en inglés y español.",
+        projeto: "El título, el resumen y la descripción en portugués se envían a Google Gemini para crear las versiones en inglés y español.",
+        documento: "Solo se envía a Google Gemini el título del documento en portugués. El archivo (PDF u hoja de cálculo), el año, la categoría y la carpeta no se envían ni se modifican.",
+        pasta: "Solo se envía a Google Gemini el nombre de la carpeta en portugués. La dirección, la carpeta principal y el orden no cambian.",
+      },
+      revisar: (limite: number) => `Revisa las pestañas antes de guardar. Límite: ${limite.toLocaleString("es-ES")} caracteres.`,
       contador: (usados: number, limite: number) => `${usados.toLocaleString("es-ES")} / ${limite.toLocaleString("es-ES")} caracteres`,
       acimaDoLimite: "El texto supera el límite de la traducción automática.",
       semTitulo: "Rellena el título en portugués antes de traducir.",
+      semNome: "Rellena el nombre de la carpeta en portugués antes de traducir.",
       confirmarTitulo: "¿Sustituir las traducciones actuales?",
-      confirmarTexto: "Ya hay texto en inglés o español. La traducción automática sustituirá el título, el resumen y el texto en los dos idiomas.",
+      confirmarTexto: {
+        noticia: "Ya hay texto en inglés o español. La traducción automática sustituirá el título, el resumen y el texto en los dos idiomas.",
+        projeto: "Ya hay texto en inglés o español. La traducción automática sustituirá el título, el resumen y la descripción en los dos idiomas.",
+        documento: "Ya hay un título en inglés o español. La traducción automática sustituirá el título en los dos idiomas.",
+        pasta: "Ya hay un nombre en inglés o español. La traducción automática sustituirá el nombre en los dos idiomas.",
+      },
       confirmarSim: "Sustituir",
       confirmarNao: "Mantener las actuales",
       sucesso: "Traducciones listas. Revisa las pestañas English y Español antes de guardar.",

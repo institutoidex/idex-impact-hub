@@ -5,52 +5,89 @@ import { Button } from "@/components/ui/button";
 import { useMensagens } from "@/i18n/mensagens";
 import { traducaoIa } from "@/i18n/catalogos/traducao-ia";
 import type { Traducoes } from "@/i18n/traduzir";
-import { LIMITE_TOTAL, totalCaracteres, type EntradaTraducao, type TraducoesGeradas } from "@/lib/traducao-ia/contrato";
-import { bloqueioTraducao, pedirTraducao, retrato, temTraducaoExistente } from "@/lib/traducao-ia/cliente";
+import {
+  ENTIDADES,
+  LIMITE_TOTAL,
+  totalCaracteres,
+  type CamposDe,
+  type Entidade,
+  type PedidoTraducao,
+  type TraducoesCampos,
+} from "@/lib/traducao-ia/contrato";
+import {
+  bloqueioTraducao,
+  camposPermitidos,
+  pedirTraducao,
+  retrato,
+  temTraducaoExistente,
+} from "@/lib/traducao-ia/cliente";
 
 /**
- * Botão "Traduzir para inglês e espanhol" do editor de notícia.
+ * Botão "Traduzir para inglês e espanhol", reutilizado por TODOS os editores
+ * trilíngues (notícia, projeto, documento, pasta).
  * - Só traduz no clique (nunca a cada digitação). type="button": não envia o formulário.
- * - Se já houver tradução, pede confirmação explícita antes de substituir.
- * - Tira um retrato do português + traduções no clique; se algo mudar durante a
+ * - Se já houver tradução NOS CAMPOS-ALVO, pede confirmação antes de substituir.
+ * - Tira um retrato dos campos PT + traduções no clique; se algo mudar durante a
  *   espera, o resultado é IGNORADO (nada aplicado).
- * - Desmontar (editor fechado) ou "Cancelar" aborta a chamada; retorno tardio é ignorado.
+ * - Desmontar, trocar `chaveAbertura` (outro registro/reabertura) ou "Cancelar"
+ *   aborta a chamada; retorno tardio é ignorado.
  * - Falha nunca apaga nada; as duas línguas só são aplicadas juntas após validação.
  *
  * Props:
- * - entrada: título/resumo/texto em português (os únicos dados enviados)
+ * - entidade: tipo do cadastro (define campos permitidos e textos da nota)
+ * - entrada: campos em português da entidade (os únicos dados enviados)
  * - traducoes: traduções atuais do formulário (para confirmar e para o retrato)
  * - aoAplicar: recebe en-US + es-ES validados; o editor mescla no estado
- * - desabilitado: ex. envio de fotos da galeria ou salvamento em andamento
+ * - desabilitado: ex. envio de arquivo/fotos ou salvamento em andamento
  * - aoMudarTraduzindo: avisa o editor para bloquear o Salvar
+ * - chaveAbertura: identidade da abertura do editor (ex.: `${aberto}:${id}`)
  */
-export function BotaoTraduzir({
+export function BotaoTraduzir<E extends Entidade = "noticia">({
+  entidade = "noticia" as E,
   entrada,
   traducoes,
   aoAplicar,
   desabilitado,
   aoMudarTraduzindo,
+  chaveAbertura,
 }: {
-  entrada: EntradaTraducao;
+  entidade?: E;
+  entrada: CamposDe<E>;
   traducoes: Traducoes;
-  aoAplicar: (novas: TraducoesGeradas) => void;
+  aoAplicar: (novas: TraducoesCampos) => void;
   desabilitado?: boolean;
   aoMudarTraduzindo?: (v: boolean) => void;
+  chaveAbertura?: string;
 }) {
   const t = useMensagens(traducaoIa);
   const [traduzindo, setTraduzindo] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const controle = useRef<AbortController | null>(null);
+  // só os campos do registro, nunca outros dados do formulário
+  const campos = camposPermitidos(entidade, entrada as Record<string, unknown>);
+  const obrigatorio = ENTIDADES[entidade].obrigatorio;
   // valores mais recentes, lidos quando a resposta chega
-  const atual = useRef({ entrada, traducoes });
-  atual.current = { entrada, traducoes };
+  const atual = useRef({ campos, traducoes });
+  atual.current = { campos, traducoes };
+  const avisar = useRef(aoMudarTraduzindo);
+  avisar.current = aoMudarTraduzindo;
 
-  // editor fechado/desmontado: aborta e esquece a chamada pendente
-  useEffect(() => () => controle.current?.abort(), []);
+  // editor fechado, desmontado ou trocado de registro: aborta e esquece a chamada
+  useEffect(
+    () => () => {
+      if (!controle.current) return;
+      controle.current.abort();
+      controle.current = null;
+      setTraduzindo(false);
+      setConfirmando(false);
+      avisar.current?.(false);
+    },
+    [chaveAbertura],
+  );
 
-  const total = totalCaracteres(entrada);
+  const total = totalCaracteres(campos);
   const acima = total > LIMITE_TOTAL;
-  const semTitulo = !entrada.titulo.trim();
+  const semObrigatorio = !(campos[obrigatorio] ?? "").trim();
 
   function marcar(v: boolean) {
     setTraduzindo(v);
@@ -59,15 +96,21 @@ export function BotaoTraduzir({
 
   // mesma checagem no clique e no "Substituir"; true = pode seguir
   function liberado() {
-    const motivo = bloqueioTraducao({ traduzindo: traduzindo || !!controle.current, desabilitado, entrada, limite: LIMITE_TOTAL });
-    if (motivo === "semTitulo") toast.error(t.semTitulo);
+    const motivo = bloqueioTraducao({
+      traduzindo: traduzindo || !!controle.current,
+      desabilitado,
+      entrada: campos,
+      limite: LIMITE_TOTAL,
+      obrigatorio,
+    });
+    if (motivo === "semTitulo") toast.error(obrigatorio === "nome" ? t.semNome : t.semTitulo);
     if (motivo === "acima") toast.error(t.acimaDoLimite);
     return motivo === null;
   }
 
   function clicar() {
     if (!liberado()) return;
-    if (temTraducaoExistente(traducoes)) return setConfirmando(true);
+    if (temTraducaoExistente(traducoes, entidade)) return setConfirmando(true);
     void traduzir();
   }
 
@@ -77,15 +120,15 @@ export function BotaoTraduzir({
     if (!liberado()) return;
     const meu = new AbortController();
     controle.current = meu;
-    const foto = retrato(entrada, traducoes);
+    const foto = retrato(campos, traducoes);
     marcar(true);
-    const r = await pedirTraducao(entrada, meu.signal);
+    const r = await pedirTraducao({ entidade, campos } as PedidoTraducao, meu.signal);
     // chamada antiga (cancelada, editor fechado ou outra mais nova): ignora
     if (controle.current !== meu || meu.signal.aborted) return;
     controle.current = null;
     marcar(false);
     if (!r.ok) return void toast.error(t.erros[r.codigo]);
-    if (retrato(atual.current.entrada, atual.current.traducoes) !== foto) {
+    if (retrato(atual.current.campos, atual.current.traducoes) !== foto) {
       return void toast.warning(t.ignorado);
     }
     aoAplicar(r.traducoes);
@@ -101,7 +144,9 @@ export function BotaoTraduzir({
 
   return (
     <div className="space-y-2 rounded-2xl border border-border p-4">
-      <p className="text-xs text-muted-foreground">{t.nota(LIMITE_TOTAL)}</p>
+      <p className="text-xs text-muted-foreground">
+        {t.envio[entidade]} {t.revisar(LIMITE_TOTAL)}
+      </p>
       <p className={`text-xs ${acima ? "text-destructive" : "text-muted-foreground"}`} aria-live="polite">
         {t.contador(total, LIMITE_TOTAL)}
       </p>
@@ -109,13 +154,13 @@ export function BotaoTraduzir({
       {confirmando ? (
         <div role="alertdialog" aria-labelledby="confirmar-traducao" className="space-y-2 rounded-xl bg-muted p-3">
           <p id="confirmar-traducao" className="text-sm font-semibold">{t.confirmarTitulo}</p>
-          <p className="text-sm text-muted-foreground">{t.confirmarTexto}</p>
+          <p className="text-sm text-muted-foreground">{t.confirmarTexto[entidade]}</p>
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               size="sm"
               className="rounded-full"
-              disabled={traduzindo || desabilitado || acima || semTitulo}
+              disabled={traduzindo || desabilitado || acima || semObrigatorio}
               onClick={() => void traduzir()}
             >
               {t.confirmarSim}
