@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ComoAjudarRouteImport } from './routes/como-ajudar'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as DevHarnessTraducaoRouteImport } from './routes/dev-harness-traducao'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticiasRouteImport } from './routes/noticias'
 import { Route as PainelRouteImport } from './routes/painel'
@@ -54,6 +55,11 @@ const ComoAjudarRoute = ComoAjudarRouteImport.update({
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevHarnessTraducaoRoute = DevHarnessTraducaoRouteImport.update({
+  id: '/dev-harness-traducao',
+  path: '/dev-harness-traducao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/dev-harness-traducao': typeof DevHarnessTraducaoRoute
   '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/dev-harness-traducao': typeof DevHarnessTraducaoRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/programa-esportivo': typeof ProgramaEsportivoRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/como-ajudar': typeof ComoAjudarRoute
   '/contato': typeof ContatoRoute
+  '/dev-harness-traducao': typeof DevHarnessTraducaoRoute
   '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRouteWithChildren
   '/painel': typeof PainelRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/dev-harness-traducao'
     | '/login'
     | '/noticias'
     | '/painel'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/dev-harness-traducao'
     | '/login'
     | '/painel'
     | '/programa-esportivo'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-ajudar'
     | '/contato'
+    | '/dev-harness-traducao'
     | '/login'
     | '/noticias'
     | '/painel'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ComoAjudarRoute: typeof ComoAjudarRoute
   ContatoRoute: typeof ContatoRoute
+  DevHarnessTraducaoRoute: typeof DevHarnessTraducaoRoute
   LoginRoute: typeof LoginRoute
   NoticiasRoute: typeof NoticiasRouteWithChildren
   PainelRoute: typeof PainelRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev-harness-traducao': {
+      id: '/dev-harness-traducao'
+      path: '/dev-harness-traducao'
+      fullPath: '/dev-harness-traducao'
+      preLoaderRoute: typeof DevHarnessTraducaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -482,6 +502,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ComoAjudarRoute: ComoAjudarRoute,
   ContatoRoute: ContatoRoute,
+  DevHarnessTraducaoRoute: DevHarnessTraducaoRoute,
   LoginRoute: LoginRoute,
   NoticiasRoute: NoticiasRouteWithChildren,
   PainelRoute: PainelRoute,
