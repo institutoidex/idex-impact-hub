@@ -11,7 +11,8 @@ export const TEMPO_LIMITE_EMAIL_MS = 10_000;
 export type CodigoErroEmail = "timeout" | "recusado" | "rede";
 
 export class ErroEmail extends Error {
-  constructor(public codigo: CodigoErroEmail) {
+  /** status HTTP do provedor (quando houve resposta) — seguro para log */
+  constructor(public codigo: CodigoErroEmail, public status?: number) {
     super(codigo);
   }
 }
@@ -41,7 +42,7 @@ export async function enviarViaResend(
   cfg: ConfigEmail,
   e: EmailMontado,
   opcoes: { fetch?: typeof fetch; tempoMs?: number } = {},
-): Promise<void> {
+): Promise<{ id: string | null; status: number }> {
   const f = opcoes.fetch ?? fetch;
   let resp: Response;
   try {
@@ -59,7 +60,18 @@ export async function enviarViaResend(
     const nome = (err as { name?: string })?.name;
     throw new ErroEmail(nome === "TimeoutError" || nome === "AbortError" ? "timeout" : "rede");
   }
-  // corpo descartado de propósito: pode conter dados que não devem ir a log
-  await resp.body?.cancel().catch(() => {});
-  if (!resp.ok) throw new ErroEmail("recusado");
+  if (!resp.ok) {
+    // corpo de erro descartado de propósito: pode conter dados que não devem ir a log
+    await resp.body?.cancel().catch(() => {});
+    throw new ErroEmail("recusado", resp.status);
+  }
+  // sucesso: extrai SOMENTE o id do e-mail aceito (nada mais do corpo é usado)
+  let id: string | null = null;
+  try {
+    const j = (await resp.json()) as { id?: unknown };
+    if (typeof j?.id === "string" && /^[\w-]{1,100}$/.test(j.id)) id = j.id;
+  } catch {
+    /* corpo vazio/inválido: aceito, porém sem id */
+  }
+  return { id, status: resp.status };
 }
