@@ -42,7 +42,7 @@ EditorNoticia → BotaoTraduzir (clique) → pedirTraducao (token da sessão)
 - `src/lib/traducao-ia/gemini.server.ts` — REST oficial, modelo fixo `gemini-3.1-flash-lite`, `responseJsonSchema`, timeout 45 s, sem tools/busca/retentativas, valida `finishReason` (MAX_TOKENS = cortada).
 - `src/lib/traducao-ia/auth.server.ts` — token Bearer + `has_role` com a chave publishable e o token do usuário (sem service_role).
 - `src/lib/traducao-ia/limite.server.ts` — 1 tradução por vez e 6 por 10 minutos por usuário.
-- `src/lib/traducao-ia/endpoint.server.ts` — ordem das checagens e respostas; logs só com o código.
+- `src/lib/traducao-ia/endpoint.server.ts` — ordem das checagens e respostas; logs só com o código + diagnóstico seguro.
 - `src/routes/api/traducao-noticia.ts` — rota POST; carrega os módulos de servidor dentro do handler.
 - `src/lib/traducao-ia/cliente.ts` — chamada do navegador, `temTraducaoExistente`, `mesclarTraducoes`, `retrato`.
 - `src/components/admin/BotaoTraduzir.tsx` — props `entrada`, `traducoes`, `aoAplicar`, `desabilitado`, `aoMudarTraduzindo`.
@@ -82,3 +82,12 @@ Sucesso: `{ ok: true, traducoes: { "en-US": {...}, "es-ES": {...} } }`. Erro: `{
 
 ## Diagnóstico: "ainda não está configurada" na prévia
 `nao_configurado` significa que o servidor que atendeu o pedido não tinha `GEMINI_API_KEY` no ambiente. O secret entra no servidor quando ele é montado de novo: a prévia montada antes do cadastro continua sem a chave até a próxima atualização, e o site publicado só recebe a chave ao publicar. Chave presente mas recusada pelo Google aparece como `chave_recusada`.
+
+## Diagnóstico seguro (permanente)
+
+Em falha do provedor, o log de produção traz uma única linha, por exemplo
+`[traducao-ia] falha_provedor http=400 status=FAILED_PRECONDITION code=400 reason=- regiao_bloqueada=true`.
+- `http`, `status`, `code` e `reason` só entram se tiverem formato fixo (`[A-Z_]`, inteiro); senão `-`.
+- `regiao_bloqueada` é só verdadeiro/falso (mensagem do Google nunca é copiada).
+- Falha de rede: `rede=<TipoDoErro>`; exceção fora do serviço: `excecao=<TipoDoErro>`; erro de validação do próprio serviço: `origem=servico`.
+- Nunca: texto traduzido, mensagem/corpo do provedor, chave, token. Função: `diagnosticoSeguro` em `gemini.server.ts`.

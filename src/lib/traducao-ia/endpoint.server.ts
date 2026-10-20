@@ -1,7 +1,7 @@
 // Lógica do endpoint POST /api/traducao-noticia (todas as entidades do registro),
 // separada da rota para ser testável. Limite por usuário é o MESMO para todas.
 // Ordem: token → admin → corpo/validação → chave configurada → limite → Gemini.
-// Logs só com o código do erro (nunca texto, token, chave ou corpo do provedor).
+// Logs só com o código do erro + diagnóstico allowlisted (nunca texto, token, chave ou corpo do provedor).
 import {
   LIMITE_CORPO,
   STATUS_POR_CODIGO,
@@ -77,7 +77,11 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
     return responder({ ok: true, traducoes });
   } catch (e) {
     const codigo = e instanceof ErroTraducao ? e.codigo : "falha_provedor";
-    console.warn(`[traducao-ia] ${codigo}`);
+    // diagnóstico seguro permanente: só códigos allowlisted, nunca texto/chave/token.
+    // Exceção fora do serviço (ex.: TypeError no runtime publicado) registra só o nome do tipo.
+    const nome = e instanceof Error && /^[A-Za-z]{1,40}$/.test(e.name) ? e.name : "desconhecido";
+    const diag = e instanceof ErroTraducao ? (e.diag ? ` ${e.diag}` : " origem=servico") : ` excecao=${nome}`;
+    console.warn(`[traducao-ia] ${codigo}${diag}`);
     return erro(codigo);
   } finally {
     deps.limitador.liberar(admin.userId);

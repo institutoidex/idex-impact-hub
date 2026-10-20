@@ -23,7 +23,11 @@ const MAX_TOKENS_SAIDA = 16_384;
 
 /** Erro com código seguro, convertido em status HTTP pelo endpoint. */
 export class ErroTraducao extends Error {
-  constructor(public codigo: CodigoServidor) {
+  /** `diag`: diagnóstico seguro (só status HTTP e códigos allowlisted, nunca texto/chave). */
+  constructor(
+    public codigo: CodigoServidor,
+    public diag?: string,
+  ) {
     super(codigo);
     this.name = "ErroTraducao";
   }
@@ -93,6 +97,36 @@ type RespostaGemini = {
   }[];
 };
 
+/**
+ * Diagnóstico PERMANENTE de erro do provedor, sem expor o corpo: só status HTTP,
+ * error.status/code e "reason" que batam com formatos fixos, e um indicador
+ * booleano de região bloqueada. Nunca inclui mensagem, texto, chave ou token.
+ */
+export function diagnosticoSeguro(http: number, corpo: string): string {
+  let j: unknown = null;
+  try {
+    j = JSON.parse(corpo);
+  } catch {
+    /* corpo não-JSON: só o status HTTP */
+  }
+  const e = (j && typeof j === "object" && "error" in j ? (j as { error: unknown }).error : null) as {
+    status?: unknown;
+    code?: unknown;
+    message?: unknown;
+    details?: unknown;
+  } | null;
+  const st = typeof e?.status === "string" && /^[A-Z_]{1,40}$/.test(e.status) ? e.status : "-";
+  const cd = typeof e?.code === "number" && Number.isInteger(e.code) ? e.code : "-";
+  const detalhes = Array.isArray(e?.details) ? e.details : [];
+  const motivos = detalhes
+    .map((d) => (d && typeof d === "object" ? (d as { reason?: unknown }).reason : undefined))
+    .filter((r): r is string => typeof r === "string" && /^[A-Z_]{1,40}$/.test(r))
+    .slice(0, 5)
+    .join(",");
+  const regiao = typeof e?.message === "string" && /location is not supported/i.test(e.message);
+  return `http=${http} status=${st} code=${cd} reason=${motivos || "-"} regiao_bloqueada=${regiao}`;
+}
+
 /** Valida a resposta do provedor e devolve as traduções no formato do site. */
 export function interpretarResposta(entrada: PedidoTraducao | EntradaTraducao, json: unknown): TraducoesCampos {
   const p = normalizarPedido(entrada);
@@ -147,17 +181,22 @@ export async function traduzirComGemini(
         body: JSON.stringify(montarCorpo(entrada)),
         signal: controle.signal,
       });
-    } catch {
-      throw new ErroTraducao(estourou ? "tempo_esgotado" : "falha_provedor");
+    } catch (e) {
+      // falha de rede/egress: registra só o tipo do erro (sem mensagem)
+      const tipo = e instanceof Error && /^[A-Za-z]{1,40}$/.test(e.name) ? e.name : "desconhecido";
+      throw new ErroTraducao(estourou ? "tempo_esgotado" : "falha_provedor", `rede=${tipo}`);
     }
     if (resp.status === 429) throw new ErroTraducao("cota");
     // chave ausente/inválida ou API não habilitada: problema de configuração
-    if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
+    if (!resp.ok) {
+      // mesma classificação de antes; o corpo só é usado para o diagnóstico allowlisted
       const corpo = await resp.text().catch(() => "");
-      if (/API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) throw new ErroTraducao("chave_recusada");
-      throw new ErroTraducao("falha_provedor");
+      const diag = diagnosticoSeguro(resp.status, corpo);
+      if ([400, 401, 403].includes(resp.status) && /API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) {
+        throw new ErroTraducao("chave_recusada", diag);
+      }
+      throw new ErroTraducao("falha_provedor", diag);
     }
-    if (!resp.ok) throw new ErroTraducao("falha_provedor");
     let json: unknown;
     try {
       json = await resp.json();

@@ -292,3 +292,39 @@ describe("todas as entidades trilíngues (registro/allowlist)", () => {
   });
 });
 
+
+// Diagnóstico seguro (permanente): só status/códigos allowlisted, nunca mensagem ou texto do corpo
+import { diagnosticoSeguro, traduzirComGemini as traduzirDiag, ErroTraducao as ErroDiag } from "./gemini.server";
+describe("diagnosticoSeguro", () => {
+  test("resume região bloqueada sem copiar a mensagem", () => {
+    const corpo = JSON.stringify({ error: { code: 400, status: "FAILED_PRECONDITION", message: "User location is not supported for the API use. segredo@x.com" } });
+    const d = diagnosticoSeguro(400, corpo);
+    expect(d).toBe("http=400 status=FAILED_PRECONDITION code=400 reason=- regiao_bloqueada=true");
+    expect(d).not.toContain("segredo");
+  });
+  test("descarta campos fora do formato e corpo não-JSON", () => {
+    expect(diagnosticoSeguro(500, "<html>chave AIza123</html>")).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
+    const d = diagnosticoSeguro(403, JSON.stringify({ error: { status: "texto livre com PII", details: [{ reason: "API_KEY_INVALID" }] } }));
+    expect(d).toBe("http=403 status=- code=- reason=API_KEY_INVALID regiao_bloqueada=false");
+  });
+  test("details que não é array, null ou error não-objeto não quebram", () => {
+    expect(diagnosticoSeguro(500, JSON.stringify({ error: { details: { reason: "X" } } }))).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
+    expect(diagnosticoSeguro(500, "null")).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
+    expect(diagnosticoSeguro(500, JSON.stringify({ error: "texto" }))).toBe("http=500 status=- code=- reason=- regiao_bloqueada=false");
+  });
+  test("classificação inalterada: 500 → falha_provedor com diag; 403 de chave → chave_recusada", async () => {
+    const entrada = { entidade: "pasta", campos: { nome: "Pasta fictícia" } } as never;
+    const f500 = (async () => new Response(JSON.stringify({ error: { code: 500, status: "INTERNAL" } }), { status: 500 })) as unknown as typeof fetch;
+    const e1 = await traduzirDiag(entrada, { chave: "k", fetchImpl: f500 }).catch((e) => e);
+    expect(e1).toBeInstanceOf(ErroDiag);
+    expect(e1.codigo).toBe("falha_provedor");
+    expect(e1.diag).toBe("http=500 status=INTERNAL code=500 reason=- regiao_bloqueada=false");
+    const f403 = (async () => new Response(JSON.stringify({ error: { code: 403, status: "PERMISSION_DENIED" } }), { status: 403 })) as unknown as typeof fetch;
+    const e2 = await traduzirDiag(entrada, { chave: "k", fetchImpl: f403 }).catch((e) => e);
+    expect(e2.codigo).toBe("chave_recusada");
+    const fRede = (async () => { throw new TypeError("detalhe sensível"); }) as unknown as typeof fetch;
+    const e3 = await traduzirDiag(entrada, { chave: "k", fetchImpl: fRede }).catch((e) => e);
+    expect(e3.codigo).toBe("falha_provedor");
+    expect(e3.diag).toBe("rede=TypeError");
+  });
+});
