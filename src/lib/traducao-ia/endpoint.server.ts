@@ -78,7 +78,9 @@ export async function processarTraducao(request: Request, deps: Dependencias): P
   } catch (e) {
     const codigo = e instanceof ErroTraducao ? e.codigo : "falha_provedor";
     // TEMPORÁRIO (diagnóstico de produção): só códigos allowlisted, nunca texto/chave/token
-    const diag = e instanceof ErroTraducao && e.diag ? ` ${e.diag}` : "";
+    // exceção que não é do serviço (ex.: TypeError no runtime publicado): só o nome do tipo
+    const nome = e instanceof Error && /^[A-Za-z]{1,40}$/.test(e.name) ? e.name : "desconhecido";
+    const diag = e instanceof ErroTraducao ? (e.diag ? ` ${e.diag}` : " origem=servico") : ` excecao=${nome}`;
     console.warn(`[traducao-ia] ${codigo}${diag}`);
     return erro(codigo);
   } finally {
