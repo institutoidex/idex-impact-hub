@@ -43,6 +43,7 @@ function deps(over = {}) {
     },
     lerConfig: () => CFG,
     enviar: mock(async (_c, e) => void enviados.push(e)),
+    agora: () => new Date("2026-10-20T13:05:00Z"),
     ...over,
   };
   return { d, linhas, status, enviados };
@@ -154,6 +155,24 @@ describe("idempotência (clique duplo / nova tentativa)", () => {
     await processarContato(req(base), d);
     expect(enviados.length).toBe(1);
   });
+  test("registro com mais de 23h sem aviso enviado: não reenvia (deduplicação do Resend expirou)", async () => {
+    const { d, enviados, status } = deps({ lerConfig: () => null });
+    await processarContato(req(base), d); // grava como nao_configurado
+    d.lerConfig = () => CFG;
+    d.agora = () => new Date("2026-10-21T12:01:00Z"); // 23h01 depois
+    const r = await processarContato(req(base), d);
+    expect(r.status).toBe(200);
+    expect(enviados.length).toBe(0);
+    expect(status).toEqual(["nao_configurado"]);
+  });
+  test("registro com 22h59 sem aviso: ainda reenvia uma vez", async () => {
+    const { d, enviados } = deps({ lerConfig: () => null });
+    await processarContato(req(base), d);
+    d.lerConfig = () => CFG;
+    d.agora = () => new Date("2026-10-21T11:59:00Z");
+    await processarContato(req(base), d);
+    expect(enviados.length).toBe(1);
+  });
   test("mesmo id com conteúdo diferente: 409 sem sobrescrever nem devolver dados", async () => {
     const { d, linhas } = deps();
     await processarContato(req(base), d);
@@ -164,10 +183,37 @@ describe("idempotência (clique duplo / nova tentativa)", () => {
   });
 });
 
+describe("falhas inesperadas depois de gravar", () => {
+  test("lerConfig lança: mensagem guardada, visitante recebe sucesso e JSON seguro", async () => {
+    const { d, linhas, enviados } = deps({ lerConfig: () => { throw new Error("segredo"); } });
+    const r = await processarContato(req(base), d);
+    expect(r.status).toBe(200);
+    expect(await r.json()).toEqual({ ok: true, protocolo: ID });
+    expect(linhas.size).toBe(1);
+    expect(enviados.length).toBe(0);
+  });
+  test("montagem/envio e status lançam: ainda sucesso após gravar", async () => {
+    const { d } = deps({ enviar: () => { throw new Error("x"); } });
+    d.banco.marcarNotificacao = () => { throw new Error("y"); };
+    const r = await processarContato(req(base), d);
+    expect(r.status).toBe(200);
+  });
+  test("cálculo da origem falha: formulário segue funcionando", async () => {
+    const { d, linhas } = deps({ origem: async () => { throw new Error("hash"); } });
+    const r = await processarContato(req(base), d);
+    expect(r.status).toBe(200);
+    expect(linhas.size).toBe(1);
+  });
+});
+
 describe("configuração e Resend", () => {
   test("config: só remetente institutoidex.org, destinos fixos de produção", () => {
     expect(lerConfigEmail({})).toBeNull();
-    expect(lerConfigEmail({ RESEND_API_KEY: "k" })).toBeNull();
+    // só a chave é obrigatória: remetente padrão formularios@institutoidex.org
+    expect(lerConfigEmail({ RESEND_API_KEY: "k" })).toEqual({
+      chave: "k", remetente: "Instituto IDEX <formularios@institutoidex.org>", para: "idex.secretaria@gmail.com", copia: "idex2007@hotmail.com",
+    });
+    expect(lerConfigEmail({ RESEND_FROM_EMAIL: "Instituto IDEX <formularios@institutoidex.org>" })).toBeNull();
     for (const r of ["IDEX <c@zas.com.br>", "onboarding@resend.dev", "IDEX <c@institutoidex.org.evil.com>", "IDEX <c@institutoidex.org>\r\nBcc: x@y.z"])
       expect(lerConfigEmail({ RESEND_API_KEY: "k", RESEND_FROM_EMAIL: r })).toBeNull();
     // variáveis antigas/extras não mudam destinos
@@ -225,6 +271,14 @@ describe("HTML do e-mail", () => {
     expect(html).toContain('href="https://institutoidex.org/admin"');
     expect(html).toContain('alt="Instituto IDEX"');
     expect(texto).toContain("<b>oi</b>"); // texto puro mostra literal, sem HTML
+  });
+  test("acessibilidade: idioma/direção e cores com contraste AA", () => {
+    const { html } = montarEmailContato({ ...base, recebidoEm: new Date() });
+    expect(html).toContain('<html lang="pt-BR" dir="ltr">');
+    expect(html).toContain('<body lang="pt-BR" dir="ltr"');
+    expect(html).not.toContain("#A0A09F");
+    expect(html).toContain("#626964");
+    expect(html).toContain('bgcolor="#007A45"');
   });
   test("parágrafos preservados e assunto sem quebra", () => {
     const { html } = montarEmailContato({ ...base, recebidoEm: new Date() });
