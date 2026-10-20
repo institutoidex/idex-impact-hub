@@ -23,17 +23,24 @@
   Exemplo com dados fictícios: `docs/exemplo-email-contato.html` (+ capturas desktop/mobile).
 - Logs só com códigos (`[contato] email_timeout`, `falha_registro`…), nunca dados do visitante, IP ou chave.
 
-## Configuração PENDENTE (Project Settings → Secrets)
-| Nome | Exemplo | Situação |
-|---|---|---|
-| `RESEND_API_KEY` | chave da API Resend | **não cadastrada** (nenhuma conexão Resend encontrada neste projeto) |
-| `CONTATO_EMAIL_REMETENTE` | `Instituto IDEX <contato@SEU-DOMINIO-VERIFICADO>` | aguardando domínio verificado no Resend |
-| `CONTATO_EMAIL_PARA` | destino principal | aguardando confirmação |
-| `CONTATO_EMAIL_COPIA` | cópia (opcional) | aguardando confirmação |
+## Configuração (confirmada em 20/10/2026)
+- Destinos de produção FIXOS no código (`config.server.ts`): para `idex.secretaria@gmail.com`, cópia `idex2007@hotmail.com`.
+  Não há variável de ambiente nem parâmetro de rota que troque destinatários.
+- Remetente: obrigatoriamente `@institutoidex.org` (zas.com.br e resend.dev são recusados; sem remetente padrão).
+- Logo e botão "Abrir painel" usam a origem `https://institutoidex.org` (o endereço .lovable.app redireciona para ela).
 
-Sem qualquer um dos três obrigatórios, nada é enviado e o status fica `nao_configurado`.
-Se a chave vier pelo conector Resend da Lovable (gateway), `resend.server.ts` precisa trocar a URL/cabeçalhos
-para o gateway — hoje está na API direta com `RESEND_API_KEY`.
+| Secret | Exemplo | Situação |
+|---|---|---|
+| `RESEND_API_KEY` | chave da API Resend | **não cadastrada** |
+| `RESEND_FROM_EMAIL` | `Instituto IDEX <contato@institutoidex.org>` | aguardando domínio verificado no Resend (DNS em preparo) |
+
+Sem os dois, nada é enviado e o status fica `nao_configurado`.
+Se a chave vier pelo conector Resend da Lovable (gateway), `resend.server.ts` precisa trocar a URL/cabeçalhos para o gateway.
+
+## Primeiro teste real (ainda NÃO executado)
+Somente para `tecnologia@zas.com.br`, sem cópia, por script rodado direto no servidor usando
+`configTesteIsolado(process.env, "tecnologia@zas.com.br")` + `montarEmailContato` + `enviarViaResend`
+com dados fictícios. Nenhuma rota aceita destinatário de teste; produção continua com os destinos fixos.
 
 ## Banco
 - Usa a PK uuid já existente de `mensagens` com o id do navegador; gravação feita no servidor com o
