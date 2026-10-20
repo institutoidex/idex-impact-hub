@@ -20,7 +20,7 @@ function Harness() {
   const [ed, setEd] = useState<{ aberto: boolean; item: ProjetoRow | null }>({ aberto: false, item: null });
   const [chave, setChave] = useState("a");
   return (
-    <div className="space-y-4 p-8">
+    <div className="space-y-4 p-8 pt-40">
       <button id="h-novo" onClick={() => setEd({ aberto: true, item: null })}>novo</button>
       <button id="h-existente" onClick={() => setEd({ aberto: true, item: PROJETO })}>existente</button>
       <button id="h-chave" onClick={() => setChave((c) => (c === "a" ? "b" : "a"))}>trocar chave ({chave})</button>
