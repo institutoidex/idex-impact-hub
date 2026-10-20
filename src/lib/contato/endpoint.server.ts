@@ -42,7 +42,7 @@ export type DependenciasContato = {
     marcarNotificacao: (id: string, status: StatusNotificacao) => Promise<void>;
   };
   lerConfig: () => ConfigEmail | null;
-  enviar: (cfg: ConfigEmail, e: EmailMontado) => Promise<void>;
+  enviar: (cfg: ConfigEmail, e: EmailMontado) => Promise<unknown>;
   agora?: () => Date;
 };
 

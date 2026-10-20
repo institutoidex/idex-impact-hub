@@ -247,6 +247,13 @@ describe("configuração e Resend", () => {
     const lento = (_u, init) => new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(Object.assign(new Error(), { name: "TimeoutError" }))));
     await expect(enviarViaResend(CFG, m, { fetch: lento, tempoMs: 5 })).rejects.toMatchObject({ codigo: "timeout" });
   });
+  test("aceite devolve só id seguro e status; erro traz só status HTTP", async () => {
+    const ok = mock(async () => new Response(JSON.stringify({ id: "abc-123", extra: "pii" }), { status: 200 }));
+    expect(await enviarViaResend(CFG, { id: ID, responderPara: "a@b.org", assunto: "s", html: "h", texto: "t" }, { fetch: ok })).toEqual({ id: "abc-123", status: 200 });
+    const ruim = mock(async () => new Response("{}", { status: 403 }));
+    const e = await enviarViaResend(CFG, { id: ID, responderPara: "a@b.org", assunto: "s", html: "h", texto: "t" }, { fetch: ruim }).catch((x) => x);
+    expect([e.codigo, e.status]).toEqual(["recusado", 403]);
+  });
   test("cópia ausente não manda cc", () => {
     expect(corpoResend({ ...CFG, copia: null }, { id: ID, responderPara: "a@b.org", assunto: "s", html: "", texto: "" }).cc).toBeUndefined();
   });
