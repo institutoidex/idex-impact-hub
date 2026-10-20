@@ -23,11 +23,7 @@ const MAX_TOKENS_SAIDA = 16_384;
 
 /** Erro com código seguro, convertido em status HTTP pelo endpoint. */
 export class ErroTraducao extends Error {
-  /** `diag`: diagnóstico seguro (só status HTTP e códigos allowlisted, nunca texto/chave). */
-  constructor(
-    public codigo: CodigoServidor,
-    public diag?: string,
-  ) {
+  constructor(public codigo: CodigoServidor) {
     super(codigo);
     this.name = "ErroTraducao";
   }
@@ -97,29 +93,6 @@ type RespostaGemini = {
   }[];
 };
 
-/**
- * Resume um erro do provedor SEM expor o corpo: só status HTTP, error.status/code e
- * "reason" se baterem com formatos fixos, e um indicador booleano de região bloqueada.
- * Exportado para os testes.
- */
-export function diagnosticoSeguro(http: number, corpo: string): string {
-  let j: { error?: { status?: unknown; code?: unknown; message?: unknown; details?: { reason?: unknown }[] } } = {};
-  try {
-    j = JSON.parse(corpo);
-  } catch {
-    /* corpo não-JSON: só o status HTTP */
-  }
-  const e = j?.error ?? {};
-  const st = typeof e.status === "string" && /^[A-Z_]{1,40}$/.test(e.status) ? e.status : "-";
-  const cd = typeof e.code === "number" ? e.code : "-";
-  const motivos = (e.details ?? [])
-    .map((d) => d?.reason)
-    .filter((r): r is string => typeof r === "string" && /^[A-Z_]{1,40}$/.test(r))
-    .join(",");
-  const regiao = typeof e.message === "string" && /location is not supported/i.test(e.message);
-  return `http=${http} status=${st} code=${cd} reason=${motivos || "-"} regiao_bloqueada=${regiao}`;
-}
-
 /** Valida a resposta do provedor e devolve as traduções no formato do site. */
 export function interpretarResposta(entrada: PedidoTraducao | EntradaTraducao, json: unknown): TraducoesCampos {
   const p = normalizarPedido(entrada);
@@ -174,21 +147,17 @@ export async function traduzirComGemini(
         body: JSON.stringify(montarCorpo(entrada)),
         signal: controle.signal,
       });
-    } catch (e) {
-      // falha de rede/egress: registra só o tipo do erro (sem mensagem)
-      const tipo = e instanceof Error && /^[A-Za-z]{1,40}$/.test(e.name) ? e.name : "desconhecido";
-      throw new ErroTraducao(estourou ? "tempo_esgotado" : "falha_provedor", `rede=${tipo}`);
+    } catch {
+      throw new ErroTraducao(estourou ? "tempo_esgotado" : "falha_provedor");
     }
     if (resp.status === 429) throw new ErroTraducao("cota");
     // chave ausente/inválida ou API não habilitada: problema de configuração
-    if (!resp.ok) {
+    if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
       const corpo = await resp.text().catch(() => "");
-      const diag = diagnosticoSeguro(resp.status, corpo);
-      if ([400, 401, 403].includes(resp.status) && /API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) {
-        throw new ErroTraducao("chave_recusada", diag);
-      }
-      throw new ErroTraducao("falha_provedor", diag);
+      if (/API_KEY|api key|PERMISSION_DENIED/i.test(corpo)) throw new ErroTraducao("chave_recusada");
+      throw new ErroTraducao("falha_provedor");
     }
+    if (!resp.ok) throw new ErroTraducao("falha_provedor");
     let json: unknown;
     try {
       json = await resp.json();
