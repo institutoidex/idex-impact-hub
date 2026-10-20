@@ -31,8 +31,8 @@
 
 | Secret | Exemplo | Situação |
 |---|---|---|
-| `RESEND_API_KEY` | chave da API Resend | **não cadastrada** |
-| `RESEND_FROM_EMAIL` | `Instituto IDEX <formularios@institutoidex.org>` | **cadastrado** (20/10/2026); domínio verificado na conta Resend institutoidex.projetos (sa-east-1) |
+| `RESEND_API_KEY` | chave "sending access" do domínio (único obrigatório) | **não cadastrada** |
+| `RESEND_FROM_EMAIL` | `Instituto IDEX <formularios@institutoidex.org>` | opcional (o código já usa esse remetente por padrão; só aceita @institutoidex.org) — cadastrado em 20/10/2026; domínio verificado na conta Resend institutoidex.projetos (sa-east-1) |
 
 Sem os dois, nada é enviado e o status fica `nao_configurado`.
 Se a chave vier pelo conector Resend da Lovable (gateway), `resend.server.ts` precisa trocar a URL/cabeçalhos para o gateway.
@@ -53,3 +53,15 @@ com dados fictícios. Nenhuma rota aceita destinatário de teste; produção con
 - 5 envios / 10 min por origem (hash SHA-256 do IP, memória da instância — com vários workers cada um
   conta separado e reinício zera; proteção de melhor esforço).
 - Campos: nome 120, e-mail 255, assunto 150, mensagem 2000.
+
+## Limite de idempotência sem coluna de status
+A chave de idempotência do Resend vale 24h. Uma nova tentativa com o mesmo protocolo só reenvia
+o aviso se o registro tiver menos de 23h e não estiver marcado como `enviada`; acima disso o envio
+é pulado (log `[contato] reenvio_expirado`). Sem a migração opcional de status, o servidor não sabe
+se um aviso antigo saiu: falhas antigas NÃO são reenviadas automaticamente (reenvio pelo admin fica
+para o futuro). Falhas inesperadas após gravar (config, montagem, envio, status) nunca viram erro
+para o visitante.
+
+## Cores do e-mail
+Fonte Arial (compatibilidade Gmail/Outlook). Texto auxiliar #626964 e CTA/links/faixa do título
+#007A45 para contraste AA; o verde da marca #00A859 aparece numa faixa decorativa.

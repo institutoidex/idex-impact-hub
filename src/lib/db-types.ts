@@ -93,6 +93,9 @@ export type MensagemRow = {
   mensagem: string;
   lida: boolean;
   criado_em: string;
+  /** status do aviso por e-mail; ausente em bancos sem a migração opcional */
+  notificacao_status?: string | null;
+  notificacao_em?: string | null;
 }
 
 type Tabela<Row, Insert = Partial<Row>> = {
@@ -113,6 +116,8 @@ export type Database = {
       mensagens: Tabela<
         MensagemRow,
         {
+          /** uuid gerado no navegador (idempotência); opcional, o banco gera se faltar */
+          id?: string;
           nome: string;
           email: string;
           telefone?: string | null;

@@ -2,17 +2,19 @@
 // Destinos de produção são FIXOS aqui (confirmados pelo Pedro em 20/10/2026) e não podem
 // ser trocados por variável de ambiente nem pelo navegador — sem "override" persistente.
 // Do ambiente (cofre de secrets da Lovable) vêm só:
-//  - RESEND_API_KEY      chave da API do Resend
-//  - RESEND_FROM_EMAIL   remetente, OBRIGATORIAMENTE no domínio institutoidex.org
-//                        (ex.: "Instituto IDEX <contato@institutoidex.org>")
-// Enquanto faltar chave ou remetente válido, nada é enviado: a mensagem é gravada
-// normalmente e o aviso fica como "nao_configurado". Não há remetente padrão.
+//  - RESEND_API_KEY      chave da API do Resend (ÚNICO obrigatório; chave "sending access" basta)
+//  - RESEND_FROM_EMAIL   opcional: troca o remetente padrão, mas só se for @institutoidex.org
+// Remetente padrão: REMETENTE_PADRAO (domínio verificado no Resend). Remetente inválido no
+// ambiente NÃO cai no padrão: o aviso fica "nao_configurado" para o erro ser notado.
+// Sem chave, nada é enviado: a mensagem é gravada e o aviso fica "nao_configurado".
 
 /** Destinos fixos de produção. */
 export const DESTINO_PRINCIPAL = "idex.secretaria@gmail.com";
 export const DESTINO_COPIA = "idex2007@hotmail.com";
 /** Único domínio aceito no remetente (nunca zas.com.br nem resend.dev). */
 export const DOMINIO_REMETENTE = "institutoidex.org";
+/** Remetente padrão (domínio institutoidex.org verificado no Resend em 20/10/2026). */
+export const REMETENTE_PADRAO = "Instituto IDEX <formularios@institutoidex.org>";
 
 export type ConfigEmail = {
   chave: string;
@@ -41,8 +43,8 @@ export function remetenteValido(s: string): boolean {
 /** Lê e valida a configuração de produção; devolve null se incompleta ou inválida. */
 export function lerConfigEmail(env: Record<string, string | undefined>): ConfigEmail | null {
   const chave = env["RESEND_API_KEY"]?.trim();
-  const remetente = env["RESEND_FROM_EMAIL"]?.trim();
-  if (!chave || !remetente || !remetenteValido(remetente)) return null;
+  const remetente = env["RESEND_FROM_EMAIL"]?.trim() || REMETENTE_PADRAO;
+  if (!chave || !remetenteValido(remetente)) return null;
   return { chave, remetente, para: DESTINO_PRINCIPAL, copia: DESTINO_COPIA };
 }
 

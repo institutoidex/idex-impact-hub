@@ -8,9 +8,12 @@ export const LOGO_EMAIL_URL =
 /** Painel onde a equipe lê as mensagens. */
 export const PAINEL_URL = "https://institutoidex.org/admin";
 
-const VERDE = "#00A859";
+// Verde da marca só em faixa decorativa; texto/CTA/link usam verde escuro (contraste AA).
+const VERDE_MARCA = "#00A859";
+const VERDE = "#007A45";
 const PRETO = "#242323";
-const CINZA = "#A0A09F";
+// Cinza escuro para texto auxiliar (o #A0A09F da marca não tem contraste em fundo branco).
+const CINZA = "#626964";
 
 export type DadosEmailContato = {
   id: string;
@@ -82,21 +85,22 @@ export function montarEmailContato(d: DadosEmailContato) {
   const preheader = escaparHtml(limparCabecalho(`${d.nome} enviou: ${d.assunto}`).slice(0, 140));
 
   const html = `<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
 <title>Nova mensagem pelo site</title>
 </head>
-<body style="margin:0;padding:0;background-color:#ffffff;">
+<body lang="pt-BR" dir="ltr" style="margin:0;padding:0;background-color:#ffffff;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#ffffff;">${preheader}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
+<table role="presentation" lang="pt-BR" dir="ltr" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;border:1px solid #e6e6e6;border-radius:12px;overflow:hidden;">
 <tr><td align="center" style="padding:28px 24px 20px 24px;background-color:#ffffff;">
 <img src="${LOGO_EMAIL_URL}" width="200" height="111" alt="Instituto IDEX" style="display:block;width:200px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
 </td></tr>
+<tr><td style="height:4px;line-height:4px;font-size:0;background-color:${VERDE_MARCA};">&nbsp;</td></tr>
 <tr><td style="padding:18px 24px;background-color:${VERDE};">
 <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.3;color:#ffffff;font-weight:normal;">Nova mensagem pelo site</h1>
 </td></tr>
