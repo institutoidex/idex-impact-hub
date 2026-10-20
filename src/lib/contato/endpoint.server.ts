@@ -54,8 +54,13 @@ function responder(corpo: RespostaContato, status = 200) {
 }
 const erro = (c: CodigoErroContato) => responder({ ok: false, codigo: c }, STATUS_HTTP_CONTATO[c]);
 
+/** Idempotência do Resend vale 24h: após isso um reenvio duplicaria o e-mail. */
+export const JANELA_REENVIO_MS = 23 * 60 * 60 * 1000;
+
 export async function processarContato(request: Request, deps: DependenciasContato): Promise<Response> {
-  if (!deps.limite.permitir(await deps.origem())) return erro("limite");
+  // falha ao calcular a origem não derruba o formulário: usa um balde comum
+  const chave = await deps.origem().catch(() => "origem_indisponivel");
+  if (!deps.limite.permitir(chave)) return erro("limite");
 
   const texto = await lerCorpoLimitado(request, LIMITE_CORPO_CONTATO);
   if (!texto) return erro("payload_invalido");
@@ -96,6 +101,13 @@ export async function processarContato(request: Request, deps: DependenciasConta
     if (!igual) return erro("conflito");
     criadoEm = existente.criado_em ? new Date(existente.criado_em) : (deps.agora?.() ?? new Date());
     jaNotificada = existente.notificacao_status === "enviada";
+    // registro antigo (>23h) sem confirmação de envio: não reenvia automaticamente,
+    // pois a deduplicação do Resend já expirou (reenvio futuro só por ação do admin)
+    const idade = (deps.agora?.() ?? new Date()).getTime() - criadoEm.getTime();
+    if (!jaNotificada && idade > JANELA_REENVIO_MS) {
+      console.warn("[contato] reenvio_expirado");
+      return responder({ ok: true, protocolo: dados.id });
+    }
   } else {
     criadoEm = r.criadoEm;
   }
@@ -104,14 +116,31 @@ export async function processarContato(request: Request, deps: DependenciasConta
   return responder({ ok: true, protocolo: dados.id });
 }
 
-/** Avisa a equipe; nunca lança — o resultado vira status gravado e log só com código. */
+/** Avisa a equipe; NUNCA lança (a mensagem já foi gravada) — status gravado e log só com código. */
 async function notificar(
   d: { id: string; nome: string; email: string; assunto: string; mensagem: string },
   recebidoEm: Date,
   deps: DependenciasContato,
 ) {
+  try {
+    await notificarInterno(d, recebidoEm, deps);
+  } catch {
+    console.warn("[contato] email_falha_inesperada");
+  }
+}
+
+async function notificarInterno(
+  d: { id: string; nome: string; email: string; assunto: string; mensagem: string },
+  recebidoEm: Date,
+  deps: DependenciasContato,
+) {
   let status: StatusNotificacao;
-  const cfg = deps.lerConfig();
+  let cfg: ConfigEmail | null;
+  try {
+    cfg = deps.lerConfig();
+  } catch {
+    cfg = null;
+  }
   if (!cfg) {
     status = "nao_configurado";
   } else {
