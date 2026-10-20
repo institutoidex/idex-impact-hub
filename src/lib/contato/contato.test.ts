@@ -4,7 +4,7 @@
 import { describe, expect, mock, test } from "bun:test";
 import { processarContato } from "./endpoint.server";
 import { criarLimiteContato } from "./limite.server";
-import { lerConfigEmail } from "./config.server";
+import { configTesteIsolado, lerConfigEmail } from "./config.server";
 import { corpoResend, enviarViaResend, ErroEmail } from "./resend.server";
 import { escaparHtml, montarEmailContato, assuntoEmail } from "./email-html";
 import { enviarContato } from "./cliente";
@@ -165,12 +165,21 @@ describe("idempotência (clique duplo / nova tentativa)", () => {
 });
 
 describe("configuração e Resend", () => {
-  test("config incompleta ou com quebra de linha é recusada", () => {
+  test("config: só remetente institutoidex.org, destinos fixos de produção", () => {
     expect(lerConfigEmail({})).toBeNull();
-    expect(lerConfigEmail({ RESEND_API_KEY: "k", CONTATO_EMAIL_PARA: "a@b.org" })).toBeNull();
-    expect(lerConfigEmail({ RESEND_API_KEY: "k", CONTATO_EMAIL_REMETENTE: "IDEX <c@d.org>", CONTATO_EMAIL_PARA: "a@b.org\r\nBcc: x@y.z" })).toBeNull();
-    expect(lerConfigEmail({ RESEND_API_KEY: "k", CONTATO_EMAIL_REMETENTE: "IDEX <c@d.org>", CONTATO_EMAIL_PARA: "a@b.org,x@y.z" })).toBeNull();
-    expect(lerConfigEmail({ RESEND_API_KEY: "k", CONTATO_EMAIL_REMETENTE: "IDEX <c@d.org>", CONTATO_EMAIL_PARA: "a@b.org" })).toEqual({ chave: "k", remetente: "IDEX <c@d.org>", para: "a@b.org", copia: null });
+    expect(lerConfigEmail({ RESEND_API_KEY: "k" })).toBeNull();
+    for (const r of ["IDEX <c@zas.com.br>", "onboarding@resend.dev", "IDEX <c@institutoidex.org.evil.com>", "IDEX <c@institutoidex.org>\r\nBcc: x@y.z"])
+      expect(lerConfigEmail({ RESEND_API_KEY: "k", RESEND_FROM_EMAIL: r })).toBeNull();
+    // variáveis antigas/extras não mudam destinos
+    expect(lerConfigEmail({ RESEND_API_KEY: "k", RESEND_FROM_EMAIL: "Instituto IDEX <contato@institutoidex.org>", CONTATO_EMAIL_PARA: "x@y.z" })).toEqual({
+      chave: "k", remetente: "Instituto IDEX <contato@institutoidex.org>", para: "idex.secretaria@gmail.com", copia: "idex2007@hotmail.com",
+    });
+  });
+  test("teste isolado: um destinatário, sem cópia, exige config válida", () => {
+    const env = { RESEND_API_KEY: "k", RESEND_FROM_EMAIL: "contato@institutoidex.org" };
+    expect(configTesteIsolado(env, "tecnologia@zas.com.br")).toEqual({ chave: "k", remetente: "contato@institutoidex.org", para: "tecnologia@zas.com.br", copia: null });
+    expect(configTesteIsolado({}, "tecnologia@zas.com.br")).toBeNull();
+    expect(configTesteIsolado(env, "a@b.c,d@e.f")).toBeNull();
   });
   test("pedido ao Resend: destinos fixos, Reply-To, Idempotency-Key e sem CRLF", async () => {
     const f = mock(async () => new Response("{}", { status: 200 }));
