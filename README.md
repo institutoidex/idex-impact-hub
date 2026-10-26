@@ -1,62 +1,183 @@
-# IDEX Social Connect
+# Instituto IDEX — Site institucional
 
-Crie o site institucional do Instituto IDEX (ONG brasileira de desenvolvimento social, fundada em 2007), em React + Tailwind + shadcn/ui, com roteamento entre páginas reais (não single-page).
+Site oficial do **Instituto IDEX**, organização social brasileira fundada em 2007 que atua com crianças, jovens, esporte, cultura e comunidade. O principal projeto em andamento é o **Talento Brasil**: treino de futebol gratuito para 200 crianças e jovens, em parceria com o Clube Esportivo Penha.
 
-## Paleta oficial (extraída do site atual, não inventar outras cores)
-- Verde `#00A859` — cor primária, CTAs, botões
-- Azul `#2E4A93` — secundária, apoio
-- Preto `#242323` — seções de contraste, texto
-- Cinza `#A0A09F` — neutro, fundos de seção
-- Amarelo `#FCD307` — uso sutil e pontual apenas (nunca área grande)
+- **Site publicado:** https://institutoidex.org
+- **Instagram:** [@idexbrasil](https://instagram.com/idexbrasil) · **Facebook:** [/idexsocial](https://facebook.com/idexsocial)
 
-## Tipografia
-Serifada de exibição 'Newsreader' (Google Fonts) para títulos + sans 'Public Sans' para corpo de texto. Evite fontes clichê de IA (Inter, Roboto, Fraunces).
+---
 
-## Tom e direção visual
-NADA formal/corporativo demais — o instituto trabalha com crianças, comunidade, esporte e cultura. Queremos: fotografia real em vez de placeholders cinza, cards com leve assimetria/inclinação em vez de grade rígida perfeita, títulos diretos e humanos (não institucionais engessados), microinterações e animações discretas (hover, scroll reveal, transições suaves) — esta é a etapa certa para isso, já que vem de um mockup estático. Evite blocos pretos sólidos grandes; quando usar preto, prefira cards internos com cantos arredondados sobre o fundo escuro.
+## Sumário
 
-## Estrutura do site (9 seções de menu + 2 templates)
-1. **Início**: hero com foto real de ação social (tema esporte/comunidade), frase direta de propósito, as 6 áreas de atuação como cartões redondos com ícone colorido cada, projeto em destaque (Talento Brasil), números de impacto (19 anos de atuação desde 2007, 200 crianças no Talento Brasil), notícias recentes, feed do Instagram (@idexbrasil), CTA de doação/parceria.
-2. **Quem Somos**: história (fundado em 2007, começou em projetos de comércio exterior/competitividade, hoje atua em 6 frentes sociais), missão/visão/valores (ainda não formalizados — usar placeholder textual claro, não inventar), equipe (placeholder), organograma simples.
-3. **Áreas de Atuação**: grade das 6 áreas — Educação (apoio e desenvolvimento), Cultura (artes e oficinas), Esportes (projetos e ações sociais), Meio Ambiente (sustentabilidade), Negócios (indústria e comércio), Saúde (qualidade de vida). Cada uma linka para uma página de detalhe (mesmo template).
-4. **Página de detalhe de área** (template): banner leve com ícone da área, descrição (placeholder onde não houver texto real), projetos relacionados — se não houver projeto real na área, mostrar estado vazio honesto ("ainda não há projetos publicados nesta área").
-5. **Projetos**: catálogo filtrável por área e ano. Único projeto real hoje: **Talento Brasil** (treinamento de futebol gratuito para 200 crianças e jovens nas categorias de base, em parceria com o Clube Esportivo Penha, lançado em 26/06/2017 na Câmara dos Vereadores de Santa Cruz do Rio Pardo, endereço Rua Armando Cardoso Alves, 106 — Penha). Outros cards como "novo projeto em breve" (não inventar projetos).
-6. **Página de detalhe de projeto** (template, usando Talento Brasil como caso real): objetivo, público, parceria, local, data de lançamento, galeria de fotos.
-7. **Parceiros**: logos de parceiros (placeholder — nenhum parceiro real informado ainda) + seção "seja um parceiro" com benefícios e CTA.
-8. **Transparência** (com submenu/abas): Estatuto, Relatórios/Prestação de Contas, Documentos (atas, declarações), Perguntas Frequentes, LGPD — todos como placeholders de documento (ainda não temos os arquivos reais).
-9. **Notícias**: grade de notícias. Real: "Lançamento do projeto Talento Brasil" (26/06/2017). Resto como "notícia em breve".
-10. **Como Ajudar**: três formas — Doação (Pix/dados bancários placeholder), Voluntariado, Parceria empresarial (cruza com página de Parceiros).
-11. **Contato**: formulário (Nome, Email, Assunto, Mensagem — como no site atual), endereço real (Rua Armando Cardoso Alves, 106 — Penha), Instagram @idexbrasil, Facebook /idexsocial, campos de telefone/email como placeholder.
+1. [Visão geral](#visão-geral)
+2. [Funcionalidades](#funcionalidades)
+3. [Tecnologias](#tecnologias)
+4. [Estrutura do projeto](#estrutura-do-projeto)
+5. [Como rodar localmente](#como-rodar-localmente)
+6. [Variáveis de ambiente e segredos](#variáveis-de-ambiente-e-segredos)
+7. [Banco de dados](#banco-de-dados)
+8. [Testes](#testes)
+9. [Identidade visual](#identidade-visual)
+10. [Regras de conteúdo](#regras-de-conteúdo)
+11. [Documentação técnica](#documentação-técnica)
+12. [Publicação](#publicação)
 
-Header fixo com toda a navegação + CTA "Como Ajudar" destacado; rodapé escuro replicando a navegação, redes sociais, endereço e copyright, com um filete fino amarelo no topo do rodapé (elemento real da marca atual).
+---
 
-## Regra de conteúdo
-Não invente fatos específicos (nomes, números, documentos) que não foram informados aqui. Onde não houver conteúdo real, use placeholders visualmente claros (ex: "[missão a definir]") em vez de texto genérico fingindo ser real.
+## Visão geral
 
-## Sobre imagens
-Ainda não anexei os arquivos reais (logo, foto do Talento Brasil, ícones das 6 áreas) porque o upload daqui falhou por rede — vou enviar esses arquivos diretamente nesta conversa do Lovable em seguida. Por enquanto, comece com placeholders de imagem coerentes com a paleta, para eu poder trocar pelos arquivos reais eu mesmo eu depois.
+O site apresenta o instituto, seus projetos e documentos de transparência, publica notícias e recebe mensagens de visitantes. A equipe administra todo o conteúdo por um **painel restrito a administradores**, sem precisar mexer em código.
 
-Comece pela Home e pelo Header/Footer compartilhados; depois siga para as demais páginas.
+O site está disponível em **três idiomas**: português (Brasil), inglês (EUA) e espanhol (Espanha).
 
-This project was built with [Lovable](https://lovable.dev).
+## Funcionalidades
 
-**Live app**: https://idex-impact-hub.lovable.app
+### Site público
+| Página | Conteúdo |
+|---|---|
+| **Início** | Destaques, áreas de atuação, números de impacto, notícias recentes e chamada para apoio |
+| **Quem Somos** | História, propósito e atuação do instituto |
+| **Programa Esportivo** | Os projetos do IDEX, mecanismos de incentivo (leis de incentivo) e documentos |
+| **Transparência** | Documentos públicos organizados em pastas e subpastas, com busca, visualização e download |
+| **Notícias** | Lista com busca e paginação; página de cada notícia com galeria de fotos ampliável |
+| **Contato** | Formulário com proteção anti-spam, telefone, endereço e redes sociais |
 
-## Build with Lovable
+Recursos gerais:
+- Seletor de idioma (PT / EN / ES) com links compartilháveis (`?lang=`)
+- Acessibilidade: VLibras (Libras), ajustes de leitura, navegação por teclado e contraste
+- SEO completo: metadados por página e idioma, dados estruturados (JSON-LD), `sitemap.xml` com versões por idioma e imagens de compartilhamento
+- Imagens otimizadas (WebP em vários tamanhos) e animações discretas
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d8567a4b-4cfc-442d-b2bf-0d51b21de805).
+### Painel administrativo (`/admin`)
+- Login seguro e recuperação de senha por e-mail
+- Cadastro de **notícias**, **documentos**, **pastas** e **projetos**
+- Capa e galeria de fotos com arrastar e soltar e reordenação
+- Biblioteca de mídia
+- Abas de edição por idioma (PT / EN / ES)
+- **Tradução automática** do português para inglês e espanhol com um clique (Google Gemini). Nada é salvo sem revisão.
+- Endereço (slug) das notícias gerado automaticamente a partir do título, sem duplicatas
+- Caixa de **mensagens** recebidas pelo formulário de contato
+- **Histórico (auditoria)** de todas as alterações de conteúdo
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+### Formulário de contato
+- A mensagem é sempre gravada no painel **antes** de qualquer envio de e-mail
+- A equipe recebe um aviso por e-mail (Resend), enviado de `formularios@institutoidex.org`
+- O visitante entra apenas como "Responder para", e o site não pode ser usado para enviar e-mails a terceiros
+- Envios repetidos (duplo clique, nova tentativa) não geram duplicatas
 
-## Development
+## Tecnologias
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+- **[TanStack Start](https://tanstack.com/start)** (React 19, SSR, rotas por arquivo, funções de servidor)
+- **Vite 7** e **TypeScript**
+- **Tailwind CSS v4** e **shadcn/ui** (Radix UI)
+- **TanStack Query** para dados, e **Zod** para validação
+- **Supabase** (banco Postgres, autenticação, storage e RLS), em projeto próprio do instituto
+- **Google Gemini API** (REST, plano gratuito) para tradução automática
+- **Resend** (REST) para avisos por e-mail
+- Hospedagem e edição pela **[Lovable](https://lovable.dev)**, com execução em ambiente edge (Cloudflare Workers)
+
+## Estrutura do projeto
+
+```text
+src/
+├── routes/            Páginas (rotas por arquivo) e endpoints em routes/api/
+├── components/        Componentes do site; admin/ contém os editores do painel
+├── i18n/              Idiomas: catálogos de textos tipados (pt-BR é a referência)
+├── lib/               Regras de negócio, Supabase, storage, galeria, contato, tradução
+│   ├── contato/       Fluxo do formulário (validação, banco, e-mail)
+│   └── traducao-ia/   Tradução automática (contrato, autenticação, Gemini, limites)
+├── hooks/             Sessão, papel de administrador, tempo real
+├── data/              Conteúdo fixo confirmado (contato, navegação, projetos)
+└── assets/            Logos e fotos
+supabase/              Esquema SQL e migrações (aplicadas manualmente)
+docs/                  Documentação técnica de cada módulo
+scripts/               Scripts auxiliares (ex.: teste isolado de e-mail)
+```
+
+## Como rodar localmente
+
+Requisitos: Node.js 20+ e [Bun](https://bun.sh) (ou npm).
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+git clone <url-do-repositorio>
+cd <pasta-do-repositorio>
+bun install
+cp .env.example .env   # preencha com os dados do Supabase do instituto
+bun run dev            # http://localhost:8080
 ```
+
+Outros comandos:
+
+```sh
+bun run build     # build de produção
+bun run lint      # análise de código
+bunx vitest run   # testes
+```
+
+## Variáveis de ambiente e segredos
+
+| Nome | Onde fica | Uso |
+|---|---|---|
+| `VITE_SUPABASE_URL` | `.env` | Endereço do Supabase (público) |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `.env` | Chave pública do Supabase |
+| `IDEX_SUPABASE_SERVICE_ROLE_KEY` | Cofre de segredos (servidor) | Operações privilegiadas pontuais |
+| `GEMINI_API_KEY` | Cofre de segredos (servidor) | Tradução automática |
+| `RESEND_API_KEY` | Cofre de segredos (servidor) | Avisos por e-mail do contato |
+| `RESEND_FROM_EMAIL` | Cofre de segredos (opcional) | Remetente alternativo, restrito a `@institutoidex.org` |
+
+> **Importante:** chaves secretas nunca vão para o código, para o navegador ou para variáveis `VITE_*`.
+
+## Banco de dados
+
+O banco é um projeto **Supabase próprio do instituto**. As alterações de estrutura ficam em `supabase/` e são **aplicadas manualmente** pela equipe responsável no painel do Supabase.
+
+- `supabase/schema.sql`: estrutura principal (áreas, projetos, notícias, documentos, mensagens, papéis)
+- `supabase/pastas.sql` e `supabase/auditoria.sql`: pastas da transparência e histórico de alterações
+- `supabase/migracoes/`: migrações aditivas datadas (traduções, galeria, status de aviso do contato)
+
+A segurança dos dados é garantida por políticas RLS. Só administradores (`has_role(..., 'admin')`) gravam conteúdo.
+
+## Testes
+
+Os testes automatizados (Vitest) cobrem idiomas e datas, galeria, nomes de capas, recuperação de senha, guarda do painel, fluxo do contato e tradução automática. Todos usam serviços simulados: **nenhum teste grava dados reais, envia e-mails ou chama APIs externas**.
+
+```sh
+bunx vitest run
+```
+
+## Identidade visual
+
+| Cor | Hex | Uso |
+|---|---|---|
+| Verde | `#00A859` | Cor principal, botões e destaques |
+| Azul | `#2E4A93` | Apoio |
+| Preto | `#242323` | Texto e seções de contraste |
+| Cinza | `#A0A09F` | Neutro |
+| Amarelo | `#FCD307` | Uso sutil e pontual |
+
+Tipografia: **Newsreader** (títulos) e **Public Sans** (textos). O tom é caloroso e humano, nunca corporativo.
+
+## Regras de conteúdo
+
+- **Nenhum fato é inventado.** Nomes, números e documentos só entram quando confirmados pelo instituto. Onde falta informação, usamos um marcador explícito.
+- O e-mail institucional **não aparece no site**, por decisão anti-spam. O contato é feito por formulário, telefone, endereço e redes.
+- Nomes próprios, endereço, CNPJ, telefone, PDFs e mensagens de visitantes não são traduzidos.
+
+## Documentação técnica
+
+| Documento | Assunto |
+|---|---|
+| [`AGENTS.md`](AGENTS.md) | Decisões técnicas e arquiteturais do projeto |
+| [`docs/i18n.md`](docs/i18n.md) | Sistema de idiomas |
+| [`docs/traducao-automatica.md`](docs/traducao-automatica.md) | Tradução automática com Gemini |
+| [`docs/contato-email.md`](docs/contato-email.md) | Formulário de contato e e-mails |
+| [`docs/galeria-noticias.md`](docs/galeria-noticias.md) | Galeria de fotos das notícias |
+| [`docs/recuperacao-senha.md`](docs/recuperacao-senha.md) | Recuperação de senha do painel |
+
+## Publicação
+
+O projeto é editado e publicado pela Lovable, e este repositório fica sincronizado com ela nos dois sentidos. Commits enviados ao branch principal aparecem no editor. Por isso, **não reescreva o histórico** (force push, rebase de commits já enviados).
+
+---
+
+**Instituto IDEX** · CNPJ 08.666.490/0001-71 · Rua Cel. José Eusébio, 95, casa 13, Higienópolis, São Paulo/SP · (11) 92544-6046
