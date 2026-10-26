@@ -3,7 +3,8 @@
 Site oficial do **Instituto IDEX**, organização social brasileira fundada em 2007 que atua com crianças, jovens, esporte, cultura e comunidade. O principal projeto em andamento é o **Talento Brasil**: treino de futebol gratuito para 200 crianças e jovens, em parceria com o Clube Esportivo Penha.
 
 - **Site publicado:** https://institutoidex.org
-- **Instagram:** [@idexbrasil](https://instagram.com/idexbrasil) · **Facebook:** [/idexsocial](https://facebook.com/idexsocial)
+- **Instagram:** [@idexbrasil](https://instagram.com/idexbrasil) ·
+- **Facebook:** [/idexsocial](https://facebook.com/idexsocial)
 
 ---
 
